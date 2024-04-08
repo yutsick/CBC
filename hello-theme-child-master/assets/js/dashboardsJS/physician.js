@@ -131,9 +131,8 @@ document.addEventListener('DOMContentLoaded', function () {
     
     //console.log(jQuery('.candidate-select__to-physician'))
     jQuery(document).on('click', '.candidate-select__to-physician', function() {
-        console.log('ggggggggggg')
+
         let id = jQuery(this).data('id');
-        console.log('id', id);
         let data = {
             id: id,
             candidate_status:'In progress',
@@ -160,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
                // overlayToggle();
                // jQuery('.elementor-search-form__icon i').replaceWith('<i aria-hidden="true" class="fas fa-search"></i>');
                // enableFilterButton()
-                console.log('success', response);
+                console.log('Updated success', response);
             }, error: function (jqXHR, textStatus, errorThrown) {
                 // Handle errors
                 console.error('AJAX Error: ' + textStatus, errorThrown);

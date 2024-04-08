@@ -17,7 +17,7 @@ const ajaxurl = filterData.ajaxUrl;
     });
 
 //Filter apply
-    jQuery("#apply-filters").on("click", function (event) {
+    jQuery("#physicians-apply-filters").on("click", function (event) {
         console.log("Apply Filters Button Click Event");
 
         // Check if page contains elementor-grid-3 or elementor-grid-4 and then load more candidates accordingly
@@ -29,7 +29,7 @@ const ajaxurl = filterData.ajaxUrl;
         const cper_page = jQuery('#providers_per_page').val();
         const corder_by = jQuery('#providers_sorting').val();
         const corder = jQuery('#providers_sorting').find(':selected').attr('data-order');
-        const zip_code = jQuery('#zippbox').val();
+        let zip_code = jQuery('#zippbox').val();
         if (zip_code.length != 5 && zip_code !== '') {
             console.log("zip-code lenght has to be 5 and can't be empty: " + zip_code);
             zip_code = '';
@@ -74,11 +74,11 @@ const ajaxurl = filterData.ajaxUrl;
                 // console.log("lng: " + southwestLng);
                 if (response.status == 'OK') {
                     const clat = southwestLat;
-                    // console.log("clat: " + clat);
                     const clng = southwestLng;
-                    // console.log("clng: " + clng);
-                    // zip_code = '';
+                    
                     load_providers_cards(page, corder, corder_by, cper_page, search_title, zip_code, clat, clng, destination,selectedSpecialties);
+                    
+                    zip_code = '';
                 }
                // overlayToggle();
             });
@@ -95,7 +95,7 @@ const ajaxurl = filterData.ajaxUrl;
 
 
     // Data to receive from our server
-    var data = {
+    let data = {
         page: page,
         order: corder,
         order_by: corder_by,
@@ -109,7 +109,7 @@ const ajaxurl = filterData.ajaxUrl;
         action: "provider-pagination-load-posts"
     };
 
-    // console.log('Candidate Cards Data:', data);
+     console.log('Candidate Cards Data:', data);
 
     jQuery.ajax({
         type: 'POST', url: filterData.ajaxUrl, data: data, 
@@ -119,7 +119,9 @@ const ajaxurl = filterData.ajaxUrl;
         //     disableFilterButton();
         // }, 
         success: function (response) {
+            console.log('YEPPPP', response)
             // If successful, append the data into our html container
+            jQuery("#providers_list").empty();
             jQuery("#providers_list").html(response);
             // Remove focus from all input, textarea and select elements
             // jQuery('input, textarea, select').focus(function() {
