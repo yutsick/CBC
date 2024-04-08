@@ -1,0 +1,3424 @@
+.right-outer-cart-item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.right-inner-cart-item {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
+
+.right-inner-cart-item #checkout_page_specific_candidate_amount {
+    display: flex;
+    gap: 10px;
+    align-content: center;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.right-inner-cart-item .product-remove {
+    display: flex;
+    margin-left: 10px;
+    align-items: center;
+}
+
+#cart_item_specific_candidate_image {
+    width: 35px;
+}
+
+.woocommerce-cart-form {
+    width: 100%;
+}
+
+.main-cart-item-full-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
+
+.right-inner-image-and-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+.main-cart-inner-image-and-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.main-cart-inner-amount-and-remove {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin-right: 10px;
+}
+
+#checkout_page_specific_candidate_image > img {
+    width: 35px;
+    height: 35px;
+    margin-right: 15px;
+    border-radius: 12px;
+}
+
+#checkout_page_specific_candidate_amount {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+#checkout_page_specific_candidate_amount > div > input {
+    text-align: center;
+    width: 100px;
+}
+
+.far {
+    font-family: 'Font Awesome\ 5 Free', serif;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* CHECKOUT PAGE SECTIONS CUSTOMIZATION */
+#frm_field_278_container > div > p:nth-child(3),
+#frm_field_306_container > div > p:nth-child(3),
+#frm_field_436_container > div > p:nth-child(3),
+#frm_field_326_container > div > p:nth-child(3),
+#frm_field_278_container > div > p:nth-child(3),
+.woocommerce-form-coupon-toggle,
+.woocommerce > p.form-row.form-row-first,
+.woocommerce > p.form-row.form-row-last,
+.col-2 .woocommerce-additional-fields,
+/*.woocommerce-account-fields,*/
+/*.woocommerce-terms-and-conditions-wrapper,*/
+#place_order,
+#order_review_heading,
+#order_review > table,
+.shop_table.woocommerce-checkout-review-order-table,
+.woocommerce-billing-fields h3,
+.woocommerce-notices-wrapper,
+.form-row.woocommerce-SavedPaymentMethods-saveNew {
+    display: none !important;
+}
+
+/*.ppc-button-wrapper {*/
+/*    !*display: none;*!*/
+/*    width: 300px;*/
+/*}*/
+/*#form_general-fund-donation .ppc-button-wrapper {*/
+.ppc-button-wrapper {
+    display: block !important;
+    width: 300px;
+}
+
+/* Checkout Page H3 styling */
+.payment-other__col .frm_pos_top.frm_section_spacing,
+#form_locationspecificdonation h3,
+#frm_field_325_container>h3,
+#other_donation_options,
+#frm_field_213_container>h3.frm_pos_top.frm_section_spacing,
+#frm_field_179_container h3.frm_pos_top.frm_section_spacing {
+    margin-bottom: 0 !important;
+}
+
+#form_general-fund-donation > div > fieldset > div > div.frm_submit,
+#form_expansion-donation > div > fieldset > div > div.frm_submit,
+#form_specific-candidate-donation > div > fieldset > div > div.frm_submit,
+#form_locationspecificdonation > div > fieldset > div > div.frm_submit
+{
+    display: flex;
+    /*flex-wrap: wrap;*/
+    align-items: center;
+    justify-content: space-between;
+}
+#form_locationspecificdonation div.frm_submit > button.frm_prev_page,
+#form_general-fund-donation div.frm_submit > button.frm_prev_page,
+#form_expansion-donation div.frm_submit > button.frm_prev_page,
+#form_specific-candidate-donation div.frm_submit > button.frm_prev_page
+{
+    /*height: 40px;*/
+}
+
+#form_specific-candidate-donation .with_frm_style .frm_radio label,
+#form_specific-candidate-donation .frm_radio input[type=radio]
+{
+    /*display: flex !important;*/
+    justify-content: center;
+    align-items: center;
+}
+@media screen and (max-width: 768px) {
+    #form_locationspecificdonation > div > fieldset > div > div.frm_submit,
+    #form_general-fund-donation > div > fieldset > div > div.frm_submit
+    {
+        align-content: space-between;
+        justify-content: space-between !important;
+    }
+    #form_locationspecificdonation .frm_page_num_3 div.frm_submit > button.frm_prev_page,
+    #form_general-fund-donation .frm_page_num_3 div.frm_submit > button.frm_prev_page
+    {
+        flex-direction: column !important;
+        align-content: flex-start;
+        height: 32px !important;
+        border: 0;
+    }
+    .ppc-button-wrapper {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+        width: 250px;
+    }
+}
+#customer_details > div:first-child {
+    width: 100%;
+}
+
+.form-row.place-order {
+    display: none;
+    height: 0;
+}
+
+.wc_payment_methods.payment_methods.methods {
+    /*border: 1px solid #cfc8d8 !important;*/
+    /*border-radius: 15px;*/
+    border-bottom: 0 !important;
+}
+#order_review {
+    border: 1px solid #cfc8d8 !important;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.woocommerce-account-fields {
+    border: 1px solid lightgray;
+    border-radius: 15px;
+    padding: 15px;
+    margin-top: 50px;
+    background-color: #5ba5f31c;
+}
+
+#field_general_donation_amount, #field_expansion_donation_amount, #field_expansion_page_donation_amount {
+    padding: 0 0 0 25px;
+}
+
+div#frm_field_233_container:after, div#frm_field_311_container:after, div#frm_field_416_container:after {
+    content: '1';
+    position: absolute;
+    left: 0;
+    margin: -35px 0 0 0;
+    width: 24px;
+    height: 24px;
+    color: transparent;
+    background-image: url('/wp-content/uploads/2023/10/currency.svg');
+}
+
+div#cart_item_specific_candidate_name {
+    margin-left: 20px;
+}
+
+div#cart_item_specific_candidate_name a {
+    color: #143A62 !important;
+}
+
+#payment {
+    /*margin-top: 40px;*/
+    border-radius: 15px !important;
+    background: #fff !important;
+}
+
+.ppc-button-wrapper {
+    position: relative;
+    top: -20px;
+    width: 100%;
+    height: 30px;
+}
+
+div.payment_box {
+    background: #eef6ff !important;
+    border-radius: 15px !important;
+}
+
+ul.payment_methods li {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-height: 50px;
+}
+
+/* checkbox at checkout page located above 'donate now securely' button */
+#field_vwxl2-0 {
+    appearance: auto !important;
+}
+
+#field_vwxl2-0:before {
+    display: none !important;
+}
+
+/* CHECKOUT forms */
+
+/*high label*/
+
+.highLabel div {
+    font-family: Be Vietnam Pro;
+    font-size: 20px !important;
+    font-style: normal;
+    font-weight: 500 !important;
+    line-height: 130%;
+    color: #333 !important;
+}
+
+/*inpts*/
+.with_frm_style input[type=text] {
+    display: flex;
+    height: 48px;
+    padding: 10px 16px;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    border-radius: 12px;
+    border: 1px solid #EBEBEB !important;
+}
+
+.frm_form_field select, .frm_form_field textarea {
+    border-color: #EBEBEB !important;
+}
+
+#frm_field_154_container {
+    margin-bottom: -4px;
+    margin-top: -20px;
+}
+
+#field_vjpse_label, #field_x5czf2_label {
+    max-width: 180px;
+}
+
+#field_donate_anonymously_label,
+#field_donate_anonymously2_label,
+#field_donate_anonymously3_label,
+#field_donate_anonymously4_label
+{
+    display: flex;
+    align-items: center;
+    max-width: 250px;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #76787A;
+    padding: 0 0 4px;
+}
+/* invisible popups for donate anonymously tooltips */
+#frm_field_462_container,
+#frm_field_467_container,
+#frm_field_469_container
+{
+    margin: 0;
+}
+
+.frm_form_field input:not([type=radio]):not([type=checkbox]), .frm_form_field select, .frm_form_field textarea {
+    border-color: #d3d3d3 !important;
+    border-radius: 12px;
+}
+
+.woocommerce form .form-row .select2-container {
+    display: flex;
+    align-items: center;
+    min-height: 45px;
+    border: 1px solid #d3d3d3;
+    border-radius: 12px;
+}
+
+.select2-container--default .select2-selection--single {
+    border: 0;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 45px;
+    width: 35px;
+}
+
+.select2.select2-container .selection {
+    width: 100%;
+}
+
+
+/* Gen-fund label */
+#field_fp9k8_label, #field_39gh4_label, #field_3nlpf_label {
+    max-width: 420px;
+}
+
+/*Exp-fund lanel*/
+#field_9231r_label, #field_cv96t_label, #field_vg33t_label {
+    max-width: 445px;
+}
+
+/* Ref label */
+#field_tydpw_label {
+    max-width: 260px;
+}
+
+.with_frm_style .frm_radio input[type=radio]:before {
+    width: 14px !important;
+    height: 14px !important;
+    margin-right: 2px 0 0 2px !important;
+}
+
+.with_frm_style .frm_radio input[type=radio] {
+    appearance: auto !important;
+}
+
+.tooltip-block, .tooltip-block.anon, .tooltip-block.gen-type {
+    z-index: 10 !important;
+}
+
+.tooltip-block.don-type {
+    bottom: unset !important;
+    left: unset !important;
+    top: unset !important;
+    right: unset !important;
+}
+
+.e-n-tabs-heading {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-rows: repeat(2, auto) !important;
+    gap: 8px !important;
+}
+
+.e-n-tabs-heading button {
+    padding: 24px 0 !important;
+    width: 100%;
+    max-width: unset !important;
+}
+
+#est-value {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('/wp-content/uploads/2023/10/arrow-faq.svg');
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+div#frm_radio_377-0, div#frm_radio_377-1, div#frm_radio_313-0, div#frm_radio_313-1 {
+    width: 100%;
+    text-align: center;
+}
+
+#frm_field_377_container .frm_opt_container, #frm_field_313_container .frm_opt_container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+ul.frm_page_bar.frm_rootline_2.frm_progress.frm_progress_line.frm_no_numbers.frm_show_lines.frm_show_titles {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 104px;
+}
+
+ul.frm_page_bar.frm_rootline_2.frm_progress.frm_progress_line.frm_no_numbers.frm_show_lines.frm_show_titles:before {
+    width: 1px;
+    height: 160px;
+    background: #EBEBEB;
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 25px;
+    z-index: 1;
+}
+
+.don-anonymous {
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 130%;
+    color: #333;
+}
+
+.spec-text {
+    font-family: Be Vietnam Pro;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    color: #333;
+}
+
+.spec-text__link {
+    color: #0B46A0;
+    text-decoration: underline !important;
+}
+
+input.cart-item__value {
+    max-width: 144px !important;
+    padding: 10px 16px 10px 50px !important;
+    display: flex;
+    height: 48px;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    border-radius: 12px;
+    border: 1px solid #EBEBEB;
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #333;
+}
+
+a#checkout_page_specific_tab_view_all_candidates, a#checkout_page_specific_tab_clear_all {
+    line-height: 5px
+}
+
+.elementor-element.elementor-element-03196b0.elementor-widget.elementor-widget-html:before, .elementor-element.elementor-element-c4c43e2.elementor-widget.elementor-widget-html:before {
+    content: '$';
+    position: absolute;
+    left: 0;
+    margin: -37px 0 0 10px;
+    width: 24px;
+    height: 24px;
+    color: #76787A;
+}
+
+input#field_expansion_general_donation_amount,
+input#field_location_page_donation_amount,
+input#field_location_general_donation_amount,
+input#field_location_expansion_donation_amount,
+input#field_candidates_general_donation_amount,
+input#field_candidates_expansion_donation_amount {
+    padding: 0 0 0 25px;
+}
+
+div#frm_field_233_container:after,
+div#frm_field_311_container:after,
+div#frm_field_416_container:after,
+div#frm_field_374_container:after,
+div#frm_field_383_container:after,
+div#frm_field_381_container:after,
+div#frm_field_399_container:after,
+div#frm_field_407_container:after,
+div#frm_field_408_container:after {
+    content: '$' !important;
+    position: absolute;
+    left: 0;
+    margin: -37px 0 0 10px !important;
+    width: 24px;
+    height: 24px;
+    color: #76787A !important;
+    background: unset !important;
+}
+
+button#e-n-tabs-title-1932 {
+    border-radius: 0 12px 12px 0;
+}
+
+button#e-n-tabs-title-1931 {
+    border-radius: 12px 0 0 12px;
+}
+
+.tooltip-block.anon {
+    flex-direction: column;
+    gap: 0;
+}
+
+.e-form__indicators__indicator--state-completed [class*=indicator--shape-]:not(.e-form__indicators__indicator--shape-none):before {
+    content: '1';
+    color: transparent;
+    position: relative;
+    left: 6px;
+    background-image: url(/wp-content/uploads/2023/10/checkedStep.png) !important;
+    background-repeat: no-repeat;
+    background-size: contain;
+    transform: scale(1.5);
+    top: 10px;
+}
+
+.spec-don__amount {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+button.spec-btn {
+    color: #143A62;
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    display: flex;
+    height: 32px;
+    padding: 10px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--Dark-Blue, #143A62);
+}
+
+.cart-item__val {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.cartd-item__del {
+    border: 0px;
+    width: 32px;
+    height: 32px;
+    background-image: url(/wp-content/uploads/2023/10/remove.svg);
+    background-position: center;
+    background-size: auto;
+    background-repeat: no-repeat;
+}
+
+.cartd-item__del:hover {
+    transition: all;
+    transform: scale(1.05);
+    background-color: transparent;
+}
+
+/* .zip-item-flex.destination_input:last-child {
+    margin-left: 16px;
+} */
+
+.spec-btn:hover {
+    background: transparent !important;
+    transition: all;
+    transform: scale(1.05);
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_072b6fb.elementor-col-20 {
+    justify-content: end;
+    display: flex;
+}
+
+button.voucherBtn {
+    display: flex;
+    height: 48px;
+    padding: 10px 24px;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    border-radius: 12px;
+    background: var(--Dark-Blue, #143A62);
+    color: var(--gray-white, #FFF);
+    font-family: Be Vietnam Pro;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    border: 0;
+}
+
+input#form-field-voucherInT, input#form-field-referrInpt, input#form-field-emailPayPal, input#form-field-field_8fe0931, input#form-field-field_e46afe2, input#form-field-field_fe9bd92, input#form-field-field_ecbd87e, input#form-field-field_6a8170f, select#form-field-field_fe0356f, select#form-field-field_cffb1cb, input#form-field-field_857d416, input#form-field-field_25309cd, input#form-field-cardNumber, input#form-field-field_d3c7784, input#form-field-field_3fd23a8 {
+    display: flex;
+    height: 48px;
+    padding: 10px 16px;
+    align-items: center;
+    gap: 10px;
+    border-radius: 12px;
+    border: 2px solid var(--gray-divider, #EBEBEB);
+    align-self: stretch;
+    color: var(--gray-main-dark, #333);
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.donor-acc {
+    color: #333 !important;
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.donor-acc a {
+    text-decoration: underline;
+    color: #143A62;
+}
+
+.elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-referrInpt.elementor-col-100 {
+    display: flex;
+    gap: 4px;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_6acd8a6.elementor-col-100 div {
+    margin: 0;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_058f8e3.elementor-col-100, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_c2ef829.elementor-col-100, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_b2bc143.elementor-col-100 {
+    border-bottom: 1px solid #EBEBEB;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_058f8e3.elementor-col-100 h1, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_e71dc55.elementor-col-100 h1, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_c2ef829.elementor-col-100 h1, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_b2bc143.elementor-col-100 h1 {
+    font-family: Be Vietnam Pro;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%;
+}
+
+.form-row h2, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_c474b2b.elementor-col-100 h2, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_ece3f47.elementor-col-100 h2 {
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 130%;
+}
+
+.tooltip, span.tootlip3 {
+    cursor: pointer;
+}
+
+.tooltip:after, span.tootlip3:after {
+    content: '1';
+    padding: 0 14px 5px 0;
+    position: relative;
+    color: transparent;
+    width: 24px;
+    height: 24px;
+    background-image: url(/wp-content/uploads/2023/10/ad-step__icon.svg) !important;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.donVoucher-icon,
+.donExpansion-icon,
+.donGeneral-icon,
+.refHelp-icon,
+.donType-icon
+{
+    cursor: pointer;
+}
+
+#field_3nlpf_label,
+#field_cv96t_label,
+#field_dx2vs_label,
+#field_vg33t_label,
+#field_dx2vs2_label,
+#field_fp9k8_label,
+#field_9231r_label,
+#field_vjpse_label,
+#field_tydpw_label,
+#field_x5czf2_label,
+#field_x5czf_label,
+#field_39gh4_label
+{
+    display: flex;
+}
+
+#field_x5czf_label {
+    cursor: pointer;
+    width: fit-content;
+}
+
+.elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-field_3fd23a8.elementor-col-20:after {
+    content: '1';
+    padding: 0 14px 5px 0;
+    position: relative;
+    color: transparent;
+    width: 24px;
+    height: 24px;
+    background-image: url(/wp-content/uploads/2023/10/tooltip-icon.svg);
+    background-repeat: no-repeat;
+}
+
+.elementor-37058 .elementor-element.elementor-element-3e81a01a .elementor-field-type-html {
+    margin-bottom: 24px
+}
+
+
+.elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-referrInpt.elementor-col-100 label {
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #76787A;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_ece3f47.elementor-col-100 {
+    margin: 0;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_6acd8a6.elementor-col-100 {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.zip-label {
+    font-family: Be Vietnam Pro;
+    font-size: 16px !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    line-height: 150% !important;
+    color: #333 !important;
+}
+
+.form-inner__col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-inner__col span {
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    color: #333;
+}
+
+.form-inner__col p {
+    color: #76787A;
+    font-family: Be Vietnam Pro;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.form-inner__col p a {
+    text-decoration: underline;
+    color: #143A62;
+}
+
+.form-row {
+    gap: 8px;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_7aa3930.elementor-col-100 h2, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_5dbe0ff.elementor-col-100 h2 {
+    margin: 24px 0 0;
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 130%;
+}
+
+.elementor-col-50, .elementor-col-100 {
+    margin-bottom: 16px !important;
+}
+
+.elementor-37058 .elementor-element.elementor-element-3e81a01a .elementor-field-group {
+    gap: 4px;
+}
+
+.elementor-37058 .elementor-element.elementor-element-3e81a01a .elementor-field-group label {
+    color: #76787A;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+input#form-field-cardNumber {
+    padding-left: 50px !important;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_4a1c3ad.elementor-col-100 {
+    margin: 40px 0 24px;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_4a1c3ad.elementor-col-100 span {
+    color: #76787A;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_4a1c3ad.elementor-col-100 span a {
+    text-decoration: underline;
+    color: #143A62;
+}
+
+.elementor-field-type-acceptance.elementor-field-group.elementor-column.elementor-field-group-acceptance.elementor-col-100 div span label {
+    color: #333 !important;
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.elementor-field-type-acceptance.elementor-field-group.elementor-column.elementor-field-group-acceptance.elementor-col-100 div span label a {
+    color: #143A62;
+    text-decoration: underline;
+}
+
+.elementor-field-type-radio.elementor-field-group.elementor-column.elementor-field-group-donValue.elementor-col-100 label {
+    color: transparent;
+}
+
+.elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-donInpt.elementor-col-100 {
+    gap: 4px;
+}
+
+.elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-donInpt.elementor-col-100 label {
+    color: #76787A;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+input#form-field-donInpt {
+    display: flex;
+    height: 48px;
+    padding: 10px 16px;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    border-radius: 12px;
+    border: 1px solid #EBEBEB;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_adec5f8.elementor-col-100 {
+    margin-top: 16px;
+}
+
+.tooltip-modal {
+    display: none;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_c1ec1c3.elementor-col-100 {
+    margin-top: 16px;
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 130%;
+}
+
+.don-type__label {
+    display: flex;
+    padding: 8px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+    border-radius: 100px;
+    border: 1px solid #143A62;
+    background: #143A62;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_c1ec1c3.elementor-col-100 span:after {
+    top: 0 !important;
+    left: 8px;
+}
+
+.ref-row {
+    display: flex;
+    gap: 16px;
+}
+
+.form-row h1 {
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_17548d8.elementor-col-100 {
+    padding-top: 24px;
+    border-top: 1px solid #EBEBEB;
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 130%;
+}
+
+.elementor-col-100 input[type="text"], select#form-field-cardCity, input#form-field-cardCVV {
+    display: flex;
+    height: 48px;
+    padding: 10px 16px;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    border-radius: 12px;
+    border: 1px solid #EBEBEB;
+}
+
+.elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-conditionPayPal.elementor-col-100, .elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-cardName.elementor-col-50, .elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-cardLName.elementor-col-50, .elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-cardAddress.elementor-col-100, .elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-cardCountry.elementor-col-50, .elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-cardZCode.elementor-col-50, .elementor-field-type-select.elementor-field-group.elementor-column.elementor-field-group-cardCity.elementor-col-50, .elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-cardState.elementor-col-50, .elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-cardPhone.elementor-col-100, .elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-cardEmail.elementor-col-100, .elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-cardNumber.elementor-col-50, .elementor-field-type-date.elementor-field-group.elementor-column.elementor-field-group-cardDate.elementor-col-50, .elementor-field-type-number.elementor-field-group.elementor-column.elementor-field-group-cardCVV.elementor-col-20, .elementor-field-type-number.elementor-field-group.elementor-column.elementor-field-group-cardCVV.elementor-col-20 {
+    gap: 4px;
+}
+
+label.elementor-field-label {
+    color: #76787A !important;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.pay-method__col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-paymentMethod.elementor-col-100 div {
+    margin: 0;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_1087989.elementor-col-100 {
+    margin: 40px 0 24px 0;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_1087989.elementor-col-100 span {
+    color: #76787A;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_1087989.elementor-col-100 span a {
+    color: #143A62;
+    text-decoration: underline
+}
+
+[type=radio], [type=checkbox] {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    /* top: 4px; */
+}
+
+.elementor-37391 .elementor-element.elementor-element-3f9643d .elementor-button .elementor-align-icon-right svg {
+    width: 97px;
+    height: 18px;
+    top: 2px;
+    position: relative;
+}
+
+.elementor-37395 .elementor-element.elementor-element-50db100 .elementor-button .elementor-align-icon-right svg {
+    width: 90px;
+    height: 24px;
+    top: 4px;
+    position: relative;
+}
+
+.elementor-37395 .elementor-element.elementor-element-50db100 .elementor-button {
+    border: 0px !important;
+}
+
+.donate-btns {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.elementor-field-type-text.elementor-field-group.elementor-column.elementor-field-group-cardNumber.elementor-col-50:after {
+    content: '1';
+    position: absolute;
+    top: 38px;
+    left: 23px;
+    background-image: url(/wp-content/uploads/2023/10/card-icon.svg);
+    width: 24px;
+    color: transparent;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_1907a51.elementor-col-100:before, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_155bff3.elementor-col-100:before {
+    content: '1';
+    position: absolute;
+    top: 0;
+    background-image: url(/wp-content/uploads/2023/10/bag.png);
+    width: 32px;
+    height: 32px;
+    color: transparent;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_1907a51.elementor-col-100 div, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_155bff3.elementor-col-100 div {
+    color: transparent;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_740f522.elementor-col-100 {
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 130%;
+    color: #333;
+    margin-top: 32px;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_740f522.elementor-col-100 .tooltip:after {
+    top: 0px !important;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_98422b1.elementor-col-100 {
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 130%;
+    color: #333;
+}
+
+.tooltip-inner, .tooltip-modal, .tooltip-modal2 {
+    cursor: pointer;
+    position: absolute;
+    z-index: 2;
+    padding: 24px;
+    width: 360px;
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;
+    border-radius: 0px 0px 12px 12px;
+    background: #FFF;
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    box-shadow: 0px 11.43313px 24.29539px 0px rgba(132, 152, 174, 0.10), 0px 101.46898px 60.0239px 0px rgba(132, 152, 174, 0.05), 0px 280.11157px 78.60273px 0px rgba(132, 152, 174, 0.00);
+}
+
+.tooltip, .tooltip2 {
+    cursor: pointer;
+}
+
+.elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_9b99bbe.elementor-col-100 h2 {
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 130%;
+    margin-top: 24px;
+}
+
+/* Start funding amounts radio buttons */
+
+/*.candidate-inputs {*/
+/*    display: flex;*/
+/*    flex-wrap: wrap;*/
+/*    align-items: center;*/
+/*    gap: 8px 8px;*/
+/*}*/
+
+/*span.inputs-option {*/
+/*    display: flex;*/
+/*    flex-wrap: nowrap;*/
+/*    justify-content: space-around;*/
+/*}*/
+
+/*.inputs-option label {*/
+/*    padding: 8px 16px;*/
+/*    background-color: transparent;*/
+/*    border: 1px solid #143A62;*/
+/*    color: #143A62 !important;*/
+/*    cursor: pointer;*/
+/*    display: inline-block;*/
+/*    border-radius: 4px;*/
+/*    transition: background-color 0.3s, color 0.3s;*/
+/*    border-radius: 100px;*/
+/*    font-family: Be Vietnam Pro;*/
+/*    font-size: 14px;*/
+/*    font-style: normal;*/
+/*    font-weight: 400;*/
+/*    line-height: 150%;*/
+/*    z-index: 2;*/
+/*    position: relative;*/
+/*}*/
+
+/*.inputs-option input[type="radio"] {*/
+/*    position: relative;*/
+/*    opacity: 0;*/
+/*}*/
+
+/*.inputs-option input[type="radio"] + label {*/
+/*    position: relative;*/
+/*    left: -20px;*/
+/*}*/
+
+/*.inputs-option input[type="radio"]:checked + label {*/
+/*    background-color: #143A62;*/
+/*    color: #ffffff !important;*/
+/*}*/
+
+/* End Funding amount radio buttons */
+
+
+#frm_field_234_container .frm_opt_container,
+#frm_field_447_container .frm_opt_container,
+#frm_field_448_container .frm_opt_container,
+#frm_field_449_container .frm_opt_container,
+#frm_field_450_container .frm_opt_container,
+#frm_field_451_container .frm_opt_container,
+#frm_field_452_container .frm_opt_container {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+}
+
+#frm_radio_234-0, #frm_radio_234-1,
+#frm_radio_447-0, #frm_radio_447-1,
+#frm_radio_448-0, #frm_radio_448-1,
+#frm_radio_449-0, #frm_radio_449-1,
+#frm_radio_450-0, #frm_radio_450-1,
+#frm_radio_451-0, #frm_radio_451-1,
+#frm_radio_452-0, #frm_radio_452-1 {
+    width: 100%;
+    text-align: center;
+}
+
+#frm_radio_234-0 label input, #frm_radio_234-1 label input,
+#frm_radio_447-0 label input, #frm_radio_447-1 label input,
+#frm_radio_448-0 label input, #frm_radio_448-1 label input,
+#frm_radio_449-0 label input, #frm_radio_449-1 label input,
+#frm_radio_450-0 label input, #frm_radio_450-1 label input,
+#frm_radio_451-0 label input, #frm_radio_451-1 label input,
+#frm_radio_452-0 label input, #frm_radio_452-1 label input {
+    display: none !important;
+}
+
+#frm_radio_234-0 label, #frm_radio_234-1 label,
+#frm_radio_447-0 label, #frm_radio_447-1 label,
+#frm_radio_448-0 label, #frm_radio_448-1 label,
+#frm_radio_449-0 label, #frm_radio_449-1 label,
+#frm_radio_450-0 label, #frm_radio_450-1 label,
+#frm_radio_451-0 label, #frm_radio_451-1 label,
+#frm_radio_452-0 label, #frm_radio_452-1 label {
+    display: flex;
+    padding: 8px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+    border-radius: 100px;
+    border: 1px solid #143A62;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #143A62;
+    cursor: pointer;
+}
+
+.tooltip {
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    color: #333;
+    line-height: 130%;
+}
+
+/* Estimate calc style */
+
+.calc-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: start;
+}
+
+.value-row {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.calc-row {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.value-label {
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    letter-spacing: -0.72px;
+}
+
+#est-value {
+    color: #0B46A0;
+    font-family: Be Vietnam Pro;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: -0.96px;
+    max-width: 230px;
+}
+
+.estimate-text {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    width: 75%;
+}
+
+.estimate-result {
+    color: #0B46A0;
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: -0.72px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.est-additional {
+    font-family: Be Vietnam Pro;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.est-tooltipIcon {
+    cursor: pointer;
+}
+
+.opt-font {
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+#frm_radio_377-0 label, #frm_radio_377-1 label {
+    display: flex;
+    padding: 8px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+    border-radius: 100px;
+    border: 1px solid #143A62;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #143A62;
+    cursor: pointer;
+}
+
+#frm_radio_377-0 label input, #frm_radio_377-1 label input {
+    display: none !important;
+}
+
+.value-row {
+    width: 100%;
+}
+
+@media screen and (max-width: 1280px) {
+    .calc-row {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .estimate-text {
+        flex-direction: column-reverse;
+        align-items: flex-start;
+        text-align: left;
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 510px) {
+    .value-row {
+        flex-direction: column;
+    }
+}
+
+
+/* Checkout margin tooltips fixes */
+
+div#frm_field_416_container {
+    margin-bottom: 16px;
+}
+
+div#frm_field_426_container,
+div#frm_field_299_container,
+div#frm_field_427_container,
+div#frm_field_424_container,
+div#frm_field_422_container,
+div#frm_field_423_container,
+div#frm_field_420_container {
+    margin: 0;
+}
+
+/* Specific Candidate Donation inpt */
+div#frm_field_150_container {
+    margin-top: 0px !important;
+}
+/* End Specific Location Donation form */
+
+/* Start Expansion form */
+.expansion-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info {
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #76787A;
+}
+
+.info-accent {
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #333;
+}
+
+.info-accent a {
+    color: #143A62;
+    text-decoration: underline;
+}
+
+.don-anonymous {
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 130%;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: -0.72px;
+}
+
+.don-anonymous img {
+    cursor: pointer;
+}
+
+/*.tooltip-block.don-anonymous {*/
+/*    display: none;*/
+/*}*/
+
+.tooltip-block.don-type {
+    /*bottom: 5% !important;*/
+    left: 22% !important;
+}
+
+/*.tooltip-block.don-anonymous {*/
+/*    bottom: 30px;*/
+/*    left: 80%;*/
+/*}*/
+
+#frm_field_311_container:after {
+    content: '$';
+    position: absolute;
+    left: 0;
+    margin: -37px 0 0 10px;
+    width: 24px;
+    height: 24px;
+    color: #76787A;
+}
+
+input#field_donation_amount2, input#field_ejrgz2 {
+    padding: 0 0 0 30px;
+    font-size: 20px;
+}
+
+#field_x5czf2_label {
+    margin-bottom: 16px;
+}
+
+#field_dx2vs3_label {
+    position: relative;
+    display: flex;
+    max-width: 360px;
+}
+
+.frm_submit button:hover {
+    background: #143A62;
+}
+
+.frm_prev_page:hover {
+    background: white;
+}
+
+@media (max-width: 767px) {
+    .frm_submit button.frm_button_submit {
+        width: unset !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .frm_submit {
+        flex-wrap: wrap !important;
+        gap: 32px !important;
+        justify-content: center;
+    }
+}
+
+/* end expansion form custom elements style */
+
+.with_frm_style .frm_radio input[type=radio]:before {
+    width: 18px;
+    height: 18px;
+    box-shadow: inset 16px 10px #143A62;
+    margin: 2px;
+}
+
+.with_frm_style .frm_radio input[type=radio] {
+    width: 24px;
+    height: 24px;
+    border-color: #76787A;
+}
+
+.with_frm_style .frm_radio input[type=radio]:checked {
+    border-color: #143A62;
+}
+
+.with_frm_style .frm_radio input[type=radio]:checked:before {
+    transform: none !important;
+}
+
+.with_frm_style .frm_radio input[type=radio]:before {
+    content: '';
+     width: unset !important;
+     height: unset !important;
+     border-radius: unset !important;
+     transform: unset !important;
+     transition: unset !important;
+     box-shadow: unset !important;
+     display: unset !important;
+     margin: unset !important;
+}
+
+.frm_opt_container {
+    gap: 8px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#frm_field_234_container .frm_opt_container,
+#frm_field_447_container .frm_opt_container,
+#frm_field_448_container .frm_opt_container,
+#frm_field_449_container .frm_opt_container,
+#frm_field_450_container .frm_opt_container,
+#frm_field_451_container .frm_opt_container,
+#frm_field_452_container .frm_opt_container {
+    flex-wrap: nowrap;
+}
+
+/*labels*/
+
+.with_frm_style .frm_radio label, .with_frm_style .frm_checkbox label {
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.with_frm_style .frm_top_container .frm_primary_label {
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #76787A;
+    padding: 0 0 4px;
+}
+
+/* additional */
+
+.formD-row h1 {
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%;
+    margin: 0;
+}
+
+.formD-row {
+    padding: 24px 0;
+    border-bottom: 1px solid #EBEBEB;
+}
+
+.general-col__info {
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #333;
+}
+
+.general-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.general-info__accent {
+    color: #143A62;
+    text-decoration: underline !important;
+}
+
+.general-col__text {
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #76787A;
+}
+
+.group-title {
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 130%;
+    color: #333;
+}
+
+.voucher-row {
+    display: flex;
+    gap: 8px;
+}
+
+.voucher-apply {
+    display: flex;
+    height: 48px;
+    padding: 10px 24px;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    border-radius: 12px;
+    background: #143A62;
+    color: white;
+    border: 0;
+    font-family: Be Vietnam Pro;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+}
+
+.reg-ref {
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 150%;
+    color: #333;
+    font-style: italic;
+}
+
+.reg-ref__accent {
+    color: #143A62;
+    text-decoration: underline !important;
+}
+
+#frm_field_163_container .frm_opt_container, #frm_field_210_container .frm_opt_container {
+    flex-direction: column;
+}
+
+.payment-other__row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.payment-other__col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.payment-other__title {
+    margin: 0;
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+}
+
+.payment-other__text {
+    font-family: Be Vietnam Pro;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #76787A;
+}
+
+.payment-other__accent {
+    color: #143A62;
+    font-weight: 600;
+    text-decoration: underline !important;
+}
+
+.policy-form {
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #76787A;
+}
+
+.policy-form__accent, .term-link {
+    color: #143A62;
+    text-decoration: underline !important;
+}
+
+
+/* checkbox terms */
+
+#frm_checkbox_177-0 {
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.frm_checkbox input[type=checkbox] {
+    border-color: #76787A !important;
+}
+
+.frm_checkbox input[type=checkbox]:before {
+    transform: rotate(2deg) !important;
+}
+
+/* card titles */
+h3.frm_pos_top.frm_section_spacing {
+    color: #333 !important;
+    border: 0 !important;
+    font-family: Be Vietnam Pro;
+    font-size: 20px !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+    line-height: 130% !important;
+    margin: 0 0 24px !important;
+}
+
+/* cardNum inpt */
+
+input#field_ejrgz, input#field_donation_amount, input#field_ejrgz2 {
+    padding: 0 0 0 25px;
+    font-size: 20px;
+}
+
+input#field_donation_amount {
+    display: grid;
+}
+
+div#frm_field_233_container:after {
+    content: '$';
+    position: absolute;
+    left: 0;
+    margin: -37px 0 0 10px;
+    width: 24px;
+    height: 24px;
+    color: #76787A;
+}
+
+div#frm_field_192_container:after, div#frm_field_225_container:after {
+    content: '1';
+    position: absolute;
+    left: 0;
+    margin: 10px 0 0 16px;
+    width: 24px;
+    height: 24px;
+    color: transparent;
+    background-image: url('/wp-content/uploads/2023/10/cardNum-icon.svg');
+}
+
+/* controls */
+
+.frm_submit {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.frm_submit button:last-child {
+    background: #143A62;
+    color: white;
+}
+
+.frm_submit button {
+    border: 0;
+    display: flex;
+    height: 48px;
+    padding: 10px 24px;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    border-radius: 12px;
+    border: 1px solid #143A62;
+    color: white;
+    background: #143A62;
+    font-family: Be Vietnam Pro;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    letter-spacing: unset !important;
+}
+
+.frm_submit button.frm_button_submit {
+    text-transform: none;
+}
+
+.frm_submit button:hover {
+    transition: all 0.4s;
+    transform: scale(1.05);
+}
+
+
+/* Start funding amounts radio buttons */
+
+.candidate-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1px;
+    line-height: 50px;
+}
+
+span.inputs-option {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    line-height: 32px;
+}
+
+.inputs-option label {
+    padding: 8px 14px;
+    background-color: transparent;
+    border: 1px solid #143A62;
+    color: #143A62 !important;
+    cursor: pointer;
+    display: inline-block;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 100px;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    z-index: 2;
+    position: relative;
+}
+
+.inputs-option input[type="radio"] {
+    position: relative;
+    opacity: 0;
+}
+
+.inputs-option input[type="radio"] + label {
+    position: relative;
+    left: -20px;
+}
+
+.inputs-option input[type="radio"] + label:hover {
+    transition: all 0.4s;
+    transform: scale(1.05);
+    background-color: #143A62;
+    color: #ffffff !important;
+}
+
+.inputs-option input[type="radio"]:checked + label {
+    background-color: #143A62;
+    color: #ffffff !important;
+}
+
+/* End Funding amount radio buttons */
+
+
+#frm_field_234_container .frm_opt_container,
+#frm_field_447_container .frm_opt_container,
+#frm_field_448_container .frm_opt_container,
+#frm_field_449_container .frm_opt_container,
+#frm_field_450_container .frm_opt_container,
+#frm_field_451_container .frm_opt_container,
+#frm_field_452_container .frm_opt_container {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+}
+
+#frm_radio_234-0, #frm_radio_234-1,
+#frm_radio_447-0, #frm_radio_447-1,
+#frm_radio_448-0, #frm_radio_448-1,
+#frm_radio_449-0, #frm_radio_449-1,
+#frm_radio_450-0, #frm_radio_450-1,
+#frm_radio_451-0, #frm_radio_451-1,
+#frm_radio_452-0, #frm_radio_452-1 {
+    width: 100%;
+    text-align: center;
+}
+
+#frm_radio_234-0 label input, #frm_radio_234-1 label input,
+#frm_radio_447-0 label input, #frm_radio_447-1 label input,
+#frm_radio_448-0 label input, #frm_radio_448-1 label input,
+#frm_radio_449-0 label input, #frm_radio_449-1 label input,
+#frm_radio_450-0 label input, #frm_radio_450-1 label input,
+#frm_radio_451-0 label input, #frm_radio_451-1 label input,
+#frm_radio_452-0 label input, #frm_radio_452-1 label input {
+    display: none !important;
+}
+
+#frm_radio_234-0 label, #frm_radio_234-1 label,
+#frm_radio_447-0 label, #frm_radio_447-1 label,
+#frm_radio_448-0 label, #frm_radio_448-1 label,
+#frm_radio_449-0 label, #frm_radio_449-1 label,
+#frm_radio_450-0 label, #frm_radio_450-1 label,
+#frm_radio_451-0 label, #frm_radio_451-1 label,
+#frm_radio_452-0 label, #frm_radio_452-1 label {
+    display: flex;
+    padding: 8px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+    border-radius: 100px;
+    border: 1px solid #143A62;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #143A62;
+    cursor: pointer;
+}
+
+.tooltip {
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    color: #333;
+    line-height: 130%;
+}
+
+#frm_radio_313-0 label, #frm_radio_313-1 label {
+    display: flex;
+    padding: 8px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+    border-radius: 100px;
+    border: 1px solid #143A62;
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #143A62;
+    cursor: pointer;
+}
+
+#frm_radio_313-0 label input, #frm_radio_313-1 label input {
+    display: none !important;
+}
+
+/* End Expansion form */
+
+/*Mob*/
+
+@media screen and (max-width: 768px) {
+    .e-n-tabs-heading {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        overflow: auto;
+    }
+
+    .elementor-widget-n-tabs .e-n-tab-title-text {
+        width: 130px;
+        font-family: Be Vietnam Pro;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%;
+    }
+
+    .elementor-37058 .elementor-element.elementor-element-7323bda0 > .elementor-widget-container > .e-n-tabs > .e-n-tabs-heading > :is( .e-n-tab-title > .e-n-tab-title-text, .e-n-tab-title ) {
+        padding: 12px;
+    }
+
+    .elementor-element.elementor-element-38a784d7.e-con-full.e-flex.e-con.e-parent, .elementor-element.elementor-element-1f80c167.e-con-full.e-flex.e-con.e-parent {
+        padding: 0 16px;
+    }
+
+    .elementor-element.elementor-element-4d334a47.e-con-full.e-flex.e-con.e-child {
+        width: 100%;
+        margin: 0;
+    }
+
+
+    div#e-n-tab-content-1931, .elementor-element.elementor-element-538670a.elementor-hidden-desktop.e-flex.e-con-boxed.e-con.e-parent {
+        padding: 0;
+    }
+
+    .elementor-37641 .elementor-element.elementor-element-53e3a69 .elementor-heading-title {
+        font-size: 18px;
+    }
+
+    .elementor-element.elementor-element-ab876ab.e-con-full.e-flex.e-con.e-child, .elementor-element.elementor-element-796eac4.e-con-full.e-flex.e-con.e-child {
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+
+    .cart-item__val {
+        gap: 8px !important;
+    }
+
+    .cart-item__val input {
+        width: 102px !important;
+    }
+
+    .elementor-37641 .elementor-element.elementor-element-790d7f67 .elementor-field-type-html {
+        margin-bottom: 16px !important;
+    }
+
+    .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_740f522.elementor-col-100 {
+        margin: 0 !important;
+    }
+
+    .e-form__buttons.elementor-column.elementor-col-100 {
+        margin: 0 !important;
+        padding: 16px 0 !important;
+    }
+
+    .elementor-element.elementor-element-38a784d7.e-con-full.e-flex.e-con.e-parent, .elementor-element.elementor-element-1f80c167.e-con-full.e-flex.e-con.e-parent {
+        padding: 24px 16px 80px !important;
+    }
+
+    .elementor-37058 .elementor-element.elementor-element-40f6471:not(.elementor-motion-effects-element-type-background), .elementor-37058 .elementor-element.elementor-element-40f6471 > .elementor-motion-effects-container > .elementor-motion-effects-layer {
+        padding: 16px !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .e-form__buttons__wrapper__button {
+        width: 147px;
+    }
+
+    .donate-btns {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+
+    .elementor-37395 .elementor-element.elementor-element-8ec542c, .elementor-37391 .elementor-element.elementor-element-0848373 {
+        padding: 0;
+    }
+
+    .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_784eec0 + *, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_469a609.elementor-col-100 + * {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_784eec0 + * button.elementor-button.elementor-size-sm.e-form__buttons__wrapper__button.e-form__buttons__wrapper__button-previous, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_469a609.elementor-col-100 + * button.elementor-button.elementor-size-sm.e-form__buttons__wrapper__button.e-form__buttons__wrapper__button-previous {
+        width: 100%;
+    }
+
+    .elementor-37641 .elementor-element.elementor-element-790d7f67 .elementor-button[type="submit"], .elementor-37684 .elementor-element.elementor-element-4f4f79a .elementor-button[type="submit"] {
+        width: 100%;
+        padding: 12px;
+    }
+
+    input.elementor-field.elementor-size-sm.elementor-field-textual.elementor-date-field.flatpickr-input.flatpickr-mobile {
+        display: flex;
+        height: 48px;
+        padding: 10px 16px;
+        align-items: center;
+        gap: 10px;
+        border-radius: 12px;
+        border: 2px solid var(--gray-divider, #EBEBEB);
+        align-self: stretch;
+        color: var(--gray-main-dark, #333);
+        font-family: Be Vietnam Pro;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+    }
+
+    form.elementor-form {
+        padding: 24px 12px 0;
+    }
+
+    /* Indicator */
+    .e-form__indicators.e-form__indicators--type-number_text {
+        position: absolute;
+        width: 100%;
+        height: fit-content;
+        left: 0% !important;
+        top: -78% !important;
+        align-items: start;
+        flex-direction: row;
+    }
+
+    .e-form__indicators__indicator.e-form__indicators__indicator {
+        flex-direction: column !important;
+    }
+
+    label.e-form__indicators__indicator__label {
+        font-size: 12px !important;
+        width: 101px;
+    }
+
+    .e-form__indicators__indicator.e-form__indicators__indicator {
+        gap: 8px
+    }
+
+    .e-form__indicators__indicator__number.e-form__indicators__indicator--shape-circle {
+        font-size: 12px;
+    }
+
+    .e-form__indicators__indicator__separator {
+        transform: rotate(180deg);
+        left: 11%;
+        top: 0;
+        width: 260px;
+    }
+
+    .e-form__indicators.e-form__indicators--type-number_text {
+        position: absolute;
+        width: 273px;
+        height: 304px;
+        left: -50%;
+        align-items: start;
+        flex-direction: column;
+    }
+
+    .e-form__indicators__indicator__number.e-form__indicators__indicator--shape-circle {
+        margin: 0;
+    }
+
+    .e-form__indicators__indicator {
+        display: flex;
+        flex-direction: row !important;
+        font-size: 20px;
+        line-height: 26px;
+        gap: 12px;
+        font-family: Be Vietnam Pro;
+    }
+
+    .e-form__indicators__indicator.e-form__indicators__indicator--state-inactive {
+        padding: 0;
+    }
+
+    .e-form__indicators__indicator__separator {
+        background-color: #EBEBEB !important;
+        transform: rotate(90deg);
+        left: -44.5%;
+        position: absolute;
+        top: 45%;
+    }
+
+    .e-form__indicators__indicator__number.e-form__indicators__indicator--shape-circle {
+        position: relative;
+        z-index: 2;
+        background-color: #76787A !important;
+        border: 0;
+        color: white;
+    }
+
+    .e-form__indicators__indicator {
+        color: #76787A !important;
+    }
+
+    .e-form__indicators__indicator--state-active {
+        color: #143A62 !important;
+    }
+
+    .e-form__indicators__indicator--state-active .e-form__indicators__indicator__number {
+        background-color: #143A62 !important;
+    }
+
+    .e-form__indicators__indicator.e-form__indicators__indicator--state-active, .e-form__indicators__indicator.e-form__indicators__indicator--state-completed {
+        padding: 0 !important
+    }
+
+    .e-form__indicators__indicator--state-completed .e-form__indicators__indicator__label {
+        filter: brightness(0.5);
+    }
+
+    .e-form__indicators__indicator--state-completed [class*=indicator--shape-]:not(.e-form__indicators__indicator--shape-none) {
+        background: #02A95C !important;
+        color: transparent !important;
+    }
+
+    .e-form__indicators__indicator--state-completed [class*=indicator--shape-]:not(.e-form__indicators__indicator--shape-none):before {
+        content: '1';
+        color: transparent;
+        position: relative;
+        left: 6px;
+        background-image: url(/wp-content/uploads/2023/10/checkedStep.png);
+        background-repeat: no-repeat;
+        background-size: contain;
+        transform: scale(1.5);
+        top: 10px;
+    }
+
+    /* Specific Candidate form */
+    .with_frm_style .frm_radio input[type=radio]:before {
+        width: 18px;
+        height: 18px;
+        box-shadow: inset 16px 10px #143A62;
+    }
+
+    .with_frm_style .frm_radio input[type=radio] {
+        width: 24px;
+        height: 24px;
+        border-color: #76787A;
+    }
+
+    .with_frm_style .frm_radio input[type=radio]:checked {
+        border-color: #143A62;
+    }
+
+    .frm_opt_container {
+        gap: 16px;
+        display: flex;
+    }
+
+    /*labels*/
+    .with_frm_style .frm_radio label, .with_frm_style .frm_checkbox label {
+        color: #333;
+        font-family: Be Vietnam Pro;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+    }
+
+    .with_frm_style .frm_top_container .frm_primary_label {
+        font-family: Be Vietnam Pro;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+        color: #76787A;
+        padding: 0 0 4px;
+    }
+
+    /* additional */
+    .formD-row h1 {
+        color: #333;
+        font-family: Be Vietnam Pro;
+        font-size: 32px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 130%;
+        margin: 0;
+    }
+
+    .formD-row {
+        padding: 24px 0;
+        border-bottom: 1px solid #EBEBEB;
+    }
+
+    .voucher-row {
+        display: flex;
+        gap: 8px;
+    }
+
+    .voucher-apply {
+        display: flex;
+        height: 48px;
+        padding: 10px 24px;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        border-radius: 12px;
+        background: #143A62;
+        color: white;
+        border: 0;
+        font-family: Be Vietnam Pro;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%;
+    }
+
+    .reg-ref {
+        font-family: Be Vietnam Pro;
+        font-size: 16px;
+        font-style: italic;
+        font-weight: 400;
+        line-height: 150%;
+        color: #333;
+        font-style: italic;
+    }
+
+    .reg-ref__accent {
+        color: #143A62;
+        text-decoration: underline !important;
+    }
+
+    #frm_field_163_container .frm_opt_container {
+        flex-direction: column;
+    }
+
+    .payment-other__row {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .payment-other__col {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .payment-other__title {
+        margin: 0;
+        color: #333;
+        font-family: Be Vietnam Pro;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%;
+    }
+
+    .payment-other__text {
+        font-family: Be Vietnam Pro;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+        color: #76787A;
+    }
+
+    .payment-other__accent {
+        color: #143A62;
+        font-weight: 600;
+        text-decoration: underline !important;
+    }
+
+    .policy-form {
+        font-family: Be Vietnam Pro;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+        color: #76787A;
+    }
+
+    .policy-form__accent, .term-link {
+        color: #143A62;
+        text-decoration: underline !important;
+    }
+
+
+    /* checkbox terms */
+    #frm_checkbox_177-0 {
+        color: #333;
+        font-family: Be Vietnam Pro;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+    }
+
+    .frm_checkbox input[type=checkbox] {
+        border-color: #76787A !important;
+    }
+
+    .frm_checkbox input[type=checkbox]:before {
+        transform: rotate(2deg) !important;
+    }
+
+    /* card titles */
+    h3.frm_pos_top.frm_section_spacing {
+        color: #333 !important;
+        border: 0 !important;
+        font-family: Be Vietnam Pro;
+        font-size: 20px !important;
+        font-style: normal !important;
+        font-weight: 500 !important;
+        line-height: 130% !important;
+        margin: 0 0 24px !important;
+    }
+
+    /* cardNum inpt */
+    input#field_ejrgz {
+        padding: 0 0 0 50px;
+    }
+
+    div#frm_field_192_container:after {
+        content: '1';
+        position: absolute;
+        left: 0;
+        margin: 10px 0 0 16px;
+        width: 24px;
+        height: 24px;
+        color: transparent;
+        background-image: url('/wp-content/uploads/2023/10/cardNum-icon.svg');
+    }
+
+    /* controls */
+    .frm_submit {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .frm_submit button:last-child {
+        background: #143A62;
+        color: white;
+    }
+
+    .frm_submit button {
+        border: 0;
+        display: flex;
+        height: 48px;
+        padding: 10px 24px;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        border-radius: 12px;
+        border: 1px solid #143A62;
+        color: white;
+        background: #143A62;
+        font-family: Be Vietnam Pro;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%;
+        letter-spacing: unset !important;
+    }
+
+    .frm_submit button.frm_button_submit {
+        text-transform: none;
+    }
+
+    .frm_submit button:hover {
+        transition: all 0.4s;
+        transform: scale(1.05);
+    }
+
+    /*General Fund form*/
+    div#field_x5czf_label {
+        max-width: 175px;
+    }
+
+    #frm_field_415_container {
+        font-size: 20px;
+    }
+
+    .elementor-element.elementor-element-5b74eed.e-con-full.e-flex.e-con.e-child, .elementor-element.elementor-element-b38825a.e-con-full.elementor-hidden-desktop.e-flex.e-con.e-child {
+        padding: 24px 12px;
+    }
+
+    div#e-n-tab-content-1932 {
+        padding: 0;
+    }
+
+    .additional {
+        display: none;
+    }
+
+    .elementor-field-subgroup.elementor-subgroup-inline .elementor-field-option {
+        padding: 0 !important;
+    }
+
+    .elementor-field-type-radio.elementor-field-group.elementor-column.elementor-field-group-donValue.elementor-col-100 label {
+        font-size: 12px !important;
+    }
+
+    .elementor-field-subgroup.elementor-subgroup-inline {
+        gap: 8px !important;
+    }
+
+    .tooltip, .tooltip2 {
+        font-size: 18px;
+    }
+
+    .with_frm_style .frm_radio input[type=radio]:before {
+        width: 18px;
+        height: 18px;
+        box-shadow: inset 16px 10px #143A62;
+    }
+
+    .with_frm_style .frm_radio input[type=radio] {
+        width: 24px;
+        height: 24px;
+        border-color: #76787A;
+    }
+
+    .with_frm_style .frm_radio input[type=radio]:checked {
+        border-color: #143A62;
+    }
+
+    .frm_opt_container {
+        gap: 8px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    #frm_field_234_container .frm_opt_container,
+    #frm_field_447_container .frm_opt_container,
+    #frm_field_448_container .frm_opt_container,
+    #frm_field_449_container .frm_opt_container,
+    #frm_field_450_container .frm_opt_container,
+    #frm_field_451_container .frm_opt_container,
+    #frm_field_452_container .frm_opt_container {
+        flex-wrap: nowrap;
+    }
+
+    /*labels*/
+    .with_frm_style .frm_radio label, .with_frm_style .frm_checkbox label {
+        color: #333;
+        font-family: Be Vietnam Pro;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+    }
+
+    .with_frm_style .frm_top_container .frm_primary_label {
+        font-family: Be Vietnam Pro;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+        color: #76787A;
+        padding: 0 0 4px;
+    }
+
+    /* additional */
+    .formD-row h1 {
+        color: #333;
+        font-family: Be Vietnam Pro;
+        font-size: 32px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 130%;
+        margin: 0;
+    }
+
+    .formD-row {
+        padding: 24px 0;
+        border-bottom: 1px solid #EBEBEB;
+    }
+
+    .general-col__info {
+        font-family: Be Vietnam Pro;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+        color: #333;
+    }
+
+    .general-col {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .general-info__accent {
+        color: #143A62;
+        text-decoration: underline !important;
+    }
+
+    .general-col__text {
+        font-family: Be Vietnam Pro;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+        color: #76787A;
+    }
+
+    .group-title {
+        font-family: Be Vietnam Pro;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 130%;
+        color: #333;
+    }
+
+    .voucher-row {
+        display: flex;
+        gap: 8px;
+    }
+
+    .voucher-apply {
+        display: flex;
+        height: 48px;
+        padding: 10px 24px;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        border-radius: 12px;
+        background: #143A62;
+        color: white;
+        border: 0;
+        font-family: Be Vietnam Pro;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%;
+    }
+
+    .reg-ref {
+        font-family: Be Vietnam Pro;
+        font-size: 16px;
+        font-style: italic;
+        font-weight: 400;
+        line-height: 150%;
+        color: #333;
+        font-style: italic;
+    }
+
+    .reg-ref__accent {
+        color: #143A62;
+        text-decoration: underline !important;
+    }
+
+    #frm_field_163_container .frm_opt_container, #frm_field_210_container .frm_opt_container {
+        flex-direction: column;
+    }
+
+    .payment-other__row {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .payment-other__col {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .payment-other__title {
+        margin: 0;
+        color: #333;
+        font-family: Be Vietnam Pro;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%;
+    }
+
+    .payment-other__text {
+        font-family: Be Vietnam Pro;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+        color: #76787A;
+    }
+
+    .payment-other__accent {
+        color: #143A62;
+        font-weight: 600;
+        text-decoration: underline !important;
+    }
+
+    .policy-form {
+        font-family: Be Vietnam Pro;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+        color: #76787A;
+    }
+
+    .policy-form__accent, .term-link {
+        color: #143A62;
+        text-decoration: underline !important;
+    }
+
+
+    /* checkbox terms */
+    #frm_checkbox_177-0 {
+        color: #333;
+        font-family: Be Vietnam Pro;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+    }
+
+    .frm_checkbox input[type=checkbox] {
+        border-color: #76787A !important;
+    }
+
+    .frm_checkbox input[type=checkbox]:before {
+        transform: rotate(2deg) !important;
+    }
+
+    /* card titles */
+    h3.frm_pos_top.frm_section_spacing {
+        color: #333 !important;
+        border: 0 !important;
+        font-family: Be Vietnam Pro;
+        font-size: 20px !important;
+        font-style: normal !important;
+        font-weight: 500 !important;
+        line-height: 130% !important;
+        margin: 0 0 24px !important;
+    }
+
+    /* cardNum inpt */
+    input#field_ejrgz, input#field_donation_amount, input#field_ejrgz2 {
+        padding: 0 0 0 25px;
+        font-size: 20px;
+    }
+
+    input#field_donation_amount {
+        display: grid;
+    }
+
+    div#frm_field_233_container:after {
+        content: '$';
+        position: absolute;
+        left: 0;
+        margin: -35px 0 0 40px;
+        color: #76787A;
+        background-image: unset !important;
+    }
+
+    div#frm_field_192_container:after, div#frm_field_225_container:after {
+        content: '1';
+        position: absolute;
+        left: 0;
+        margin: 10px 0 0 16px;
+        width: 24px;
+        height: 24px;
+        color: transparent;
+        background-image: url('/wp-content/uploads/2023/10/cardNum-icon.svg');
+    }
+
+    /* controls */
+    .frm_submit {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .frm_submit button:last-child {
+        background: #143A62;
+        color: white;
+    }
+
+    .frm_submit button {
+        border: 0;
+        display: flex;
+        height: 48px;
+        padding: 10px 24px;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        border-radius: 12px;
+        border: 1px solid #143A62;
+        color: white;
+        background: #143A62;
+        font-family: Be Vietnam Pro;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%;
+    }
+
+    .frm_final_submit {
+        text-transform: none;
+    }
+
+    .frm_submit button:hover {
+        transition: all 0.4s;
+        transform: scale(1.05);
+    }
+
+    button.frm_button_submit.frm_final_submit {
+        letter-spacing: unset !important;
+    }
+
+    /* Start funding amounts radio buttons */
+    .candidate-inputs {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 8px;
+    }
+
+    span.inputs-option {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-around;
+    }
+
+    .inputs-option label {
+        padding: 8px 16px;
+        background-color: transparent;
+        border: 1px solid #143A62;
+        color: #143A62 !important;
+        cursor: pointer;
+        display: inline-block;
+        border-radius: 4px;
+        transition: background-color 0.3s, color 0.3s;
+        border-radius: 100px;
+        font-family: Be Vietnam Pro;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+        z-index: 2;
+        position: relative;
+    }
+
+    .inputs-option input[type="radio"] {
+        position: relative;
+        opacity: 0;
+    }
+
+    .inputs-option input[type="radio"] + label {
+        position: relative;
+        left: -20px;
+    }
+
+    .inputs-option input[type="radio"]:checked + label {
+        background-color: #143A62;
+        color: #ffffff !important;
+    }
+
+    /* End Funding amount radio buttons */
+    #frm_field_234_container .frm_opt_container,
+    #frm_field_447_container .frm_opt_container,
+    #frm_field_448_container .frm_opt_container,
+    #frm_field_449_container .frm_opt_container,
+    #frm_field_450_container .frm_opt_container,
+    #frm_field_451_container .frm_opt_container,
+    #frm_field_452_container .frm_opt_container {
+        width: 100%;
+        display: flex;
+        gap: 8px;
+    }
+
+    #frm_radio_234-0, #frm_radio_234-1,
+    #frm_radio_447-0, #frm_radio_234-1,
+    #frm_radio_448-0, #frm_radio_234-1,
+    #frm_radio_449-0, #frm_radio_234-1,
+    #frm_radio_450-0, #frm_radio_234-1,
+    #frm_radio_451-0, #frm_radio_234-1,
+    #frm_radio_452-0, #frm_radio_234-1 {
+        width: 100%;
+        text-align: center;
+    }
+
+    #frm_radio_234-0 label input, #frm_radio_234-1 label input,
+    #frm_radio_447-0 label input, #frm_radio_447-1 label input,
+    #frm_radio_448-0 label input, #frm_radio_448-1 label input,
+    #frm_radio_449-0 label input, #frm_radio_449-1 label input,
+    #frm_radio_450-0 label input, #frm_radio_450-1 label input,
+    #frm_radio_451-0 label input, #frm_radio_451-1 label input,
+    #frm_radio_452-0 label input, #frm_radio_452-1 label input {
+        display: none !important;
+    }
+
+    #frm_radio_234-0 label, #frm_radio_234-1 label,
+    #frm_radio_447-0 label, #frm_radio_447-1 label,
+    #frm_radio_448-0 label, #frm_radio_448-1 label,
+    #frm_radio_449-0 label, #frm_radio_449-1 label,
+    #frm_radio_450-0 label, #frm_radio_450-1 label,
+    #frm_radio_451-0 label, #frm_radio_451-1 label,
+    #frm_radio_452-0 label, #frm_radio_452-1 label {
+        display: flex;
+        padding: 8px 16px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        flex: 1 0 0;
+        border-radius: 100px;
+        border: 1px solid #143A62;
+        font-family: Be Vietnam Pro;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+        color: #143A62;
+        cursor: pointer;
+    }
+
+    .tooltip {
+        font-family: Be Vietnam Pro;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 500;
+        color: #333;
+        line-height: 130%;
+    }
+
+    .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_c1ec1c3.elementor-col-100:after {
+        content: 'Click Continue to login or register';
+        position: absolute;
+        font-family: Be Vietnam Pro;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%;
+        color: #76787A;
+        top: 120%;
+        left: 15%;
+    }
+
+    .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_89946ae.elementor-col-100 {
+        border-bottom: 1px solid #EBEBEB;
+    }
+
+    .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-paymentMethod.elementor-col-100:before {
+        font-size: 18px;
+    }
+
+    /*Heading font-sizes mob*/
+    .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_058f8e3.elementor-col-100 h1, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_e71dc55.elementor-col-100 h1, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_c2ef829.elementor-col-100 h1, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_b2bc143.elementor-col-100 h1, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_058f8e3.elementor-col-100 h1, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_415ead6.elementor-col-100 h1, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_89946ae.elementor-col-100 h1 {
+        font-size: 24px !important;
+    }
+
+    .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_e5153a3.elementor-col-100.elementor-sm-100 h2, .elementor-element.elementor-element-38a784d7.e-con-full.e-flex.e-con.e-parent, .elementor-element.elementor-element-1f80c167.e-con-full.e-flex.e-con.e-parent, .elementor-37684 .elementor-element.elementor-element-b755c71 .elementor-heading-title, .elementor-37684 .elementor-element.elementor-element-7ea092c .elementor-heading-title, .elementor-37684 .elementor-element.elementor-element-2a0d183 .elementor-heading-title, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_9b99bbe.elementor-col-100 h2, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_68deb2c.elementor-col-100 .form-row h1, .elementor-field-type-html.elementor-field-group.elementor-column.elementor-field-group-field_ccb39ae.elementor-col-100 .form-row h1 {
+        font-size: 18px !important;
+        margin: 0 !important;
+    }
+
+    .elementor-37684 .elementor-element.elementor-element-172bbc0 .elementor-heading-title, .elementor-37684 .elementor-element.elementor-element-0a29897 .elementor-heading-title {
+        font-size: 16px !important;
+    }
+
+    .elementor-37684 .elementor-element.elementor-element-38a0539 .elementor-heading-title, .elementor-37684 .elementor-element.elementor-element-1953471 .elementor-heading-title, .elementor-37684 .elementor-element.elementor-element-53c33f9 .elementor-heading-title, .elementor-37684 .elementor-element.elementor-element-b1121d2 .elementor-heading-title {
+        font-size: 14px !important;
+    }
+
+    button.spec-btn {
+        font-size: 14px !important;
+    }
+
+    .donor-acc {
+        font-size: 14px !important;
+    }
+
+    .elementor-labels-above .elementor-field-group > label {
+        font-size: 12px !important;
+    }
+}
+
+@media screen and (max-width: 490px) {
+    .frm_rootline_group {
+        display: none;
+    }
+}
+
+div#frm_desc_field_tcw26 {
+    position: relative;
+    bottom: -24px;
+}
+
+.frm_show_password_wrapper button svg {
+    color: #76787A;
+}
+
+div#frm_password_strength_285 {
+    margin-top: 16px;
+}
+
+#field_donation-voucher_label {
+    display: flex;
+}
+
+.tooltip-block.don-anonymous {
+    display: none;
+    position: absolute;
+    left: -16px;
+    z-index: 10;
+}
+
+
+.e-form__indicators.e-form__indicators--type-number_text {
+    left: 0 !important;
+}
+
+.e-form__indicators__indicator__separator {
+    background-color: #EBEBEB !important;
+    transform: rotate(90deg);
+    left: -44.5%;
+    position: absolute;
+    top: 45%;
+    padding: 1px;
+    z-index: 1;
+}
+
+.e-form__indicators__indicator--state-completed [class*=indicator--shape-]:not(.e-form__indicators__indicator--shape-none):before {
+    content: '1';
+    color: transparent;
+    position: relative;
+    left: 4px !important;
+    background-image: url(/wp-content/uploads/2023/10/checkedStep.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+    transform: scale(1.5);
+    top: 13px !important;
+}
+
+ul.frm_page_bar.frm_rootline_3.frm_progress.frm_progress_line.frm_no_numbers.frm_show_lines.frm_show_titles {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 104px;
+}
+
+li.frm_rootline_single {
+    flex-direction: row-reverse !important;
+    gap: 12px;
+    z-index: 2;
+}
+
+.frm_rootline_title {
+    font-family: Be Vietnam Pro;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 130%;
+    color: #76787A;
+    text-align: left;
+}
+
+.frm_current_page .frm_rootline_title {
+    color: #143A62 !important;
+}
+
+/* if device width is less than 1400 */
+@media screen and (max-width: 1400px) {
+    .frm_rootline_title {
+        width: 150px;
+    }
+}
+
+input.frm_page_back.frm_page_1 {
+    width: 32px;
+    height: 32px;
+    padding: 10px;
+    border-radius: 100% !important;
+    border: 0 !important;
+}
+
+.frm_forms .frm_progress_line li:last-of-type input.frm_page_skip {
+    width: 32px;
+    height: 32px;
+    padding: 10px;
+    border-radius: 100%;
+    border: 0;
+}
+
+.frm_forms .frm_progress_line.frm_show_lines .frm_current_page input[type="button"], input.frm_page_skip.frm_page_2, input.frm_page_back.frm_page_2 {
+    border: 0;
+    width: 32px;
+    height: 32px;
+    padding: 10px;
+    border-radius: 100%;
+}
+
+.frm_rootline_single input {
+    background: #76787A !important;
+    border: 0 !important;
+}
+
+.frm_rootline_single.frm_current_page input {
+    background: #143A62 !important;
+}
+
+ul.frm_page_bar.frm_rootline_3.frm_progress.frm_progress_line.frm_no_numbers.frm_show_lines.frm_show_titles:before {
+    width: 1px;
+    height: 304px;
+    background: #EBEBEB;
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 25px;
+    z-index: 1;
+}
+
+.frm_rootline_single:after {
+    z-index: 3;
+    color: white;
+    position: absolute;
+    left: 12px;
+    content: '';
+}
+
+.frm_rootline_single:nth-child(1)::after {
+    content: '1';
+}
+
+.frm_rootline_single:nth-child(2)::after {
+    content: '2';
+    left: 10px;
+}
+
+.frm_rootline_single:nth-child(3)::after {
+    content: '3';
+    left: 10px;
+}
+
+.frm_rootline_group {
+    position: absolute;
+    left: -47%;
+    width: 240px;
+}
+
+/* Tooltips */
+.voucher-popup {
+    display: none;
+    position: absolute;
+    padding: 24px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    align-self: stretch;
+    border-radius: 12px;
+    background: white;
+    width: 360px;
+    box-shadow: 0px 11.43313px 24.29539px 0px rgba(132, 152, 174, 0.10), 0px 101.46898px 60.0239px 0px rgba(132, 152, 174, 0.05), 0px 280.11157px 78.60273px 0px rgba(132, 152, 174, 0.00);
+    z-index: 2;
+    margin-top: -125px;
+}
+.tooltip-block, .help-popup, .donor-account-help {
+    display: none;
+    padding: 24px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    align-self: stretch;
+    border-radius: 12px;
+    background: white;
+    width: 360px;
+    box-shadow: 0px 11.43313px 24.29539px 0px rgba(132, 152, 174, 0.10), 0px 101.46898px 60.0239px 0px rgba(132, 152, 174, 0.05), 0px 280.11157px 78.60273px 0px rgba(132, 152, 174, 0.00);
+    position: absolute;
+    z-index: 2;
+}
+
+
+.tooltip-content {
+    color: #333;
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.tooltip-link {
+    color: #143A62;
+    font-family: Be Vietnam Pro;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 150%;
+    text-decoration-line: underline !important;
+}
+
+/* CHECKOUT TABS */
+
+.e-n-tabs-heading {
+    padding: 16px;
+    border: 1px solid #8497AB;
+    border-radius: 12px;
+}
+
+@media screen and (max-width: 789px) {
+    .e-n-tabs-heading {
+        padding: 12px;
+    }
+}
+
+.donoption__row {
+    padding: 24px 32px;
+}
+
+/* Form control buttons */
+
+.frm_submit {
+    border-top: 1px solid #EBEBEB;
+    border-bottom: 1px solid #EBEBEB;
+    padding: 14px 0 24px 0;
+}
+
+/* Fix funds inner margins */
+
+#frm_field_427_container,
+#frm_field_426_container,
+#frm_field_416_container,
+#frm_field_421_container,
+#frm_field_422_container,
+#frm_field_423_container {
+    /*margin-bottom: unset;*/
+    margin-bottom: 32px;
+}
+
+/* Form additional */
+
+.form-additionalInfo {
+    font-family: Be Vietnam Pro;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    color: #76787A;
+    position: relative;
+    top: 24px;
+}
+
+.form-additionalInfo a {
+    color: #143A62;
+    text-decoration-line: underline !important;
+}
+
+/* Fix Donation Amount margin */
+
+div#frm_field_310_container, div#frm_field_232_container {
+    margin-bottom: 0 !important;
+}
+
+/* Fix form prevBtn */
+
+.frm_prev_page:focus {
+    background: white !important;
+    color: #143A62 !important;
+}
+
+.frm_button_submit:focus {
+    background: #143A62 !important;
+}
+
+.frm_prev_page {
+    background: white !important;
+    color: #143A62 !important;
+}
+
+/* fix terms checkbox in forms */
+
+input#field_vwxl-0 {
+    margin-bottom: 3px;
+}
+
+
+/* fix form error messages */
+
+div#frm_error_field_location_page_donation_amount {
+    position: absolute;
+}
+
+/* RIGHT PANEL - RIGHT SIDE PANEL STYLING */
+
+/* bottom border - dashed - donation summary */
+/*.elementor-58153 .elementor-element.elementor-element-c1c79a9.elementor-element {*/
+/*    background-image: linear-gradient(to right, black 33%, rgba(255,255,255,0) 0%);*/
+/*    background-position: bottom;*/
+/*    background-size: 3px 1px;*/
+/*    background-repeat: repeat-x;*/
+/*    width: 100%;*/
+/*    text-align: center;*/
+/*}*/
+
+/* top border - dotted - above total donation in right panel */
+.elementor-58153 .elementor-element.elementor-element-7c1659df, #total_donation_amount {
+    background-image: linear-gradient(to right, black 33%, rgba(255,255,255,0) 0%);
+    background-position: top;
+    background-size: 10px 1px;
+    background-repeat: repeat-x;
+}
+
+/* icon -> remove item from cart in right panel */
+.icon_remove-item_right-panel {
+    color:red;
+    font-weight: normal;
+    margin-left: 5px;
+    cursor: pointer;
+    zoom: 80%;
+}
+.icon_remove-item_right-panel:hover {
+    color: #143A62;
+    font-weight: bold;
+    zoom: 100%;
+}
+
+#frm_field_229_container,
+#frm_field_437_container,
+#frm_field_178_container,
+#frm_field_328_container
+{
+    margin-bottom: 1px !important;
+}
+
+/* formidable form submit button, next button, previous button styling */
+.frm_style_formidable-style.with_frm_style .frm_submit button {
+    width: auto;
+}
+
+.frm_style_formidable-style.with_frm_style .form-field {
+    margin-bottom: 16px;
+}
+
+@media screen and (max-width: 1200px) {
+    span.inputs-option label {
+        width: 100%;
+    }
+    .candidate-inputs br {
+        display: none;
+    }
+    .candidate-inputs {
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        grid-gap: 20px;
+    }
+    span.inputs-option label {
+        width: 100%;
+    }
+    span.inputs-option {
+        text-align: center;
+    }
+}
+
+#field_kz8bg_label, #field_n68u0_label, #field_4u47x_label, #field_a9yqn_label {
+    display: flex;
+    align-items: center;
+}
+
+.help-icon {
+    display: flex;
+    cursor: pointer;
+    position: relative;
+}
+
+/* DONOR ACCOUNT TOOLTIP FOR MONTHLY SUBSCRIPTION ON CHECKOUT BILLING FORM */
+.woocommerce-form__label.woocommerce-form__label-for-checkbox.checkbox {
+    display: flex !important;
+    gap: 10px;
+}
+
+/* PayPal buttons Overlay */
+.paypal_button_overlay {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 105%;
+    height: 65px;
+    background: transparent;
+    z-index: 999999;
+    cursor: pointer;
+}
+
+.frm_submit.btns {
+    flex-direction: row;
+}
+
+#clear_the_cart, #clear_the_cart_mini {
+    display:flex;
+    justify-content: center;
+    margin-top:10px;
+    font-size:18px;
+    font-weight:500;
+    padding:5px 0;
+    color:#143A62;
+    border:1px solid #143A62;
+    border-radius:12px;
+    width:100%;
+}
+
+#clear_the_cart:hover, #clear_the_cart_mini:hover {
+    background-color:#143A62;
+    color:white;
+}

@@ -1,0 +1,537 @@
+/* 
+Theme Name: Hello Elementor Child
+Theme URI: https://github.com/elementor/hello-theme/
+Description: Hello Elementor Child is a child theme of Hello Elementor, created by Elementor team
+Author: Elementor Team
+Author URI: https://elementor.com/
+Template: hello-elementor
+Version: 1.0.1
+Text Domain: hello-elementor-child
+License: GNU General Public License v3 or later.
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
+Tags: flexible-header, custom-colors, custom-menu, custom-logo, editor-style, featured-images, rtl-language-support, threaded-comments, translation-ready
+*/
+
+/*
+    JET ELEMENTS START -----------------------------------------------------------------------
+*/
+.jet-animated-box__front {
+    background-color: var(--ang_background_accent_background);
+}
+.jet-animated-box .jet-animated-box__title--front{
+	color: var(--ang_background_accent_heading);
+}
+.jet-animated-box .jet-animated-box__subtitle--front{
+	color: var(--ang_background_accent_heading);
+}
+.jet-animated-box__description--front{
+	color: var(--ang_background_accent_heading);
+}
+.jet-animated-box__back {
+    background-color: var(--ang_background_dark_background);
+}
+.jet-animated-box .jet-animated-box__title--back{
+	color:var(--ang_background_dark_heading);
+}
+.jet-animated-box .jet-animated-box__subtitle--back{
+	color:var(--ang_background_dark_heading);
+}
+.jet-animated-box__description--back{
+	color:var(--ang_background_dark_heading);	
+}
+.jet-animated-text__before-text {
+    color:var(--ang_color_heading);
+}
+.jet-animated-text__animated-text{
+	color:var(--ang_color_accent_primary);
+}
+.jet-animated-text__after-text {
+    color:var(--ang_color_heading);
+}
+.jet-button__plane-normal {
+    background-color:var(--ang_color_accent_primary);
+}
+.jet-button__plane-hover {
+    background-color:var(--ang_color_accent_secondary);
+}
+.jet-button__label {
+    color: var(--ang_background_accent_text);
+}
+.jet-hor-timeline-item.is-active .jet-hor-timeline-item__point-content{
+    background-color:var(--ang_color_accent_primary);
+    color:var(--ang_background_accent_text);
+}
+.jet-hor-timeline-item__card{
+	background-color:var(--ang_background_light_background);
+}
+.jet-headline__first {
+    color: var(--ang_color_heading);
+}
+.jet-headline__second {
+	color: var(--ang_color_accent_primary);
+}
+.jet-image-comparison .jx-controller {
+	background-color:var(--ang_color_accent_primary);
+}
+.jet-image-comparison .jet-slick-dots li.slick-active span{
+	background-color:var(--ang_color_accent_primary);	
+}
+.jet-services .jet-services__title{
+	color: var(--ang_color_heading);	
+}
+.jet-services .jet-services__desc{
+	color: var(--ang_color_text_light);
+}
+.jet-slider .sp-arrow {
+    background-color:var(--ang_color_accent_primary);
+}
+.jet-slider .sp-thumbnails .sp-thumbnail-container.sp-selected-thumbnail:before{
+	border:2px solid var(--ang_color_accent_primary);
+}
+.jet-slider .jet-slider__button-wrapper .jet-slider__button--primary{
+	background-color:var(--ang_color_accent_primary);
+}
+.jet-slider .sp-thumbnails .sp-thumbnail-container:hover:before{
+	border:2px solid var(--ang_color_accent_primary);	
+}
+.jet-slider .jet-slider__title{
+	color:var(--ang_color_heading);
+}
+.jet-slider .jet-slider__subtitle{
+	color:var(--ang_color_heading);
+}
+.elementor-16 .elementor-element.elementor-element-490be9f .jet-slider__desc{
+	color:var(--ang_color_heading);	
+}
+.jet-table__head-cell, .jet-table__foot-cell{
+	background-color:var(--ang_color_accent_primary);
+	color:var(--ang_background_accent_text);
+}
+.jet-team-member .jet-team-member__position{
+	color:var(--ang_color_accent_primary);
+}
+.jet-team-member .jet-team-member__socials-icon{
+	color:var(--ang_color_accent_primary);	
+}
+.jet-testimonials .jet-testimonials__comment{
+	background-color:var(--ang_background_dark_background);
+}
+.elementor-16 .elementor-element.elementor-element-d70ea55 .jet-testimonials__comment{
+	color:var(--ang_color_text_dark);
+}
+.jet-testimonials .jet-testimonials__position{
+	color:var(--ang_color_accent_primary);	
+}
+.jet-testimonials .jet-testimonials__name{
+	color:var(--ang_color_heading);
+}
+.jet-timeline-item.is--active .timeline-item__point-content{
+background-color:var(--ang_color_accent_primary);	
+}
+.jet-timeline-item.is--active .timeline-item__meta-content{
+	color:var(--ang_color_heading);
+}
+.jet-testimonials .jet-slick-dots li.slick-active span{
+background-color:var(--ang_color_accent_primary);
+}
+.jet-timeline__line-progress{
+background-color:var(--ang_color_accent_primary);	
+}
+.jet-timeline-item .timeline-item__point-content{
+	background-color:var(--ang_background_light_background);
+}
+.jet-timeline__line{
+	background-color:var(--ang_background_light_background);	
+}
+.jet-hamburger-panel__toggle{
+	background-color:var(--ang_color_accent_primary);
+}
+.jet-nav--horizontal a{
+	color:var(--ang_color_accent_primary);
+}
+.jet-nav--horizontal a :hover{
+	color:var(--ang_color_accent_secondary);
+}
+.jet-search__submit [type=button], [type=submit]{
+	color:var(--ang_background_accent_text);
+}
+.brands-list__item-link :hover{
+	color:var(--ang_color_accent_secondary);	
+}
+.jet-services .jet-services__icon .inner{
+	background-color:var(--ang_color_accent_primary);		
+}
+.jet-toggle__icon{
+	background-color:var(--ang_color_accent_primary);		
+}
+.active-tab .jet-tabs__label-icon{
+	color:var(--ang_color_accent_primary);		
+}
+.active-tab .jet-tabs__label-text{
+	color:var(--ang_color_accent_primary);	
+}
+.jet-scroll-navigation__item-hint{
+	background-color:var(--ang_color_accent_primary);	
+}
+.jet-scroll-navigation__item.active .jet-scroll-navigation__dot{
+	background-color:var(--ang_color_accent_primary);		
+}
+.jet-scroll-navigation__item.active .jet-scroll-navigation__dot :hover{
+	background-color:var(--ang_color_accent_secondary);		
+}
+.jet-switcher--preset-1.jet-switcher--enable .jet-switcher__control-handler span{
+	background-color:var(--ang_color_accent_primary);
+}
+[type=button]:focus, [type=button]:hover, [type=submit]:focus, [type=submit]:hover, button:focus, button:hover{
+	background-color:var(--ang_color_accent_secondary);		
+}
+.jet-scroll-navigation__item:hover .jet-scroll-navigation__dot{
+	background-color:var(--ang_color_accent_secondary);	
+}
+.premium-pricing-button-container .premium-pricing-price-button {
+	background-color:var(--ang_color_accent_primary);
+	color:var(--ang_background_accent_text);
+}
+.premium-pricing-price-button:hover {
+	background-color:var(--ang_color_accent_secondary);	
+	color:var(--ang_background_accent_text);
+}
+.premium-pricing-price-button span{
+	color:var(--ang_background_accent_text);
+}
+.premium-flip-main-box>div{
+	background-color:var(--ang_color_accent_primary);	
+}
+.premium-magic-section-container [type=button], [type=submit], button {
+	background-color:var(--ang_color_accent_primary);
+	color:var(--ang_background_accent_text);
+}
+.premium-magic-section-container[type=button]:focus, [type=button]:hover, [type=submit]:focus, [type=submit]:hover, button:focus, button:hover{
+	background-color:var(--ang_color_accent_secondary);
+	color:var(--ang_background_accent_text);
+}
+.premium-progressbar-bar-wrap .premium-progressbar-bar{
+	background:var(--ang_color_accent_primary);	
+}
+[type=button], [type=submit], button {
+	border: 0px solid #fff;
+}
+.circle-counter .circle-val{
+	color:var(--ang_color_accent_primary);
+}
+/*
+    JET ELEMENTS END ---------------------------------------------------------------------------------
+*/
+
+/* 
+  	FORMIDABLE FORMS START ---------------------------------------------------------------------------
+*/
+.with_frm_style .frm_inside_container .frm_primary_label {
+	/*
+	display: none !important;
+    height: 0px !important;
+	*/
+	opacity: 1 !important;
+}
+.sk-dark-bg .with_frm_style input[type=text], .sk-dark-bg .with_frm_style input[type=password], .sk-dark-bg .with_frm_style input[type=email], .sk-dark-bg .with_frm_style input[type=number], .sk-dark-bg .with_frm_style input[type=url], .sk-dark-bg .with_frm_style input[type=tel], .sk-dark-bg .with_frm_style input[type=phone], .sk-dark-bg .with_frm_style input[type=search], .sk-dark-bg .with_frm_style select, .sk-dark-bg .with_frm_style textarea, .sk-dark-bg .frm_form_fields_style, .sk-dark-bg .with_frm_style .frm_scroll_box .frm_opt_container, .frm_form_fields_active_style, .sk-dark-bg .frm_form_fields_error_style,.sk-dark-bg  .with_frm_style .frm-card-element.StripeElement, .sk-dark-bg .with_frm_style .chosen-container-multi .chosen-choices,.sk-dark-bg  .with_frm_style .chosen-container-single .chosen-single, .sk-accent-bg .with_frm_style input[type=text], .sk-accent-bg .with_frm_style input[type=password], .sk-accent-bg .with_frm_style input[type=email], .sk-accent-bg .with_frm_style input[type=number], .sk-accent-bg .with_frm_style input[type=url], .sk-accent-bg .with_frm_style input[type=tel], .sk-accent-bg .with_frm_style input[type=phone], .sk-accent-bg .with_frm_style input[type=search], .sk-accent-bg .with_frm_style select, .sk-accent-bg .with_frm_style textarea, .sk-accent-bg .frm_form_fields_style, .sk-accent-bg .with_frm_style .frm_scroll_box .frm_opt_container, .frm_form_fields_active_style, .sk-accent-bg .frm_form_fields_error_style,.sk-accent-bg  .with_frm_style .frm-card-element.StripeElement, .sk-accent-bg .with_frm_style .chosen-container-multi .chosen-choices,.sk-accent-bg  .with_frm_style .chosen-container-single .chosen-single {
+    border: none !important; 
+}
+.frm_form_widget .frm-edit-page-btn, .frm_form_widget .frm_submit input[type=submit], .frm_form_widget .frm_submit input[type=button], .frm_form_widget .frm_submit button {
+    height: 50px !important;
+    width: 100% !important;
+    background: var(--ang_color_accent_primary)!important;
+    transition: all ease-in-out .2s !important;
+	-moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+.frm_form_widget .frm-edit-page-btn:hover, .frm_form_widget .frm_submit input[type=submit]:hover, .frm_form_widget .frm_submit input[type=button]:hover, .frm_form_widget .frm_submit button:hover,
+.frm_form_widget .frm-edit-page-btn:focus, .frm_form_widget .frm_submit input[type=submit]:focus, .frm_form_widget .frm_submit input[type=button]:focus, .frm_form_widget .frm_submit button:focus {
+    background: var(--ang_color_accent_secondary)!important;
+}
+.frm_form_widget fieldset {
+    padding: 0px;
+    border: none !important;
+
+}
+
+.frm_form_widget input[type=date], .frm_form_widget input[type=email], .frm_form_widget input[type=number], .frm_form_widget input[type=password], .frm_form_widget input[type=search], .frm_form_widget input[type=tel], .frm_form_widget input[type=text], .frm_form_widget input[type=url], .frm_form_widget select, .frm_form_widget textarea {
+    width: 100%;
+    border: 0px;
+    border-radius: 0px;
+    padding: .75rem 1rem;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.frm_form_widget label {
+    position: absolute;
+    top: -2000px;
+    left: -2000px;
+}
+/* 
+  	FORMIDABLE FORMS END --------------------------------------------------------------------------
+*/
+
+/* 
+  	SK FIXES START -----------------------------------------------------------------------------------
+*/
+.sk-dark-bg a {
+    color: var(--ang_background_dark_text) !important;
+}
+.sk-accent-bg a {
+    color: var(--ang_background_accent_text) !important;
+}
+.sk-dark-bg a:hover, .sk-dark-bg a:focus {
+    color: var(--ang_background_dark_heading) !important;
+}
+.sk-accent-bg .elementor-widget-text-editor a:hover, .sk-accent-bg .elementor-widget-text-editor a:focus {
+    color: var(--ang_background_accent_heading) !important;
+}
+.sk-dark-bg h1, .sk-dark-bg h2, .sk-dark-bg h3, .sk-dark-bg h4, .sk-dark-bg h5, .sk-dark-bg h6,
+.sk-dark-bg h1 *, .sk-dark-bg h2 *, .sk-dark-bg h3 *, .sk-dark-bg h4 *, .sk-dark-bg h5 *, .sk-dark-bg h6 * {
+	color: var(--ang_background_dark_heading) !important;
+}
+.sk-accent-bg h1, .sk-accent-bg h2, .sk-accent-bg h3, .sk-accent-bg h4, .sk-accent-bg h5, .sk-accent-bg h6,
+.sk-accent-bg h1 *, .sk-accent-bg h2 *, .sk-accent-bg h3 *, .sk-accent-bg h4 *, .sk-accent-bg h5 *, .sk-accent-bg h6 * {
+    color: var(--ang_background_accent_heading) !important;
+}
+/* 
+  	SK FIXES END -------------------------------------------------------------------------------------
+*/
+
+/* 
+  	CUSTOM START -------------------------------------------------------------------------------------
+*/
+fieldset {
+	border: 0;
+	padding: 0;
+}
+
+.pipe {
+    opacity: .3;
+    padding: 0 6px;
+}
+
+header.page-header {
+	display: none;
+}
+
+@media (max-width: 767px) {
+	.frm_upload_text button {
+		font-size: 15px !important;
+		white-space: break-spaces;
+	}
+}
+
+.ui-widget.ui-tooltip {
+	background: rgba(0, 0, 0, 0.7) !important;
+	color: white !important;
+	padding: 20px !important;
+	opacity: 1;
+	width: 300px;
+}
+
+.form-dollar-amount .woocommerce-input-wrapper {
+	position: relative;
+}
+
+.form-dollar-amount .woocommerce-input-wrapper::before {
+	content: '$';
+	position: absolute;
+	left: 10px;
+	line-height: 35px;
+}
+
+.form-dollar-amount .woocommerce-input-wrapper input {
+	padding-left: 1.5em;
+}
+
+.woocommerce form .form-row label.radio, .woocommerce-page form .form-row label.radio {
+	display: inline;
+	margin: 0 0.5em;
+}
+
+.wc_payment_method img {
+	display: none;
+}
+
+.woocommerce-MyAccount-content table {}
+
+.woocommerce-MyAccount-content table thead th {
+	color: black;
+	text-align: left;
+}
+
+.woocommerce-MyAccount-content table td {
+	border-top: 1px solid rgba(209, 197, 177, 0.25) !important;
+}
+
+.woocommerce-MyAccount-content table td a {
+    color: #003366 !important;
+}
+
+.woocommerce-MyAccount-content-box {
+	background: white;
+	border-radius: 10px;
+	margin-bottom: 20px;
+	padding: 20px;
+}
+
+.woocommerce_account_subscriptions,
+.woocommerce-view-subscription .subscription_details,
+.woocommerce-view-subscription .order_details,
+.woocommerce-view-subscription .my_account_orders,
+.woocommerce-orders-table--subscriptions {
+	background: white;
+	border: 0 !important;
+	border-radius: 10px;
+	margin-bottom: 20px;
+	padding: 20px;
+}
+
+.woocommerce_account_subscriptions table {
+	border: 0 !important;
+}
+
+.woocommerce-MyAccount-content .order-again {
+	display: none;
+}
+
+.physician-search {
+	background: var( --e-global-color-600d1e7 );
+	border-radius: 10px;
+	display: flex;
+	flex-flow: row wrap;
+	margin-bottom: 20px;
+	padding: 20px;
+}
+
+.physician-search-field {
+	flex: 1 1 auto;
+	margin-right: 10px;
+}
+
+.physician-search-field input[type=text] {
+	border: 0;
+	border-radius: 50px;
+}
+
+.physician-submit-field {
+	flex: 0 0 auto;
+	margin-right: 0;
+}
+
+
+.physician-submit-field button {
+	background: var( --e-global-color-accent );
+}
+
+abbr[title] {
+	text-decoration: none;
+}
+
+.wocommerce-MyAccount-table {}
+
+.physician-result {
+	background: #f5f5f5;
+	display: flex;
+	flex-flow: row nowrap;
+	padding: 30px;
+}
+
+.physician-result + .physician-result {
+	margin-top: 10px;
+}
+
+.physician-result__info, .physician-result__address {
+	flex: 1 1 50%;
+}
+
+.physician-result h3.physician-result__name {
+	font-size: 18px !important;
+	font-weight: bold !important;
+}
+
+.physician-result__address {
+	text-align: right;
+}
+
+.physician-result__distance {
+	font-style: italic;
+}
+
+@media (max-width: 767px) {
+	
+	.wocommerce-MyAccount-table thead {
+		display: none;
+	}
+	
+	.wocommerce-MyAccount-table,
+	.wocommerce-MyAccount-table tbody,
+	.wocommerce-MyAccount-table tr,
+	.wocommerce-MyAccount-table td {
+		display: block;
+	}
+	
+	.wocommerce-MyAccount-table tr {
+		margin-bottom: 20px;
+	}
+	
+	.wocommerce-MyAccount-table td {
+		text-align: right;
+	}
+	
+	.wocommerce-MyAccount-table td::before {
+		content: attr(data-title);
+		color: black;
+		font-weight: bold;
+		float: left;
+	}
+	
+}
+
+
+.multiple-donate {}
+
+.multiple-donate .form-field {
+	margin-bottom: 15px;
+}
+
+.multiple-donate .form-field label {
+	display: block;
+}
+
+.multiple-donate input[type=number] {
+	border: 1px solid black !important;
+}
+
+.woocommerce-error .verify-button, .woocommerce-info .verify-button, .woocommerce-message .verify-button {
+	background: none !important;
+}
+
+/* 
+  	CUSTOM END ---------------------------------------------------------------------------------------
+*/
+
+/* 
+  	MEDIA QUERIES START ------------------------------------------------------------------------------
+*/
+@media (max-width: 1024px) {
+    .desktop {display:none;}
+}
+@media (max-width: 767px) and (min-width: 1024px) {
+    .tablet {display:none;}
+}
+@media (max-width: 767px) {
+    .tablet-up {display:none;}
+}
+@media (min-width: 1024px) {
+    .tablet-down {display:none;}
+}
+@media (max-width: 767px) {
+    .mobile {display:none;}
+}
+/* 
+  	MEDIA QUERIES END --------------------------------------------------------------------------------
+*/

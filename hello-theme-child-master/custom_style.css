@@ -1,0 +1,550 @@
+.candidate-top {
+    padding-top: 150px;
+}
+
+.main-candidate-section {
+    background-color: #fef4ea;
+}
+
+.flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.cand-567 {
+    width: 50%;
+}
+
+.cand-567 h1 {
+    font-size: 35px;
+    font-weight: 700;
+    line-height: 1em;
+    color: #003366;
+    margin: 4px 0px;
+}
+
+.sidebar {
+    width: 25%;
+    padding-top: 20px;
+    position: relative;
+}
+
+.profiles-main {
+    width: 75%;
+    position: relative;
+}
+
+.candidate-select-5 {
+    max-width: 250px;
+    border-radius: 10px 10px 10px 10px;
+    padding: 0.5rem 1rem;
+    border: 1px solid #666;
+    font-size: 16px;
+    font-family: "Montserrat", Sans-serif;
+}
+
+.main-candidate-section .cvf-universal-content {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.container {
+    display: block;
+    margin: auto;
+    max-width: 1240px;
+}
+
+.main-candidate-section .candidate_item_details {
+    width: 33%;
+}
+
+.candidate_item_details img {
+    height: 300px !important;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 6px 6px 0px 0px;
+}
+
+.main-candidate-section .candidate_item_details {
+    width: 30%;
+    padding: 10px;
+}
+
+.candidate_item_details a {
+    text-decoration: none;
+}
+
+.candidate_item_details h2 {
+    color: #003366;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.1em;
+    font-family: "Montserrat", Sans-serif;
+    margin: 20px 0px 0px 0px;
+}
+
+.fund {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    top: 120px;
+    background: #FEF4EA;
+    z-index: 22;
+    padding-bottom: 20px;
+    border: none;
+    outline: none;
+}
+
+.fund-btn-1 {
+    width: 47%;
+    text-align: center;
+}
+
+.fund-btn-2 {
+    width: 5.522%;
+}
+
+.fund-btn button {
+    padding: 5px 15px 5px 15px;
+    font-size: 13px;
+    background-color: #91c8c8;
+    border-radius: 50px;
+    border: none;
+    color: #fff;
+    font-family: "Montserrat", Sans-serif;
+    line-height: 22px;
+}
+
+.fund-btn button:hover {
+
+    background-color: #003366;
+}
+
+.fund-btn-2 p {
+    font-weight: 800;
+    margin: 9px 0px;
+    font-size: 15px;
+    line-height: 1;
+    max-width: 95%;
+    color: #3f4254;
+}
+
+.show-234 {
+    display: none;
+}
+
+.cand-568 {
+    display: flex;
+    justify-content: end;
+}
+
+.icon::before {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+}
+
+.male::before {
+    font-family: "Font Awesome 5 Brands";
+    content: "\f222";
+}
+
+.user-info {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.gender-1 {
+    width: 100%;
+}
+
+.age-1 {
+    width: 50%;
+}
+
+.user-info i {
+    color: #0066cb;
+    margin-right: 4px;
+}
+
+.user-info p {
+    font-size: 13px;
+    text-transform: capitalize;
+    text-align: left;
+    color: #3f4254;
+    margin-bottom: 0;
+}
+
+.candidate_progressbar span {
+    font-size: 12px;
+    color: #3f4254;
+}
+
+span.price-main-1 {
+    font-size: 15px;
+    color: #3f4254;
+    font-weight: 700;
+}
+
+span.price-main-2 {
+    font-size: 15px;
+    color: #3f4254;
+    font-weight: 400;
+}
+
+progress#file {
+    width: 95%;
+}
+
+.candidate_item_details {
+    padding-top: 40px !important;
+}
+
+.candidate_item_details-56 {
+    padding-top: 10px !important;
+}
+
+.filter-main-1 {
+    padding: 25px;
+    background-color: #003366;
+    border-radius: 10px 10px 10px 10px;
+    margin: 0px 10px 10px 10px;
+    position: sticky;
+    top: 120px;
+}
+
+.darkviolet-567 {
+    padding: 10px;
+}
+
+progress {
+    border-radius: 7px;
+    width: 80%;
+    height: 7px;
+}
+
+progress::-webkit-progress-bar {
+    background-color: #E3D7CA;
+    border-radius: 7px;
+}
+
+.candidate_ammount_goal {
+    margin-top: 5px;
+}
+
+.jet-search-filter__input-wrapper input {
+    border: 1px solid #666;
+    border-radius: 3px;
+    padding: 0.7rem 1rem;
+    width: 100%;
+    font-family: "Montserrat", Sans-serif;
+    font-size: 16px;
+}
+
+.filter-main-1 hr {
+    border-style: solid;
+    color: #E1F7F71A;
+    border-width: 1px;
+    margin: 13px 0px;
+}
+
+h1.sel-gender-1 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    padding: 0px 0px 0px 0px;
+    margin: 17px 0px 5px 0px;
+}
+
+.filter-main-1 label {
+    font-size: 15px;
+    font-weight: 400;
+    color: #fff !important;
+    margin-top: 9px;
+}
+
+button.load-btn-1 {
+    padding: 12px 24px;
+    font-size: 13px;
+    background-color: #91c8c8;
+    border-radius: 50px;
+    border: none;
+    color: #fff;
+    font-family: "Montserrat", Sans-serif;
+    line-height: 22px;
+}
+
+.cvf-universal-pagination ul li {
+    list-style: none;
+}
+
+.cvf-universal-pagination ul {
+    text-align: center;
+    padding: 0px;
+}
+
+/*tabs-css*/
+
+@media screen and (max-width: 1024px) and (min-width: 767px) {
+    .main-candidate-section .candidate_item_details {
+        width: 46%;
+    }
+
+    .main-candidate-section {
+        padding: 0px 20px;
+    }
+
+    .candidate-top {
+        padding-top: 70px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .fund {
+        position: relative;
+    }
+    .cand-567 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .candidate-select-5 {
+        max-width: 90%;
+    }
+
+    .cand-568 {
+        display: flex;
+        justify-content: center;
+    }
+
+    .sidebar {
+        width: 100%;
+        margin: 15px;
+    }
+
+    .profiles-main {
+        width: 100%;
+        position: relative;
+    }
+
+    .fund-btn-1 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .fund-btn-2 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .main-candidate-section .candidate_item_details {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .candidate-top {
+        padding-top: 20px;
+    }
+
+    .cand-567 h1 {
+        font-size: 22px;
+        margin: 10px 0px;
+    }
+
+    .candidate_item_details-56 {
+        padding-top: 40px !important;
+    }
+
+    .candidate_item_details-60 {
+        padding-top: 10px !important;
+    }
+}
+
+.candidate_loading span.candidate_loader {
+    display: block !important;
+}
+
+
+.main-candidate-section .price-input {
+    width: 100%;
+    display: flex;
+    margin: 30px 0 35px;
+}
+
+.main-candidate-section .price-input .field {
+    display: flex;
+    width: 100%;
+    height: 45px;
+    align-items: center;
+}
+
+.main-candidate-section .field input {
+    width: 100%;
+    height: 100%;
+    outline: none;
+    font-size: 19px;
+    margin-left: 12px;
+    border-radius: 5px;
+    text-align: center;
+    border: 1px solid #999;
+    -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.main-candidate-section .price-input .separator {
+    width: 130px;
+    display: flex;
+    font-size: 19px;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-candidate-section .slider {
+    height: 5px;
+    position: relative;
+    background: #ddd;
+    border-radius: 5px;
+}
+
+.main-candidate-section .slider .progress {
+    height: 100%;
+    left: 25%;
+    right: 25%;
+    position: absolute;
+    border-radius: 5px;
+    background: #17A2B8;
+}
+
+.main-candidate-section .range-input {
+    position: relative;
+}
+
+.main-candidate-section .range-input input {
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    top: -5px;
+    background: none;
+    pointer-events: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    height: 17px;
+    width: 17px;
+    border-radius: 50%;
+    background: #17A2B8;
+    pointer-events: auto;
+    -webkit-appearance: none;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+}
+
+input[type="range"]::-moz-range-thumb {
+    height: 17px;
+    width: 17px;
+    border: none;
+    border-radius: 50%;
+    background: #17A2B8;
+    pointer-events: auto;
+    -moz-appearance: none;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+}
+
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+/* The Close Button */
+.all_candidates_close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.multi_candidates_close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.all_candidates_close:hover,
+.all_candidates_close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.multi_candidates_close:hover,
+.multi_candidates_close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+span.zip_code_error.container {
+    color: red;
+    font-size: 12px;
+}
+
+div#candidate-multi-select-submit-widget {
+    position: fixed;
+    bottom: 0px;
+}
+
+
+#refering_name_field span.optional {
+    display: none;
+}
+
+p#refering_name_field {
+    display: none;
+}
+
+
+.candidate-reason-for-procedure-profile {
+    color: #003366 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    line-height: 1em !important;
+}
+
+.with_frm_style .frm_top_container .frm_primary_label {
+    font-weight: 500 !important;
+}
+
+@media only screen and (max-width: 1024px) and (min-width: 400px) {
+    .reg-button-mobile > div > div > a {
+        background: #FFFFFF !important;
+    }
+}

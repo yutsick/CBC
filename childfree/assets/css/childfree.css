@@ -1,0 +1,920 @@
+.card {
+    box-shadow: 0px 8px 17px 0px rgba(132, 152, 174, 0.10), 0px 31px 31px 0px rgba(132, 152, 174, 0.09), 0px 71px 42px 0px rgba(132, 152, 174, 0.05), 0px 126px 50px 0px rgba(132, 152, 174, 0.01), 0px 196px 55px 0px rgba(132, 152, 174, 0.00);
+    max-width: 422px !important;
+    min-width: 163.5px;
+}
+
+.candidate_loader{
+    position: absolute;
+    left:-60px;
+}
+
+.cvf-universal-pagination .active{
+    position: relative;
+}
+
+@media (max-width: 600px) {
+    .card-title, h2.elementor-heading-title.elementor-size-default {
+        font-size: 14px !important;
+    }
+
+    .elementor-91 .elementor-element.elementor-element-c036a9e .elementor-button, .elementor-91 .elementor-element.elementor-element-767092c .elementor-button, .elementor-91 .elementor-element.elementor-element-fa26caf .elementor-button, .elementor-91 .elementor-element.elementor-element-d421ffb .elementor-button {
+        font-size: 8px;
+        line-height: 12px !important;
+    }
+
+    .elementor-element.elementor-element-c036a9e.elementor-widget.elementor-widget-button {
+        margin-top: -6px;
+    }
+
+    a.elementor-button.elementor-button-link.elementor-size-sm.elementor-animation-shrink {
+        padding: 5px 12px;
+        font-size: 16px;
+        line-height: 12px;
+        border-radius: 6px;
+    }
+
+    .elementor-91 .elementor-element.elementor-element-b8e4381 {
+        gap: 8px !important;
+    }
+
+    .elementor-91 .elementor-element.elementor-element-1d4d3ef .elementor-heading-title {
+        font-size: 9px !important;
+    }
+
+    .elementor-element.elementor-element-748cbda.e-con-full.e-flex.e-con.e-child {
+        margin-top: -8px;
+    }
+
+    .elementor-91 .elementor-element.elementor-element-e4ed70d img {
+        height: 160px !important;
+    }
+
+    .elementor-element.elementor-element-71e28f9.e-con-full.e-flex.e-con.e-child {
+        gap: 6px !important;
+    }
+}
+
+.button-disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+
+.card-btn .elementor-widget-container div a span span:before {
+    content: "";
+    background-image: url('/wp-content/uploads/2023/09/Component-1.svg');
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    position: relative;
+    top: 5px;
+    right: 8px
+}
+
+@media screen and (max-width: 600px) {
+    .card-btn .elementor-widget-container div a span span:before {
+        content: "";
+        background-image: url(/wp-content/uploads/2023/09/donate-mob.svg) !important;
+        background-repeat: no-repeat;
+        width: 12px !important;
+        height: 12px !important;
+        top: 3px !important;
+        right: 5px !important;
+    }
+
+    a.elementor-button.elementor-button-link.elementor-size-sm.elementor-animation-shrink {
+        padding: 5px 12px;
+    }
+}
+
+
+.elementor-36663 .elementor-element.elementor-element-7220f95 {
+    --display: flex;
+    --flex-direction: column;
+    --container-widget-width: 100%;
+    --container-widget-height: initial;
+    --container-widget-flex-grow: 0;
+    --container-widget-align-self: initial;
+    --gap: 12px 0px;
+    --background-transition: 0.3s;
+    --border-radius: 12px 12px 12px 12px;
+    --margin-block-start: 0px;
+    --margin-block-end: 0px;
+    --margin-inline-start: 0px;
+    --margin-inline-end: 0px;
+    --padding-block-start: 0px;
+    --padding-block-end: 24px;
+    --padding-inline-start: 0px;
+    --padding-inline-end: 0px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-7220f95:not(.elementor-motion-effects-element-type-background), .elementor-36663 .elementor-element.elementor-element-7220f95 > .elementor-motion-effects-container > .elementor-motion-effects-layer {
+    background-color: #FFFFFF;
+}
+
+.elementor-36663 .elementor-element.elementor-element-7220f95, .elementor-36663 .elementor-element.elementor-element-7220f95::before {
+    --border-transition: 0.3s;
+}
+
+.elementor-36663 .elementor-element.elementor-element-7cdb593 img {
+    width: 425px;
+    height: 400px;
+    object-fit: cover;
+    object-position: center center;
+    border-radius: 12px 12px 0px 0px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-7cdb593 > .elementor-widget-container {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    border-radius: 12px 12px 0px 0px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-7cdb593 {
+    width: 100%;
+    max-width: 100%;
+}
+
+.elementor-36663 .elementor-element.elementor-element-7cdb593.elementor-element {
+    --align-self: stretch;
+}
+
+.elementor-36663 .elementor-element.elementor-element-af71874 {
+    --display: flex;
+    --flex-direction: column;
+    --container-widget-width: 100%;
+    --container-widget-height: initial;
+    --container-widget-flex-grow: 0;
+    --container-widget-align-self: initial;
+    --gap: 16px 0px;
+    --background-transition: 0.3s;
+    --margin-block-start: 0px;
+    --margin-block-end: 0px;
+    --margin-inline-start: 0px;
+    --margin-inline-end: 0px;
+    --padding-block-start: 0px;
+    --padding-block-end: 0px;
+    --padding-inline-start: 12px;
+    --padding-inline-end: 12px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-cb7f323 {
+    --display: flex;
+    --flex-direction: row;
+    --container-widget-width: calc((1 - var(--container-widget-flex-grow)) * 100%);
+    --container-widget-height: 100%;
+    --container-widget-flex-grow: 1;
+    --container-widget-align-self: stretch;
+    --justify-content: space-between;
+    --align-items: center;
+    --gap: 0px 0px;
+    --flex-wrap: wrap;
+    --background-transition: 0.3s;
+    --margin-block-start: 0px;
+    --margin-block-end: 0px;
+    --margin-inline-start: 0px;
+    --margin-inline-end: 0px;
+    --padding-block-start: 0px;
+    --padding-block-end: 0px;
+    --padding-inline-start: 0px;
+    --padding-inline-end: 0px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-f9b4d53 .elementor-heading-title {
+    color: var(--e-global-color-primary);
+    font-family: "Be Vietnam Pro", Sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-822ce76 .elementor-button .elementor-align-icon-right {
+    margin-left: 0px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-822ce76 .elementor-button .elementor-align-icon-left {
+    margin-right: 0px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-822ce76 .elementor-button {
+    font-family: "Be Vietnam Pro", Sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    fill: #478BF2;
+    color: #478BF2;
+    background-color: #EDF3FE;
+    border-style: none;
+    border-radius: 12px 12px 12px 12px;
+    padding: 4px 8px 4px 8px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-b63b759 {
+    --display: flex;
+    --flex-direction: row;
+    --container-widget-width: calc((1 - var(--container-widget-flex-grow)) * 100%);
+    --container-widget-height: 100%;
+    --container-widget-flex-grow: 1;
+    --container-widget-align-self: stretch;
+    --justify-content: flex-start;
+    --align-items: center;
+    --gap: 0px 8px;
+    --flex-wrap: wrap;
+    --background-transition: 0.3s;
+    --margin-block-start: 0px;
+    --margin-block-end: 0px;
+    --margin-inline-start: 0px;
+    --margin-inline-end: 0px;
+    --padding-block-start: 0px;
+    --padding-block-end: 0px;
+    --padding-inline-start: 0px;
+    --padding-inline-end: 0px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-1575f24 .elementor-button .elementor-align-icon-right {
+    margin-left: 2px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-1575f24 .elementor-button .elementor-align-icon-left {
+    margin-right: 2px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-1575f24 .elementor-button {
+    font-family: "Be Vietnam Pro", Sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    fill: #478BF2;
+    color: #478BF2;
+    background-color: #EDF3FE;
+    border-style: none;
+    border-radius: 12px 12px 12px 12px;
+    padding: 4px 6px 4px 6px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-958bb66 .elementor-button .elementor-align-icon-right {
+    margin-left: 2px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-958bb66 .elementor-button .elementor-align-icon-left {
+    margin-right: 2px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-958bb66 .elementor-button {
+    font-family: "Be Vietnam Pro", Sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    fill: var(--e-global-color-secondary);
+    color: var(--e-global-color-secondary);
+    background-color: #EBEBEB80;
+    border-style: none;
+    border-radius: 12px 12px 12px 12px;
+    padding: 4px 6px 4px 6px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-3d71b57 .elementor-button .elementor-align-icon-right {
+    margin-left: 2px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-3d71b57 .elementor-button .elementor-align-icon-left {
+    margin-right: 2px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-3d71b57 .elementor-button {
+    font-family: "Be Vietnam Pro", Sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    fill: var(--e-global-color-secondary);
+    color: var(--e-global-color-secondary);
+    background-color: #EBEBEB80;
+    border-style: none;
+    border-radius: 12px 12px 12px 12px;
+    padding: 7px 6px 6px 6px !important;
+}
+
+.elementor-36663 .elementor-element.elementor-element-5d72a9e {
+    --display: flex;
+    --flex-direction: column;
+    --container-widget-width: 100%;
+    --container-widget-height: initial;
+    --container-widget-flex-grow: 0;
+    --container-widget-align-self: initial;
+    --gap: 8px 0px;
+    --background-transition: 0.3s;
+    --margin-block-start: 0px;
+    --margin-block-end: 0px;
+    --margin-inline-start: 0px;
+    --margin-inline-end: 0px;
+    --padding-block-start: 0px;
+    --padding-block-end: 0px;
+    --padding-inline-start: 0px;
+    --padding-inline-end: 0px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-a5bfd78 .elementor-heading-title {
+    color: var(--e-global-color-text);
+    font-family: "Be Vietnam Pro", Sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-a643f6b .elementor-progress-wrapper {
+    background-color: #EBEBEB;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.elementor-36663 .elementor-element.elementor-element-a643f6b .elementor-progress-bar {
+    height: 6px;
+    line-height: 6px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-ebdea9d {
+    --display: flex;
+    --flex-direction: row;
+    --container-widget-width: initial;
+    --container-widget-height: 100%;
+    --container-widget-flex-grow: 1;
+    --container-widget-align-self: stretch;
+    --justify-content: space-between;
+    --background-transition: 0.3s;
+    --margin-block-start: 0px;
+    --margin-block-end: 0px;
+    --margin-inline-start: 0px;
+    --margin-inline-end: 0px;
+    --padding-block-start: 0px;
+    --padding-block-end: 0px;
+    --padding-inline-start: 0px;
+    --padding-inline-end: 0px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-effe374 .elementor-heading-title {
+    color: var(--e-global-color-text);
+    font-family: "Be Vietnam Pro", Sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-3f84327 .elementor-heading-title {
+    color: var(--e-global-color-secondary);
+    font-family: "Be Vietnam Pro", Sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-567c4b0 {
+    --display: flex;
+    --flex-direction: column;
+    --container-widget-width: 100%;
+    --container-widget-height: initial;
+    --container-widget-flex-grow: 0;
+    --container-widget-align-self: initial;
+    --gap: 8px 0px;
+    --background-transition: 0.3s;
+    --margin-block-start: 0px;
+    --margin-block-end: 0px;
+    --margin-inline-start: 0px;
+    --margin-inline-end: 0px;
+    --padding-block-start: 0px;
+    --padding-block-end: 0px;
+    --padding-inline-start: 0px;
+    --padding-inline-end: 0px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-e15b5f2 .elementor-button {
+    font-family: "Be Vietnam Pro", Sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 27px;
+    fill: #FFFFFF;
+    color: #FFFFFF;
+    background-color: var(--e-global-color-primary);
+    border-style: solid;
+    border-width: 1px 1px 1px 1px;
+    border-color: var(--e-global-color-primary);
+    border-radius: 12px 12px 12px 12px;
+    padding: 10px 24px 10px 24px;
+}
+
+.elementor-36663 .elementor-element.elementor-element-ef4ae14 .elementor-button {
+    font-family: "Be Vietnam Pro", Sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 27px;
+    fill: var(--e-global-color-primary);
+    color: var(--e-global-color-primary);
+    background-color: #143A6200;
+    border-style: solid;
+    border-width: 1px 1px 1px 1px;
+    border-color: var(--e-global-color-primary);
+    border-radius: 12px 12px 12px 12px;
+    padding: 10px 24px 10px 24px;
+}
+
+@media (max-width: 1024px) {
+    .elementor-36663 .elementor-element.elementor-element-7cdb593 img {
+        object-fit: cover;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-af71874 {
+        --gap: 8px 0px;
+        --margin-block-start: 0px;
+        --margin-block-end: 0px;
+        --margin-inline-start: 0px;
+        --margin-inline-end: 0px;
+        --padding-block-start: 0px;
+        --padding-block-end: 0px;
+        --padding-inline-start: 6px;
+        --padding-inline-end: 6px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-cb7f323 {
+        --justify-content: space-between;
+        --margin-block-start: 0px;
+        --margin-block-end: 0px;
+        --margin-inline-start: 0px;
+        --margin-inline-end: 0px;
+        --padding-block-start: 0px;
+        --padding-block-end: 0px;
+        --padding-inline-start: 0px;
+        --padding-inline-end: 0px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-f9b4d53 .elementor-heading-title {
+        font-size: 20px;
+        line-height: 13px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-f9b4d53 > .elementor-widget-container {
+        margin: 0px 0px 0px 0px;
+        padding: 0px 0px 0px 0px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-822ce76 .elementor-button {
+        font-size: 6px;
+        line-height: 14px;
+        border-radius: 50px 50px 50px 50px;
+        padding: 4px 8px 4px 8px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-822ce76 > .elementor-widget-container {
+        margin: 0px 0px 0px 0px;
+        padding: 0px 0px 0px 0px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-b63b759 {
+        --margin-block-start: 0px;
+        --margin-block-end: 0px;
+        --margin-inline-start: 0px;
+        --margin-inline-end: 0px;
+        --padding-block-start: 0px;
+        --padding-block-end: 0px;
+        --padding-inline-start: 0px;
+        --padding-inline-end: 0px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-1575f24 .elementor-button {
+        font-size: 12px;
+        line-height: 14px;
+        border-radius: 6px 6px 6px 6px;
+        padding: 4px 6px 4px 6px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-1575f24 > .elementor-widget-container {
+        margin: 0px 0px 0px 0px;
+        padding: 0px 0px 0px 0px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-958bb66 .elementor-button {
+        font-size: 12px;
+        line-height: 14px;
+        border-radius: 6px 6px 6px 6px;
+        padding: 4px 6px 4px 6px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-958bb66 > .elementor-widget-container {
+        margin: 0px 0px 0px 0px;
+        padding: 0px 0px 0px 0px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-3d71b57 .elementor-button {
+        font-size: 12px;
+        line-height: 14px;
+        border-radius: 6px 6px 6px 6px;
+        padding: 4px 6px 4px 6px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-3d71b57 > .elementor-widget-container {
+        margin: 0px 0px 0px 0px;
+        padding: 0px 0px 0px 0px;
+    }
+}
+
+@media (min-width: 768px) {
+    .elementor-36663 .elementor-element.elementor-element-7220f95 {
+        --width: 100%;
+    }
+}
+
+@media (max-width: 767px) {
+    .elementor-36663 .elementor-element.elementor-element-7220f95 {
+        --gap: 8px 0px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-7cdb593 img {
+        height: 281px;
+        object-fit: cover;
+        border-radius: 12px 12px 0px 0px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-cb7f323 {
+        --align-items: center;
+        --container-widget-width: calc((1 - var(--container-widget-flex-grow)) * 100%);
+        --gap: 0px 0px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-f9b4d53 .elementor-heading-title {
+        font-size: 9px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-822ce76 > .elementor-widget-container {
+        margin: 0px 0px 0px 0px;
+        padding: 0px 0px 0px 0px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-b63b759 {
+        --justify-content: flex-start;
+        --align-items: center;
+        --container-widget-width: calc((1 - var(--container-widget-flex-grow)) * 100%);
+        --gap: 0px 3px;
+        --flex-wrap: wrap;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-b63b759.e-con {
+        --align-self: center;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-1575f24 .elementor-button {
+        font-size: 9px;
+        line-height: 14px;
+        height: 27px;
+        display: flex;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-1575f24 {
+        width: auto;
+        max-width: auto;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-958bb66 .elementor-button {
+        font-size: 9px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-958bb66 {
+        width: auto;
+        max-width: auto;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-3d71b57 .elementor-button {
+        font-size: 9px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-3d71b57 {
+        width: auto;
+        max-width: auto;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-a5bfd78 .elementor-heading-title {
+        font-size: 8px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-effe374 .elementor-heading-title {
+        font-size: 7px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-3f84327 .elementor-heading-title {
+        font-size: 7px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-567c4b0 {
+        --gap: 6px 0px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-e15b5f2 .elementor-button {
+        font-size: 8px;
+        border-radius: 6px 6px 6px 6px;
+        padding: 5px 12px 5px 12px;
+    }
+
+    .elementor-36663 .elementor-element.elementor-element-ef4ae14 .elementor-button {
+        font-size: 8px;
+        border-radius: 6px 6px 6px 6px;
+        padding: 5px 12px 5px 12px;
+    }
+}
+
+/* Start custom CSS for button, class: .elementor-element-e15b5f2 */
+.card-btn .elementor-widget-container div a span span:before {
+    content: "";
+    background-image: url('/wp-content/uploads/2023/09/Component-1.svg');
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    position: relative;
+    top: 5px;
+    right: 8px
+}
+
+@media screen and (max-width: 600px) {
+    .card-btn .elementor-widget-container div a span span:before {
+        content: "";
+        background-image: url(/wp-content/uploads/2023/09/donate-mob.svg) !important;
+        background-repeat: no-repeat;
+        width: 12px !important;
+        height: 12px !important;
+        top: 3px !important;
+        right: 5px !important;
+    }
+
+    a.elementor-button.elementor-button-link.elementor-size-sm.elementor-animation-shrink {
+        padding: 5px 12px;
+    }
+}
+
+/* End custom CSS */
+/* Start custom CSS for container, class: .elementor-element-7220f95 */
+.card {
+    box-shadow: 0px 8px 17px 0px rgba(132, 152, 174, 0.10), 0px 31px 31px 0px rgba(132, 152, 174, 0.09), 0px 71px 42px 0px rgba(132, 152, 174, 0.05), 0px 126px 50px 0px rgba(132, 152, 174, 0.01), 0px 196px 55px 0px rgba(132, 152, 174, 0.00);
+    max-width: 422px !important;
+    min-width: 163.5px;
+}
+
+@media (max-width: 600px) {
+    .card-title, h2.elementor-heading-title.elementor-size-default {
+        font-size: 14px !important;
+    }
+
+    .elementor-91 .elementor-element.elementor-element-c036a9e .elementor-button, .elementor-91 .elementor-element.elementor-element-767092c .elementor-button, .elementor-91 .elementor-element.elementor-element-fa26caf .elementor-button, .elementor-91 .elementor-element.elementor-element-d421ffb .elementor-button {
+        font-size: 8px;
+        line-height: 12px !important;
+    }
+
+    .elementor-element.elementor-element-c036a9e.elementor-widget.elementor-widget-button {
+        margin-top: -6px;
+    }
+
+    a.elementor-button.elementor-button-link.elementor-size-sm.elementor-animation-shrink {
+        padding: 5px 12px;
+        font-size: 16px;
+        line-height: 12px;
+        border-radius: 6px;
+    }
+
+    .elementor-91 .elementor-element.elementor-element-b8e4381 {
+        gap: 8px !important;
+    }
+
+    .elementor-91 .elementor-element.elementor-element-1d4d3ef .elementor-heading-title {
+        font-size: 9px !important;
+    }
+
+    .elementor-element.elementor-element-748cbda.e-con-full.e-flex.e-con.e-child {
+        margin-top: -8px;
+    }
+
+    .elementor-91 .elementor-element.elementor-element-e4ed70d img {
+        height: 160px !important;
+    }
+
+    .elementor-element.elementor-element-71e28f9.e-con-full.e-flex.e-con.e-child {
+        gap: 6px !important;
+    }
+}
+
+.button-disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.load_more {
+    font-family: "Be Vietnam Pro", serif;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 26px;
+    padding: 10px 24px 10px 24px;
+    color: #143A62;
+    border: 2px solid #143A62;
+    border-radius: 12px;
+}
+
+button.load_more.load-btn-1:hover {
+    background: #143A62;
+    color: white;
+}
+
+.cvf-universal-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+.cvf-universal-pagination .active {
+    display: flex;
+    list-style: none;
+    flex-direction: column;
+    align-items: center;
+}
+
+#overlay-container {
+    display: flex;
+    position: fixed;
+    z-index: 999;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgb(255 255 255 / 99%);
+    justify-content: center;
+    align-items: center;
+}
+#overlay {
+    text-align: center;
+}
+.overlay-content {
+    display: flex;
+}
+.overlay-content img {
+    display: block;
+    margin: 0 auto;
+}
+
+
+/* End custom CSS */
+
+/* Start donation table popup */
+.candidate-donation-table {
+}
+
+.candidate-donation-table th,
+.candidate-donation-table td {
+    background: none !important;
+    border: 0 !important;
+    padding: 5px;
+}
+
+.candidate-donation-table .donation-name {
+    padding-left: 0;
+}
+
+.candidate-donation-table .donation-amount,
+.candidate-donation-table .donation-date {
+    white-space: nowrap;
+    width: 1px;
+}
+
+.candidate-donation-table .donation-amount {
+    font-weight: bold;
+}
+
+.candidate-donation-table .donation-date {
+    color: #8b8b8b;
+    text-align: right;
+}
+/* End donation table popup */
+
+/* #remove_coupon_code_value {
+    margin-left: 10px;
+    padding: 0 10px;
+    border-radius: 12px;
+} */
+
+#remove_coupon_code_value {
+    margin-left: 5px;
+    margin-bottom: -20px;
+    position: relative;
+    top: 0px;
+    padding: 4px 12px;
+    border: 0;
+    color: #FF2919;
+    font-weight: 400;
+    font-family: 'Font Awesome\ 5 Free', serif;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.4s;
+}
+
+#remove_coupon_code_value:hover {
+    background: #FF2919;
+    color: white;
+    transform: scale(1.04);
+}
+
+/* Single product Donation Amount input currency icon */
+
+.currency-icon {
+    content: '$';
+    position: absolute;
+    left: 0;
+    margin: 9px 0 0 20px;
+    color: #76787A;
+    font-size: 20px;
+}
+
+/*recaptcha*/
+frm_field_440_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+/* All pages Highliter link */
+
+.highliter:hover {
+    color: #336 !important;
+    transition: all 0.4s;
+    cursor: pointer;
+}
+
+/* make checkbox clickable */
+.with_frm_style .frm_checkbox input[type=checkbox] {
+    appearance: auto !important;
+}
+.with_frm_style .frm_checkbox input[type=checkbox]:before {
+    display: none !important;
+}
+
+/* WooCommerce cart text */
+
+.cartLink {
+    color: #143A62;
+    text-decoration: underline !important;
+}
+
+/* Browse Candidates names font */
+
+#card-candidate-name {
+    font-size: 18px;
+}
+
+#frm_field_25_container.frm_opt_container {
+    display: flex !important;
+    flex-wrap: nowrap;
+    gap: 8px;
+}
+
+#frm_radio_25-0,
+#frm_radio_25-1, 
+#frm_radio_25-2,
+#frm_radio_25-3, 
+#frm_radio_25-4, 
+#frm_radio_25-5, 
+#frm_radio_25-6,
+#frm_radio_25-other_9 {
+    max-width: fit-content;
+}
+
+div#frm_radio_25-0 label,
+div#frm_radio_25-1 label, 
+div#frm_radio_25-2 label,
+div#frm_radio_25-3 label, 
+div#frm_radio_25-4 label, 
+div#frm_radio_25-5 label, 
+div#frm_radio_25-6 label, 
+div#frm_radio_25-other_9 label {
+    padding: 8px 16px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #143A62 !important;
+    color: #143A62 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 100px;
+    text-indent: unset !important;
+}
+
+input#field_i5n9y-0, input#field_i5n9y-1, input#field_i5n9y-2, input#field_i5n9y-3, input#field_i5n9y-4, input#field_i5n9y-5, input#field_i5n9y-6, input#field_i5n9y-other_9, input#field_i5n9y-other_9-otext {
+    display: none !important;
+}
+
+/* styling other input amount field's placeholder */
+#dAmount_other_input::-webkit-input-placeholder {
+    font-size: 20px;
+    font-weight: normal;
+}
+#dAmount_other_input:-ms-input-placeholder {
+    font-size: 20px;
+    font-weight: normal;
+}
+#dAmount_other_input:-moz-placeholder {
+    font-size: 20px;
+    font-weight: normal;
+}
+#dAmount_other_input::-moz-placeholder {
+    font-size: 20px;
+    font-weight: normal;
+}
