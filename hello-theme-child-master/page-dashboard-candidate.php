@@ -201,9 +201,48 @@
     }
 
     echo "<script>";
-    echo "console.log(" . json_encode($user_meta) . ");";
-    echo "console.log(" . json_encode($requests) . ");";
+    echo "console.log('User meta:', " . json_encode($user_meta) . ");";
+    echo "console.log('Requests from phys cab:', " . json_encode($requests) . ");";
     echo "</script>";
+
+    // REQUESTS from physician
+    $user_meta = get_user_meta($user->ID);
+    $requestsPhys = [];
+    foreach (array_keys($user_meta) as $key) {
+        if (preg_match('/^physicians_for_candidate_(\d+)_/', $key, $matches)) {
+            $index = $matches[1];
+
+            if (!isset($requestsPhys[$index])) {
+                $requestsPhys[$index] = new stdClass();
+            }
+
+            if (preg_match('/^physicians_for_candidate_\d+_(\w+)$/', $key, $propertyMatch)) {
+                $property = $propertyMatch[1];
+                $requestsPhys[$index]->{$property} = $user_meta[$key][0] ?? '';
+            }
+        }
+    }
+
+    echo "<script>";
+    echo "console.log('Requests to phys cab:', " . json_encode($requestsPhys) . ");";
+    echo "</script>";
+
+    $ids = array_column($requestsPhys, 'physician');
+
+// Remove duplicate physicians
+$unique_ids = array_unique($ids);
+$unique_phs = array();
+
+
+foreach ($requestsPhys as $object) {
+    if (in_array($object->physician, $unique_ids)) {
+        $unique_phs[] = $object;
+
+        $key = array_search($object->physician, $unique_ids);
+        unset($unique_ids[$key]);
+    }
+}
+
 
 
 
@@ -425,7 +464,7 @@ if($catch_item === false) {
                 <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow rounded-box w-52 bg-white">
                     <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Dashboard</li>
                     <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">My Donations</li>
-                    <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">My Canditate Profile</li>
+                    <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">My Candidate Profile</li>
                     <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Physicians</li>
                     <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Notifications</li>
                     <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Influencer Referrals</li>
@@ -621,6 +660,118 @@ if($catch_item === false) {
                                             <input type="file" accept="image/*" id="newProductImage" style="display: none">
                                         </div>
                                     </div>
+                                    <!-- Gallery -->
+
+                                    <?php 
+
+                                    $user_id = get_current_user_id(); 
+                                    $field_value = get_user_meta($user_id, '_rest', true);
+                                    
+                                    $product_name = get_user_meta($user_id, '_rest', true); 
+
+                                    $product = get_page_by_title($product_name, OBJECT, 'product');
+
+                                    $product_id = $product->ID;
+
+                                    $gallery_attachment_ids = get_post_meta($product_id, '_product_image_gallery', true);
+                                    $current_gallery = array();
+                                    if (!empty($gallery_attachment_ids)) {
+                                        $gallery_images = array();
+                                    
+                                        // Loop through each gallery attachment ID
+                                        foreach (explode(',', $gallery_attachment_ids) as $attachment_id) {
+                                            $current_gallery[] = $attachment_id;
+                                            $image_url = wp_get_attachment_url($attachment_id);
+                                            if ($image_url) {
+                                                $gallery_images[] = $image_url;
+                                            }
+                                        }
+                                    
+                                        if (!empty($gallery_images)) {
+                                            // Output the gallery images
+                                            foreach ($gallery_images as $image_url) {
+                                                echo '<img src="' . $image_url . '" alt="Gallery Image">';
+                                            }
+                                        } else {
+                                            echo 'No gallery images found for the product.';
+                                        }
+                                    } else {
+                                        echo 'Product gallery is empty.';
+                                    }
+                                    
+                                    ?>
+
+
+                                    <form method="post" enctype="multipart/form-data">
+                                        <input type="file" name="gallery_images[]" multiple>
+                                        <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
+                                        <button type="submit" class="btn bg-primary text-white border-0 w-64 hover:scale-105" name="update_gallery">Update Gallery</button>
+                                    </form>
+
+                                    <?php 
+                                    require_once( ABSPATH . 'wp-admin/includes/image.php' );
+                                    require_once( ABSPATH . 'wp-admin/includes/file.php' );
+                                    require_once( ABSPATH . 'wp-admin/includes/media.php' );   
+                                        // Handle form submission
+                                        if (isset($_POST['update_gallery'])) {
+                                            $product_id = $_POST['product_id'];
+                                            $gallery_images = $_FILES['gallery_images'];
+
+                                            // Check if there are any new gallery images
+                                            if (!empty($gallery_images['name'][0])) {
+                                                //$attachment_ids = array();
+                                                $attachment_ids = $current_gallery;
+                                                // Loop through each gallery image
+                                                foreach ($gallery_images['name'] as $key => $image_name) {
+                                                    $image_tmp = $gallery_images['tmp_name'][$key];
+                                                    $image_type = $gallery_images['type'][$key];
+
+                                                    // Prepare the image for upload
+                                                    $upload = wp_upload_bits($image_name, null, file_get_contents($image_tmp));
+
+                                                    if ($upload['error']) {
+                                                        // Handle the upload error
+                                                        echo 'Error uploading image: ' . $upload['error'];
+                                                    } else {
+                                                        // Create the attachment for the gallery image
+                                                        $attachment = array(
+                                                            'post_mime_type' => $image_type,
+                                                            'post_title' => sanitize_file_name($image_name),
+                                                            'post_content' => '',
+                                                            'post_status' => 'inherit'
+                                                        );
+
+                                                        // Insert the attachment into the media library
+                                                        $attachment_id = wp_insert_attachment($attachment, $upload['file'], $product_id);
+
+                                                        if (!is_wp_error($attachment_id)) {
+                                                            // Generate the attachment metadata
+                                                            $attachment_data = wp_generate_attachment_metadata($attachment_id, $upload['file']);
+
+                                                            // Update the attachment metadata
+                                                            wp_update_attachment_metadata($attachment_id, $attachment_data);
+
+                                                            // Add the attachment ID to the list
+                                                            $attachment_ids[] = $attachment_id;
+                                                        } else {
+                                                            // Handle the attachment creation error
+                                                            echo 'Error creating attachment: ' . $attachment_id->get_error_message();
+                                                        }
+                                                    }
+                                                }
+
+                                                
+                                                update_post_meta($product_id, '_product_image_gallery', implode(',', $attachment_ids));
+
+                                              
+                                            } 
+                                        }
+
+                                  
+                                    ?>
+
+
+                                    
                                 </div>
                                 <div class="flex flex-col w-full">
                                     <div class="w-full flex flex-col">
@@ -715,9 +866,9 @@ if($catch_item === false) {
                             $items_per_page = 9;
                             $limited_providers = array_slice($result_array, 0, $items_per_page);
 
-                            echo "<script>";
-                            echo "console.log(" . $json_result . ");";
-                            echo "</script>";
+                            // echo "<script>";
+                            // echo "console.log(" . $json_result . ");";
+                            // echo "</script>";
                         ?>
                         <div class="flex w-full justify-between lg:items-center mb-8 flex-col gap-4 lg:gap-8">
                             <div class="requests-wrapper flex w-full flex-col px-2 md:p-6 rounded-lg gap-4 shadowCard">
@@ -726,54 +877,30 @@ if($catch_item === false) {
                                         <h2 class="text-2xl font-medium text-textColor pl-20 xl:pl-0">My Physician</h2>
                                         <span class="text-textValue">Your Physician will be displayed here when you select them</span>
                                         <?php
-                                            if($requests) {
-                                                $physician_ids = [];
-                                                $currRequests = array();
-
-                                                foreach ($requests as $object) {
-                                                    foreach ($object as $key => $value) {
-                                                        if (strpos($key, 'candidates_for_physicians_') === 0 && strpos($key, '_candidate') !== false) {
-                                                            if (is_numeric($value[0])) {
-                                                                $physician_ids[] = $value[0];
-                                                            }
-                                                        }
-                                                    }
-                                                }
-
-                                                $physician_ids = array_values(array_unique($physician_ids));
-
-                                                foreach ($physician_ids as $id) {
-                                                    $user_meta = get_user_meta($id);
-                                                    $user_data = get_userdata($id);
-                                                    $provider_curr_data = array(
-                                                        'medical_provider' => array(
-                                                            'data' => (array) $user_data,
-                                                            'meta' => $user_meta
-                                                        ),
-                                                        'meta_keys' => array_keys($user_meta)
-                                                    );
-                                                    $currRequests[] = $provider_curr_data;
-                                                }
-
-                                                echo "<script>";
-                                                echo "console.log(" . json_encode($physician_ids) . ");";
-                                                echo "console.log(" . json_encode($currRequests) . ");";
-                                                echo "</script>";
+                                        
+                                            if(count($unique_phs) !=0 ) {
+                                     
+                                                
+                                                $object = end($unique_phs);
+                                                $user_meta = get_user_meta($object->physician);
+                                                $user_data = get_userdata($object->physician);
+                              
+                                                
                                                 ?>
-                                                <!-- <div class="flex flex-col gap-4 pt-8 px-8 pb-1 items-center max-h-96 overflow-auto">
-                                                    <div class="w-full flex flex-col md:flex-row px-4 py-3 rounded-lg gap-4 shadowCard">
+                                                <div class="flex flex-col gap-4 pb-1 items-center max-h-96 overflow-auto shadowCard rounded-lg">
+                                                    <div class="w-full flex flex-col md:flex-row px-4 py-3  gap-4 ">
                                                         <div class="flex w-full flex-col gap-4">
                                                             <div class="flex items-center gap-4">
                                                                 <h2 class="text-lg text-primary font-bold">
-                                                                    name
+                                                                    <?php echo $user_data->first_name . ' ' . $user_data->last_name ?>
                                                                 </h2>
                                                                 <div class="badge bg-badgeM badgeM border-0 text-blueMain py-3">
-                                                                    speciality
+                                                                    <?php echo $user_meta['speciality'][0]; ?>
                                                                 </div>
                                                             </div>
                                                             <div class="flex flex-col gap-1">
-                                                                <a href="tel:#">
-                                                                    phone
+                                                                <a href="tel:<?php echo $user_meta['phone'][0]; ?>">
+                                                                <?php echo ($user_meta['phone'][0]) ? $user_meta['phone'][0] : 'No phone provided'; ?>
                                                                 </a>
                                                                 <a href="#" class="flex gap-1 items-center">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
@@ -788,10 +915,10 @@ if($catch_item === false) {
                                                                             </clipPath>
                                                                         </defs>
                                                                     </svg>
-                                                                    hospital
+                                                                    <?php echo $user_meta['business_name'][0]; ?>
                                                                 </a>
-                                                                <a href="#">
-                                                                    website
+                                                                <a href="<?php echo $user_meta['url'][0]; ?>">
+                                                                    <?php echo $user_meta['url'][0]; ?>
                                                                 </a>
                                                             </div>
                                                         </div>
@@ -802,7 +929,7 @@ if($catch_item === false) {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div> -->
+                                                </div>
                                                 <?php
                                             } else {
                                                 ?>
@@ -814,7 +941,7 @@ if($catch_item === false) {
                                     <div class="flex w-full justify-between">
                                         <div class="flex items-center text-lg gap-1 pl-6 xl:pl-0">
                                             <h2 class="text-textColor font-semibold">Request</h2>
-                                            <span class="text-textValue">(0)</span>
+                                            <span class="text-textValue"><?php echo count($unique_phs); ?></span>
                                         </div>
                                         <button 
                                             class="px-4 py-2.5 text-base bg-white rounded-lg border border-primary text-primary font-medium hover:bg-white hover:scale-105 hover:text-primary "
@@ -943,7 +1070,7 @@ if($catch_item === false) {
                                     <div class="overflow-x-auto w-full">
                                         <table class="table table-zebra">
                                             <thead>
-                                                <tr class="text-xs font-semibold bg-primary bg-opacity-5 text-info border-b border-borderColor h-14">
+                                                <tr class="text-xs font-semibold bg-primary bg-opacity-5 text-info border-b border-borderColor" style="color: #8497AB !important">
                                                     <th>Clinic</th>
                                                     <th>Name</th>
                                                     <th>Website</th>
@@ -959,7 +1086,7 @@ if($catch_item === false) {
                                                         $medical_provider = $provider_data['medical_provider']['data'];
                                                         $meta_data = $provider_data['medical_provider']['meta'];
                                                     ?>
-                                                        <tr>
+                                                        <tr class="h-14 border-0">
                                                             <td><span class="text-sm font-medium text-textColor whitespace-nowrap"><?php echo $meta_data['business_name'][0]; ?></span></td>
                                                             <td><span class="text-sm font-medium text-textColor whitespace-nowrap"><?php echo $meta_data['billing_first_name'][0] . ' ' . $meta_data['billing_last_name'][0]; ?></span></td>
                                                             <td><span class="text-sm font-medium text-textColor whitespace-nowrap"><?php echo $meta_data['billing_email'][0]; ?></span></td>
@@ -1589,23 +1716,31 @@ if($catch_item === false) {
                     <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 </form>
                 <h2 class="font-bold text-3xl px-6 pb-8 border-b border-borderColor">All Requests:</h2>
-                <div class="text-center text-2xl text-textValue py-5 w-full">No request</div>
-                <!--
+                <?php 
+                
+                if(count($unique_phs) !=0 ) {
+                    $total_requests = count($unique_phs);                     
+                    foreach($unique_phs as $object) {
+                        $user_meta = get_user_meta($object->physician);
+                        $user_data = get_userdata($object->physician);             
+
+                    ?>
+               
+                
                     <div class="flex flex-col gap-4 pt-8 px-8 pb-1 items-center max-h-96 overflow-auto">
                             <div class="w-full flex flex-col md:flex-row px-4 py-3 rounded-lg gap-4 shadowCard">
                                 <div class="flex w-full flex-col gap-4">
                                     <div class="flex items-center gap-4">
                                         <h2 class="text-lg text-primary font-bold">
-                                            name']
+                                        <?php echo $user_data->first_name . ' ' . $user_data->last_name; ?>
                                         </h2>
                                         <div class="badge bg-badgeM badgeM text-blueMain py-3">
-                                            speciality
+                                            <?php echo $user_meta['speciality'][0]; ?>
                                         </div>
                                     </div>
                                     <div class="flex flex-col gap-1">
-                                        <a href="tel:#">
-                                            phone
-                                        </a>
+                                    <a href="tel:<?php echo $user_meta['phone'][0]; ?>"><?php echo ($user_meta['phone'][0]) ? $user_meta['phone'][0] : 'No phone provided'; ?>
+                                                                </a>
                                         <a href="#" class="flex gap-1 items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
                                                 <g clip-path="url(#clip0_2152_34177)">
@@ -1619,10 +1754,10 @@ if($catch_item === false) {
                                                     </clipPath>
                                                 </defs>
                                             </svg>
-                                            hospital
+                                            <?php echo $user_meta['business_name'][0]; ?>
                                         </a>
-                                        <a href="#">
-                                            website
+                                        <a href="<?php echo $user_meta['url'][0]; ?>">
+                                            <?php echo $user_meta['url'][0]; ?>
                                         </a>
                                     </div>
                                 </div>
@@ -1634,13 +1769,13 @@ if($catch_item === false) {
                                 </div>
                             </div>
                     </div>
-
-                    <span class="text-center text-2xl text-textValue">No request</span>
-                -->
+                    <?php }
+                } else { ?>
+                         <div class="text-center text-2xl text-textValue py-5 w-full">No request</div>
+                <?php } ?>
+ 
                 <div class="flex items-center text-lg gap-1 pl-6 mt-4 xl:pl-0">
-                    <?php
-                        $total_requests = 0;
-                    ?>
+                    
                     <h3 class="text-textColor font-semibold">Requests:</h3>
                     <span class="text-textValue">(<?php echo $total_requests; ?>)</span>
                 </div> 

@@ -58,7 +58,7 @@ jQuery(document).ready(function ($) {
     }
 
     // Populate candidate cards
-    function load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, clat, clng, destination, elementor_grid_style) {
+    function load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, clat, clng, destination, elementor_grid_style, canToggle) {
 
 
         // Data to receive from our server
@@ -78,10 +78,11 @@ jQuery(document).ready(function ($) {
             clng: clng,
             cdestination: destination,
             elementor_grid_style: elementor_grid_style,
+            canToggle: canToggle,
             action: "candidate-pagination-load-posts"
         };
 
-        // console.log('Candidate Cards Data:', data);
+        console.log('Candidate Cards Data:', data);
 
         $.ajax({
             type: 'POST', url: ajaxurl, data: data, beforeSend: function () {
@@ -90,6 +91,7 @@ jQuery(document).ready(function ($) {
                 disableFilterButton();
             }, success: function (response) {
                 // If successful, append the data into our html container
+                console.log(response);
                 $(".cvf-universal-content").html(response);
                 // Remove focus from all input, textarea and select elements
                 // jQuery('input, textarea, select').focus(function() {
@@ -349,6 +351,8 @@ jQuery(document).ready(function ($) {
         var cmax_age = jQuery(".age .multi-range-slider #max-value").val();
         var gender_male = jQuery('#candidate_male:checked').val();
         var gender_female = jQuery('#candidate_female:checked').val();
+        var canToggle = localStorage.getItem('toggleState') === 'true';
+
         if (gender_male !== undefined && gender_female !== undefined) {
             var gender_type = "";
         } else {
@@ -403,13 +407,13 @@ jQuery(document).ready(function ($) {
                     var clng = southwestLng;
                     // console.log("clng: " + clng);
                     // zip_code = '';
-                    load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, clat, clng, destination, elementor_grid_style);
+                    load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, clat, clng, destination, elementor_grid_style, canToggle);
                     // overlayToggle();
                     candidateLoaderToggle();
                 }
             });
         } else {
-            load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, undefined, undefined, undefined, elementor_grid_style);
+            load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, undefined, undefined, undefined, elementor_grid_style, canToggle);
             // overlayToggle();
             candidateLoaderToggle();
         }
@@ -437,6 +441,8 @@ jQuery(document).ready(function ($) {
 
         var gender_male = jQuery('#candidate_male:checked').val();
         var gender_female = jQuery('#candidate_female:checked').val();
+        var canToggle = localStorage.getItem('toggleState') === 'true';
+
         if (gender_male !== undefined && gender_female !== undefined) {
             var gender_type = "";
         } else {
@@ -490,12 +496,12 @@ jQuery(document).ready(function ($) {
                     var clng = southwestLng;
                     // console.log("clng: " + clng);
                     // zip_code = '';
-                    load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, clat, clng, destination, elementor_grid_style);
+                    load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, clat, clng, destination, elementor_grid_style, canToggle);
                 }
                 overlayToggle();
             });
         } else {
-            load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, undefined, undefined, undefined, elementor_grid_style);
+            load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, undefined, undefined, undefined, elementor_grid_style, canToggle);
             overlayToggle();
         }
     });
@@ -519,6 +525,8 @@ jQuery(document).ready(function ($) {
         var cmax_age = jQuery(".age .multi-range-slider #max-value").val();
         var gender_male = jQuery('#candidate_male:checked').val();
         var gender_female = jQuery('#candidate_female:checked').val();
+        var canToggle = localStorage.getItem('toggleState') === 'true';
+
         if (gender_male !== undefined && gender_female !== undefined) {
             var gender_type = "";
         } else {
@@ -553,12 +561,12 @@ jQuery(document).ready(function ($) {
                     var clat = southwestLat;
                     var clng = southwestLng;
                     zip_code = '';
-                    load_candidate_cards(1, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, clat, clng, destination, elementor_grid_style);
+                    load_candidate_cards(1, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, clat, clng, destination, elementor_grid_style, canToggle);
                 }
                 overlayToggle();
             });
         } else {
-            load_candidate_cards(page, corder, corder_by, undefined, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, undefined, undefined, undefined, elementor_grid_style);
+            load_candidate_cards(page, corder, corder_by, undefined, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, undefined, undefined, undefined, elementor_grid_style, canToggle);
             overlayToggle();
         }
     });
@@ -580,6 +588,8 @@ jQuery(document).ready(function ($) {
         var cmax_age = jQuery(".age .multi-range-slider #max-value").val();
         var gender_male = jQuery('#candidate_male:checked').val();
         var gender_female = jQuery('#candidate_female:checked').val();
+        var canToggle = localStorage.getItem('toggleState') === 'true';
+
         if (gender_male !== undefined && gender_female !== undefined) {
             var gender_type = "";
         } else {
@@ -617,12 +627,12 @@ jQuery(document).ready(function ($) {
                     var clat = southwestLat;
                     var clng = southwestLng;
                     zip_code = '';
-                    load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, clat, clng, destination, elementor_grid_style);
+                    load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, clat, clng, destination, elementor_grid_style, canToggle);
                 }
                 overlayToggle();
             });
         } else {
-            load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, undefined, undefined, undefined, elementor_grid_style);
+            load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, undefined, undefined, undefined, elementor_grid_style, canToggle);
             overlayToggle();
         }
     });
@@ -643,6 +653,7 @@ jQuery(document).ready(function ($) {
         var cmax_age = jQuery(".age .multi-range-slider #max-value").val();
         var gender_male = jQuery('#candidate_male:checked').val();
         var gender_female = jQuery('#candidate_female:checked').val();
+        var canToggle = localStorage.getItem('toggleState') === 'true';
         if (gender_male !== undefined && gender_female !== undefined) {
             var gender_type = "";
         } else {
@@ -675,13 +686,65 @@ jQuery(document).ready(function ($) {
                     var clat = southwestLat;
                     var clng = southwestLng;
                     zip_code = '';
-                    load_candidate_cards(1, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, clat, clng, destination, elementor_grid_style);
+                    load_candidate_cards(1, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, clat, clng, destination, elementor_grid_style, canToggle);
                 }
             });
         } else {
-            load_candidate_cards(1, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, undefined, undefined, undefined, elementor_grid_style);
+            load_candidate_cards(1, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, undefined, undefined, undefined, elementor_grid_style, canToggle);
         }
     }
+
+    // Fully founded show\hide toggle
+    $(document).ready(function() {
+        var elementor_grid_style = "elementor-grid-3";
+        var page = 1;
+        var search_title = jQuery("#elementor-search-form-08120cf").val();
+        var cper_page = jQuery('.candidate-per-page-select').val();
+
+        var corder_by = jQuery('.candidate-sorting-select').val();
+        var corder = jQuery('.candidate-sorting-select').find(':selected').attr('data-order');
+
+        var cmin_price = jQuery(".goal .multi-range-slider #min-value-goal").val();
+        var cmax_price = jQuery(".goal .multi-range-slider #max-value-goal").val();
+
+        var cmin_age = jQuery(".age .multi-range-slider #min-value").val();
+        var cmax_age = jQuery(".age .multi-range-slider #max-value").val();
+
+        var gender_male = jQuery('#candidate_male:checked').val();
+        var gender_female = jQuery('#candidate_female:checked').val();
+        if (gender_male !== undefined && gender_female !== undefined) {
+            var gender_type = "";
+        } else {
+            var gender_type = jQuery('input[name="gender_type"]:checked').val();
+        }
+        if (gender_type === "undefined") {
+            gender_type = "";
+        }
+        var zip_code = jQuery('input[name="candidate_zip_code"]').val();
+        if (zip_code.length != 5 && zip_code !== '') {
+            console.log("zip-code lenght has to be 5 and can't be empty: " + zip_code);
+            zip_code = '';
+        }
+
+        const $canToggle = $("#canFtoggle .elementor-widget-container .jet-switcher");
+        let isToggleEnabled = false;     
+        if ($canToggle.length > 0) {
+            $canToggle.on('click', function() {
+                isToggleEnabled = $(this).hasClass('jet-switcher--enable');
+                localStorage.setItem('toggleState', isToggleEnabled);
+                load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, undefined, undefined, undefined, elementor_grid_style, isToggleEnabled);
+            
+                const $span = $(".elementor-element.elementor-element-31c30e3.elementor-widget.elementor-widget-heading span span");
+                $span.text(function(index, currentText) {
+                    let words = currentText.split(' ');
+                    words[0] = isToggleEnabled ? 'Show' : 'Hide';
+                    return words.join(' ');
+                });
+            });
+        } else {
+            load_candidate_cards(page, corder, corder_by, cper_page, search_title, gender_type, cmax_price, cmin_price, cmin_age, cmax_age, zip_code, undefined, undefined, undefined, elementor_grid_style, false);
+        }
+    });    
 
     // Debounce function to add a delay while typing
     function debounce(func, wait) {

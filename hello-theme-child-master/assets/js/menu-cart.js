@@ -25,3 +25,5 @@ const config = { childList: true };
 
 // Start observing the target node for configured mutations
 observer.observe(targetNode, config);
+
+

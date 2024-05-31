@@ -242,6 +242,13 @@ function candidates_pagination_load_posts()
             if ($corder_by == "meta_value_num") {
                 $meta_key = '_age';
             }
+
+            if($corder_by == "_amount_raised"){
+                  $meta_key = '_progress';
+                  $corder_by = "_progress";
+            }
+
+            
         } else {
             $corder_by = 'sort'; // this is the default sort order (no-order) when the candidates page is initially loaded in browser.
             $corder = 'DESC';
@@ -343,6 +350,7 @@ function candidates_pagination_load_posts()
                 );
             }
         } else if (isset($corder_by) && $corder_by == "sort") {
+
             $candidates_arg = array(
                 'posts_per_page' => $page * $per_page,
                 'meta_key' => $meta_key,
@@ -372,8 +380,8 @@ function candidates_pagination_load_posts()
         } else {
             $candidates_arg = array(
                 'posts_per_page' => (int)$page * (int)$per_page,
-                'meta_key' => $meta_key,
-                'orderby' => $corder_by,
+                'meta_key' => '_progress',
+                'orderby' => 'meta_value_num',
                 'order' => $corder,
                 'post_type' => 'product',
                 'post_status' => 'publish',
@@ -402,12 +410,18 @@ function candidates_pagination_load_posts()
 
         $total_candidates = $candidates->found_posts;
         $max_num_pages = ceil($total_candidates / $per_page);
+        $exclude_full_progress = isset($_POST['canToggle']) && filter_var($_POST['canToggle'], FILTER_VALIDATE_BOOLEAN);
         if ($candidates->have_posts()) {
 
             while ($candidates->have_posts()) {
                 $candidates->the_post();
 
                 $candidate_Id = get_the_ID();
+                $progress = get_post_meta($candidate_Id, '_progress', true);
+
+                if ($exclude_full_progress && (int)$progress === 100) {
+                  continue;
+                }
 
                 if ($candidate_Id) {
                     $thumbnail_id = get_post_thumbnail_id($candidate_Id);
@@ -466,8 +480,25 @@ function candidates_pagination_load_posts()
                           </div>
                         </div>
                         </div>';
-                } else {
+                } else if($amount_raised == $goal_amount) {
                     $buttons = '<div class="elementor-element elementor-element-e15b5f2 elementor-align-justify card-btn elementor-widget elementor-widget-button" 
+                      data-id="e15b5f2" data-element_type="widget" data-widget_type="button.default">
+                      </div>
+                      <div class="elementor-element elementor-element-ef4ae14 elementor-align-justify elementor-widget elementor-widget-button" 
+                      data-id="ef4ae14" data-element_type="widget" data-widget_type="button.default">
+                        <div class="elementor-widget-container">
+                          <div class="elementor-button-wrapper">
+                            <a class="elementor-button elementor-button-link elementor-size-sm elementor-animation-shrink" 
+                            href="' . get_permalink($candidate_Id) . '" >
+                              <span class="elementor-button-content-wrapper">
+                                <span class="elementor-button-text">Candidate Profile</span>
+                              </span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>';
+                } else {
+                  $buttons = '<div class="elementor-element elementor-element-e15b5f2 elementor-align-justify card-btn elementor-widget elementor-widget-button" 
                       data-id="e15b5f2" data-element_type="widget" data-widget_type="button.default">
                         <div class="elementor-widget-container">
                           <div class="elementor-button-wrapper">
@@ -630,7 +661,7 @@ function candidates_pagination_load_posts()
                       data-settings="{&quot;content_width&quot;:&quot;full&quot;,&quot;jet_parallax_layout_list&quot;:[],&quot;container_type&quot;:&quot;flex&quot;}">
                         <div class="elementor-element elementor-element-a5bfd78 elementor-widget elementor-widget-heading" 
                         data-id="a5bfd78" data-element_type="widget" data-widget_type="heading.default">
-                          <div class="elementor-widget-container">
+                          <div class="elementor-widget-container test-here">
                             <h2 class="elementor-heading-title elementor-size-default">Progress Towards Goal</h2>
                           </div>
                         </div>
@@ -711,6 +742,9 @@ function candidates_pagination_load_posts()
 }
 
 
+
+
+
 function haversine_distance($lat1, $lon1, $lat2, $lon2)
 {
 
@@ -772,6 +806,51 @@ function search_posts_within_radius($user_latitude, $user_longitude, $radius)
     return $newLocation;
 }
 
+add_action('wp_ajax_update_physician_for_candidates', 'update_physician_for_candidates_list');
+add_action('wp_ajax_nopriv_update_physician_for_candidates', 'update_physician_for_candidates_list');
 
+function update_physician_for_candidates_list(){
+    $current_user_id = get_current_user_id();
+
+    if (isset($_POST['id']) && !empty($_POST['id'])){
+        $ph_id = sanitize_text_field($_POST['id']);
+    } 
+
+    if (isset($_POST['provider_name']) && !empty($_POST['provider_name'])){
+        $ph_name = sanitize_text_field($_POST['provider_name']);
+    } 
+
+    if (isset($_POST['provider_business_name']) && !empty($_POST['provider_business_name'])){
+        $ph_business_name = sanitize_text_field($_POST['provider_business_name']);
+    } 
+
+    if (isset($_POST['provider_phone']) && !empty($_POST['provider_phone'])){
+        $ph_phone = sanitize_text_field($_POST['provider_phone']);
+    }
+
+    if (isset($_POST['provider_url']) && !empty($_POST['provider_url'])){
+        $ph_url = sanitize_text_field($_POST['provider_url']);
+    } 
+
+    if (isset($_POST['provider_speciality']) && !empty($_POST['provider_speciality'])){
+        $ph_speciality = sanitize_text_field($_POST['provider_speciality']);
+    } 
+
+    $new_row_data = array(
+        'physician' => $ph_id, 
+        'name' => $ph_name,
+        'speciality' => $ph_speciality,
+        'phone_number'  =>  $ph_phone,
+        'url' => $ph_url,
+        'clinic' => $ph_business_name
+    );
+
+
+    $existing_rows = get_field('physicians_for_candidate', 'user_' . $current_user_id);
+    $existing_rows[] = $new_row_data;
+    update_field('physicians_for_candidate', $existing_rows, 'user_' . $current_user_id);
+    echo ('success');
+    die();
+}
 
 

@@ -16,38 +16,73 @@
     $user_id = $user->ID;
 
     // Get requests
-    $user_meta = get_user_meta($user->ID);
-    $requests = [];
 
-    $candidate_keys = preg_grep('/^candidates_for_physicians_\d+_candidate$/', array_keys($user_meta));
 
-    foreach ($candidate_keys as $candidate_key) {
-        preg_match('/(\d+)/', $candidate_key, $matches);
-        $index = $matches[0];
-        
-        $object = new stdClass();
-        $object->{"candidates_for_physicians_{$index}_candidate"} = $user_meta[$candidate_key];
 
-        $status_key = "candidates_for_physicians_{$index}_candidate_status";
-        $procedure_key = "candidates_for_physicians_{$index}_procedure_status";
-        
-        if (isset($user_meta[$status_key])) {
-            $object->{$status_key} = $user_meta[$status_key];
+    $users_candidates = get_field('candidates_for_physicians', 'user_' . $user_id);
+ 
+// Check if the repeater field has rows
+$candidatesApproved = array();
+$candidateInProgress = array();
+$candidateDeclined = array();
+$topCandidates = array();
+
+if ($users_candidates) {
+    // Loop through each row in the repeater field
+    foreach ($users_candidates as $row) {
+        // Access subfields within each row
+        $requests[] = array(
+            'candidate_id' => $row['candidate']->ID,
+            'candidate' => $row['candidate']->post_title,
+            'candidate_status' => $row['candidate_status'],
+            'procedure_status' => $row['procedure_status'],
+            'date_added' => $row['date_added'],
+        );
+    } 
+
+    function remove_duplicate_candidates($candidates) {
+        $unique_candidates = array();
+        $unique_ids = array();
+        foreach ($candidates as $candidate) {
+            // Check if candidate_id is already in the unique_ids array
+            if (!in_array($candidate['candidate_id'], $unique_ids)) {
+                $unique_candidates[] = $candidate; // Add candidate to unique_candidates
+                $unique_ids[] = $candidate['candidate_id']; // Add candidate_id to unique_ids
+            }
         }
-        
-        if (isset($user_meta[$procedure_key])) {
-            $object->{$procedure_key} = $user_meta[$procedure_key];
-        }
-
-        $requests[] = $object;
+        return $unique_candidates;
     }
 
-    echo "<script>";
-    echo "console.log('User meta:');";
-    echo "console.log(" . json_encode($user_meta) . ");";
-    echo "console.log('User requests:');";
-    echo "console.log(" . json_encode($requests) . ");";
-    echo "</script>";
+    $candidates = remove_duplicate_candidates($requests);
+
+
+    //getCandidateDetailes($candidates);
+
+        foreach ($candidates as $candidate) {
+            
+      
+     
+            if ($candidate['candidate_status'] === 'Approved') {
+                $candidatesApproved[] = $candidate;
+                $raised = intval(get_post_meta($candidate['candidate_id'], '_amount_raised', true));
+                $goal = intval(get_post_meta($candidate['candidate_id'], '_goal', true));
+                if ($raised >= $goal){
+                    $topCandidates[] = $candidate;
+                }
+            } 
+            if ($candidate['candidate_status'] === 'Pending') {
+                $candidateInProgress[] = $candidate;
+            }
+            if ($candidate['candidate_status'] === 'Declined') {
+                $candidateDeclined[] = $candidate;
+            }
+        }  
+}
+
+        $my_candidates = array_merge($candidatesApproved, $candidateDeclined);
+
+
+ 
 
     // hidded
     // echo str_contains(wp_get_referer(), 'register-as-physicians') ;
@@ -63,7 +98,7 @@
     ));
 
     $orders = $order_query->get_orders();
-    
+    $total_order_amount = 0;
     foreach ($orders as $order) {
 
         $order_id = $order->get_id();
@@ -207,189 +242,202 @@
     }
 
     // echo '<script>console.log('. json_encode($foundRef) .')</script>';
+
 ?>
 
 <style>
+.navbar {
+    padding: 18px 80px;
+}
+
+.mainBg {
+    background: #F5F5F5 !important;
+}
+
+a.page-link.active {
+    background: #143A62;
+    color: white;
+    border-radius: 100%;
+}
+
+.dashboard,
+.bg-white {
+    background: white;
+}
+
+.table :where(th, td) {
+    border: 0 !important;
+}
+
+.rounded-xl {
+    border-radius: 0.75rem !important;
+}
+
+.border-borderColor {
+    border-color: #EBEBEB !important;
+}
+
+.progress::-webkit-progress-value {
+    background: #143A62;
+}
+
+.text-primary {
+    color: #143A62;
+}
+
+.bg-primary {
+    background: #143A62 !important;
+}
+
+.text-info {
+    color: #8497AB !important;
+}
+
+.bg-accentBg {
+    background: #F3E6F6;
+}
+
+.bg-primary.bg-opacity-5 {
+    background: rgba(20, 58, 98, 0.03) !important;
+}
+
+.checkbox-primary:checked {
+    border-color: transparent !important
+}
+
+[type=button]:focus,
+[type=button]:hover,
+[type=submit]:focus,
+[type=submit]:hover,
+button:focus {
+    background-color: unset !important;
+    outline: none;
+    color: #333;
+}
+
+.toggle {
+    box-shadow: var(--handleoffsetcalculator) 0 0 2px white inset, 0 0 0 2px white inset, var(--togglehandleborder);
+}
+
+.toggle-primary:checked {
+    background: #143A62;
+}
+
+.accent:after {
+    content: '1';
+    width: 310px;
+    background-size: contain;
+    /*background-image: url(https://staging.childfreebc.com/wp-content/uploads/2023/10/title-line__long.svg);*/
+    background-image: url(https://childfreebc.com/wp-content/uploads/2023/10/title-line__long.svg);
+    position: absolute;
+    color: transparent;
+    background-repeat: no-repeat;
+    right: 10%;
+    top: 100%;
+}
+
+.acc-avatar img {
+    object-fit: cover;
+    width: 100% !important;
+    height: 100%;
+    border-radius: 6px !important;
+    object-position: right center;
+}
+
+.shadowCard {
+    box-shadow: 0px 0px 12px 0px rgba(52, 64, 77, 0.11);
+}
+
+.badgeM {
+    background: #EDF3FE;
+}
+
+.badgeF {
+    background: #F3E6F6;
+}
+
+.reqCards-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.reqCards-scroll::-webkit-scrollbar-thumb {
+    background-color: #143A62;
+    border-radius: 6px;
+}
+
+.reqCards-scroll::-webkit-scrollbar-track {
+    background-color: #eee;
+    border-radius: 6px;
+}
+
+@media screen and (max-width:1024px) {
+    .accent:after {
+        background-image: unset;
+    }
 
     .navbar {
-        padding: 18px 80px;
+        padding: 18px 16px;
     }
+}
 
-    .mainBg {
-        background: #F5F5F5 !important;
+@media screen and (max-width: 490px) {
+    .mobMenuBtn {
+        top: 20px;
     }
-
-    a.page-link.active {
-        background: #143A62;
-        color: white;
-        border-radius: 100%;
-    }
-
-    .dashboard, .bg-white {
-        background: white;
-    }
-
-    .table :where(th, td) {
-        border: 0 !important;
-    }
-
-    .rounded-xl {
-        border-radius: 0.75rem !important;
-    }
-
-    .border-borderColor {
-        border-color: #EBEBEB !important;
-    }
-
-    .progress::-webkit-progress-value {
-        background: #143A62;
-    }
-
-    .text-primary {
-        color: #143A62;
-    }
-
-    .bg-primary {
-        background: #143A62 !important;
-    }
-
-    .text-info {
-        color: #8497AB !important;
-    }
-
-    .bg-accentBg {
-        background: #F3E6F6;
-    }
-
-    .bg-primary.bg-opacity-5 {
-        background: rgba(20, 58, 98, 0.03) !important;
-    }
-
-    .checkbox-primary:checked {
-        border-color: transparent !important
-    }
-
-    [type=button]:focus, [type=button]:hover, [type=submit]:focus, [type=submit]:hover, button:focus {
-        background-color: unset !important;
-        outline: none;
-        color: #333;
-    }
-
-    .toggle {
-        box-shadow: var(--handleoffsetcalculator) 0 0 2px white inset, 0 0 0 2px white  inset, var(--togglehandleborder);
-    }
-
-    .toggle-primary:checked {
-        background: #143A62;
-    }
-
-    .accent:after {
-        content: '1';
-        width: 310px;
-        background-size: contain;
-        /*background-image: url(https://staging.childfreebc.com/wp-content/uploads/2023/10/title-line__long.svg);*/
-        background-image: url(https://childfreebc.com/wp-content/uploads/2023/10/title-line__long.svg);
-        position: absolute;
-        color: transparent;
-        background-repeat: no-repeat;
-        right: 10%;
-        top: 100%;
-    }
-
-    .acc-avatar img {
-        object-fit: cover;
-        width: 100% !important;
-        height: 100%;
-        border-radius: 6px !important;
-        object-position: right center;
-    }
-
-    .shadowCard {
-        box-shadow: 0px 0px 12px 0px rgba(52, 64, 77, 0.11);
-    }
-
-    .badgeM {
-        background: #EDF3FE;
-    }
-
-    .badgeF {
-        background: #F3E6F6;
-    }
-
-    .reqCards-scroll::-webkit-scrollbar {
-        width: 6px;  
-    }
-
-    .reqCards-scroll::-webkit-scrollbar-thumb {
-        background-color: #143A62;  
-        border-radius: 6px; 
-    }
-
-    .reqCards-scroll::-webkit-scrollbar-track {
-        background-color: #eee; 
-        border-radius: 6px;
-    }
-
-    @media screen and (max-width:1024px) {
-        .accent:after {
-            background-image: unset;
-        }      
-
-        .navbar {
-            padding: 18px 16px;
-        }
-    }
-
-    @media screen and (max-width: 490px) {
-        .mobMenuBtn {
-            top: 20px;
-        }        
-    }
+}
 </style>
 
-<main class="bg-mainBg py-6 px-4 xl:px-20 xl:py-8">    
-        
-        <div class="screenHeader flex w-full mb-8">
-            <h1 class="text-4xl font-normal flex flex-wrap gap-2 lg:gap-3 lg:text-6xl font-normal text-primary relative justify-center md:justify-start">
-                My
-                <span>Donations</span>
-                and
-                <span class="accent">Physician Account</span>
-            </h1>
-        </div>
+<main class="bg-mainBg py-6 px-4 xl:px-20 xl:py-8">
 
-        <div class="dashboard py-6 px-3 lg:px-6 rounded-xl shadow-lg relative">
-            <div class="dropdown xl:hidden absolute t-5 mobMenuBtn">
-                <label tabindex="0" class="btn btn-ghost btn-circle text-primary">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
-                </label>
-                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow rounded-box w-52 bg-white">
-                    <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Dashboard</li> 
-                    <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">My Candidates Status</li>
-                    <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Search Candidates</li>
-                    <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Procedure Notes</li>
-                    <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Notifications</li>
-                    <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Influencer Referrals</li>             
-                    <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Account Details</li>
-                    <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Switch Account</li>
-                    <!-- <li class="hidden"><a href="#tabRequests"></a></li> -->
-                    <button class="pt-4 px-2 text-left border-0 hover:bg-transparent hover:text-primary" onclick="logout.showModal()">Log Out</button>
-                </ul>
-            </div>
+    <div class="screenHeader flex w-full mb-8">
+        <h1
+            class="text-4xl font-normal flex flex-wrap gap-2 lg:gap-3 lg:text-6xl font-normal text-primary relative justify-center md:justify-start">
+            My
+            <span>Donations</span>
+            and
+            <span class="accent">Physician Account</span>
+        </h1>
+    </div>
+
+    <div class="dashboard py-6 px-3 lg:px-6 rounded-xl shadow-lg relative">
+        <div class="dropdown xl:hidden absolute t-5 mobMenuBtn">
+            <label tabindex="0" class="btn btn-ghost btn-circle text-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+            </label>
+            <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow rounded-box w-52 bg-white">
+                <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Dashboard</li>
+                <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">My Candidates Status</li>
+                <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Search Candidates</li>
+                <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Procedure Notes</li>
+                <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Notifications</li>
+                <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Influencer Referrals</li>
+                <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Account Details</li>
+                <li class="p-2 w-full menuItem cursor-pointer hover:text-primary">Switch Account</li>
+                <!-- <li class="hidden"><a href="#tabRequests"></a></li> -->
+                <button class="pt-4 px-2 text-left border-0 hover:bg-transparent hover:text-primary"
+                    onclick="logout.showModal()">Log Out</button>
+            </ul>
+        </div>
 
         <div class="flex w-full">
             <div class="w-1/4 pr-8 border-r border-borderColor hidden xl:flex" style="width: 282px;">
                 <ul class="flex flex-col gap-4 text-textColor text-base font-normal w-full">
-                <li><a href="#tab1" class="p-2 w-full hidden xl:flex">Dashboard</a></li> 
-                <li><a href="#tab2" class="p-2 w-full hidden xl:flex">My Candidates Status</a></li>
-                <li><a href="#tab3" class="p-2 w-full hidden xl:flex">Search Candidates</a></li>
-                <li><a href="#tab4" class="p-2 w-full hidden xl:flex">Procedure Notes</a></li>
-                <li><a href="#tab5" class="p-2 w-full hidden xl:flex">Notifications</a></li>
-                <li class="pb-4" style="border-bottom: 1px solid #EBEBEB;"><a href="#tab6" class="p-2 w-full hidden xl:flex">Influencer Referrals</a></li>             
-                <li><a href="#tab7" class="p-2 w-full hidden xl:flex">Account Details</a></li>
-                <li class="pb-4" style="border-bottom: 1px solid #EBEBEB;"><a href="#tab8" class="p-2 w-full hidden xl:flex">Switch Account</a></li>
-                <!-- <li class="hidden"><a href="#tabRequests"></a></li> -->
-                <button class="px-2 text-left hidden xl:flex border-0 hover:bg-transparent hover:text-primary" onclick="logout.showModal()">Log Out</button>
+                    <li><a href="#tab1" class="p-2 w-full hidden xl:flex">Dashboard</a></li>
+                    <li><a href="#tab2" class="p-2 w-full hidden xl:flex">My Candidates Status</a></li>
+                    <li><a href="#tab3" class="p-2 w-full hidden xl:flex">Search Candidates</a></li>
+                    <li><a href="#tab4" class="p-2 w-full hidden xl:flex">Procedure Notes</a></li>
+                    <li><a href="#tab5" class="p-2 w-full hidden xl:flex">Notifications</a></li>
+                    <li class="pb-4" style="border-bottom: 1px solid #EBEBEB;"><a href="#tab6"
+                            class="p-2 w-full hidden xl:flex">Influencer Referrals</a></li>
+                    <li><a href="#tab7" class="p-2 w-full hidden xl:flex">Account Details</a></li>
+                    <li class="pb-4" style="border-bottom: 1px solid #EBEBEB;"><a href="#tab8"
+                            class="p-2 w-full hidden xl:flex">Switch Account</a></li>
+                    <!-- <li class="hidden"><a href="#tabRequests"></a></li> -->
+                    <button class="px-2 text-left hidden xl:flex border-0 hover:bg-transparent hover:text-primary"
+                        onclick="logout.showModal()">Log Out</button>
                 </ul>
             </div>
 
@@ -400,97 +448,175 @@
                             <h1 class="text-3xl font-medium text-textColor pl-20 xl:pl-0">
                                 Dashboard
                             </h1>
-                            
+
                         </div>
                         <div class="w-full h-full flex flex-col gap-6">
                             <div class="cardRow w-full flex gap-6 flex-wrap lg:flex-nowrap">
 
-                                <div class="cardItem px-6 py-5 flex gap-6 items-center bg-card2 rounded-xl w-full lg:max-w-3xl shadow-shadowItem">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" fill="none">
-                                        <path d="M40 63C54.9117 63 67 50.9117 67 36C67 21.0883 54.9117 9 40 9C25.0883 9 13 21.0883 13 36C13 50.9117 25.0883 63 40 63Z" fill="#C2DDDD"/>
-                                        <path d="M50.2375 19.7937C51.5555 18.5289 53.6085 17.6034 56.7968 17.5996C59.987 17.6034 62.038 18.5289 63.358 19.7937C63.3623 19.797 63.3662 19.8008 63.3695 19.805C72.5033 27.4616 67.2986 39.7703 67.5083 42.5486C67.6738 44.722 61.2626 44.2149 61.2626 44.2149C60.9844 43.5526 60.785 42.8621 60.6681 42.1566L60.6546 42.1434C62.0447 40.8513 63.1051 39.2667 63.7524 37.514C64.5317 35.499 64.9973 33.0297 65.3495 29.8272C63.5696 28.9676 62.117 24.9754 61.584 23.3336C61.5656 23.2743 61.5298 23.2214 61.4809 23.1813C61.432 23.1412 61.372 23.1156 61.3083 23.1076C61.2446 23.0996 61.1798 23.1096 61.1218 23.1363C61.0639 23.1631 61.0152 23.2054 60.9817 23.2582C58.1648 27.6652 54.128 28.6322 48.2075 29.4785C48.881 35.8477 49.9604 39.365 52.9409 42.1415L52.9274 42.1547C52.8093 42.8602 52.6092 43.5506 52.3309 44.2131V44.215C52.3309 44.215 45.9217 44.722 46.0853 42.5486C46.295 39.7684 41.0864 27.4503 50.2356 19.7937L50.2375 19.7937Z" fill="#91C8C8"/>
-                                        <path d="M33.0635 26.8223C32.9696 27.5485 32.9495 29.8091 32.9434 30.8875L32.9418 30.8891C32.8403 30.7958 32.7243 30.7191 32.5982 30.6619C32.3899 30.7572 32.1527 30.7715 31.9342 30.7019C31.7156 30.6323 31.5318 30.4839 31.4195 30.2865C31.038 29.7595 30.7701 29.161 30.6321 28.5281C30.6153 28.4475 30.5678 28.3762 30.4992 28.3291C30.4307 28.282 30.3465 28.2625 30.2638 28.2747C24.1652 29.1755 19.4564 26.0807 17.9448 24.908C17.8816 24.8593 17.8079 24.8256 17.7294 24.8093C17.6509 24.7929 17.5696 24.7944 17.4918 24.8137C17.4107 24.8261 17.3347 24.8603 17.2721 24.9127C17.2096 24.9651 17.1629 25.0335 17.1374 25.1103C17.0114 25.8033 16.8295 26.4854 16.5935 27.1499C16.1583 28.4774 15.4264 29.6918 14.4518 30.7036C13.9325 31.2429 13.2623 30.6619 13.2623 30.6619C13.1415 30.7175 13.0294 30.7898 12.9294 30.8767C12.9063 29.8863 12.8509 27.5995 12.7969 26.8223C12.7938 24.1416 13.4918 18.6951 18.5381 18.6796C20.1452 18.675 19.6968 17.5996 22.7939 17.5996C32.2777 17.595 33.0635 23.8511 33.0635 26.8223Z" fill="#91C8C8"/>
-                                        <path d="M50.2691 20.7996L49.785 20.3207L49.0625 20.0445L49.2676 19.8076C50.96 18.3552 53.4428 17.603 56.6127 17.5996C59.7834 17.603 62.2667 18.3551 63.9958 19.835L62.9183 20.7663C61.4852 19.5395 59.3637 18.9161 56.6127 18.9131C53.8629 18.9161 51.7422 19.5391 50.3116 20.7658C50.2992 20.7765 50.2823 20.7898 50.2691 20.7996Z" fill="#003366"/>
-                                        <path d="M76.4004 62.9327C75.9213 58.2204 75.2513 53.8536 74.8074 52.5492C74.663 52.124 74.4268 51.7327 74.1143 51.4007C73.8018 51.0688 73.4198 50.8037 72.9934 50.6226L61.8377 46.3378C61.7217 46.2933 61.6194 46.2211 61.5407 46.1279C61.2879 45.8315 61.0757 45.5052 60.9092 45.1571C60.6063 44.4481 60.389 43.7083 60.2617 42.9519L61.6992 42.666C61.807 43.3171 61.9891 43.9549 62.2423 44.5679C62.332 44.7563 62.4415 44.9355 62.5691 45.1026L73.5621 49.3251C74.1821 49.5851 74.7379 49.9678 75.193 50.4481C75.648 50.9284 75.9922 51.4954 76.2028 52.1121C76.7638 53.7601 77.4558 58.8055 77.8617 62.7962L76.4004 62.9327Z" fill="#003366"/>
-                                        <path d="M57.0869 44.2661C56.6774 44.2641 56.2688 44.229 55.8658 44.1612L55.6762 44.1333C54.6837 44.0035 53.7553 43.6017 53.0091 42.9789C52.8443 42.842 52.7075 42.7225 52.573 42.5989C49.1594 39.5232 48.115 35.4786 47.4648 29.5333C47.4451 29.3533 47.5007 29.1731 47.62 29.0302C47.7394 28.8874 47.9133 28.7929 48.1056 28.7663C53.9308 27.9609 57.9584 27.117 60.7548 22.8874C60.8656 22.7192 61.0264 22.5844 61.2176 22.4993C61.4089 22.4142 61.6226 22.3825 61.8328 22.408C62.043 22.4334 62.2409 22.515 62.4024 22.6428C62.5639 22.7706 62.6822 22.9392 62.743 23.1283C63.8275 26.3578 65.1701 28.6798 66.2442 29.1812C66.3816 29.2454 66.4947 29.3471 66.5684 29.4726C66.6421 29.5982 66.6729 29.7417 66.6567 29.884C66.26 33.3741 65.7383 35.7918 64.9654 37.7241C64.2589 39.5713 63.1023 41.2411 61.5862 42.6025C61.4534 42.723 61.3168 42.842 61.1764 42.9597C60.4246 43.5914 59.4874 44 58.4847 44.1333L58.2958 44.1612C58.0732 44.1951 57.8914 44.2194 57.7079 44.2372C57.5112 44.2551 57.3225 44.2638 57.0869 44.2661ZM49.044 30.0567C49.776 36.2383 50.9636 39.1921 53.6262 41.5901L53.6314 41.5952C53.7502 41.7042 53.8707 41.809 53.995 41.913C54.5287 42.3642 55.1971 42.654 55.9116 42.744L56.1017 42.772C56.4254 42.8283 56.7539 42.8576 57.0832 42.8594C57.258 42.8581 57.4069 42.8512 57.5554 42.8379C57.7055 42.8228 57.8612 42.8022 58.0557 42.7724L58.2466 42.744C58.9726 42.6508 59.6509 42.3541 60.1913 41.8933C60.2921 41.8081 60.4139 41.7019 60.5337 41.5933C61.8869 40.3763 62.919 38.8841 63.5491 37.2337C64.2444 35.4951 64.7275 33.3036 65.1034 30.1679C63.5299 29.0644 62.2958 26.3115 61.5648 24.3032C58.5873 28.2828 54.4463 29.2805 49.044 30.0567Z" fill="#003366"/>
-                                        <path d="M63.0089 45.3324C62.2304 45.3324 61.6011 45.2918 61.3281 45.2708L61.451 43.8724C63.2812 44.0121 66.1908 43.9012 66.928 43.2175C66.9676 43.1873 66.9985 43.1484 67.018 43.1042C67.0375 43.06 67.0449 43.012 67.0396 42.9645C67.0632 41.9397 67.2044 40.9201 67.4606 39.9234C68.3922 35.2561 70.1262 26.5681 63.0556 20.8111C63.0385 20.7974 63.0221 20.7828 63.0065 20.7678L63.0057 20.7668C62.9693 20.7311 62.9369 20.6919 62.9093 20.6499L63.5361 20.2709L64.017 19.7324L64.0385 19.7557L64.0407 19.7534C71.7584 26.037 69.9221 35.2378 68.9355 40.181C68.7156 41.0617 68.5819 41.9593 68.536 42.8627C68.5572 43.1121 68.5187 43.3628 68.4232 43.5966C68.3277 43.8303 68.1778 44.0412 67.9842 44.214C66.9742 45.1502 64.6575 45.3324 63.0089 45.3324Z" fill="#003366"/>
-                                        <path d="M50.6862 45.3324C49.141 45.3324 46.9702 45.1501 46.0227 44.2141C45.8409 44.0413 45.7001 43.8302 45.6104 43.5963C45.5207 43.3624 45.4844 43.1115 45.5041 42.8618C45.4612 41.9578 45.3358 41.0596 45.1296 40.1782C44.2042 35.2301 42.4819 26.0191 49.7303 19.7324L50.653 20.7914C44.0123 26.5513 45.6387 35.2484 46.5124 39.921C46.7527 40.9181 46.885 41.938 46.9071 42.9632C46.9022 43.0108 46.9093 43.0589 46.9276 43.1032C46.9459 43.1474 46.975 43.1864 47.0121 43.2168C47.7042 43.9011 50.4318 44.0126 52.1466 43.8719L52.2617 45.2708C52.006 45.2918 51.4158 45.3324 50.6862 45.3324Z" fill="#003366"/>
-                                        <path d="M57.0612 49.5999C56.4947 49.5996 55.943 49.3813 55.4863 48.9768L51.7266 45.6689L52.574 44.2666L56.3347 47.5751C56.5448 47.7618 56.7988 47.8627 57.0597 47.8631C57.3206 47.8635 57.5748 47.7634 57.7853 47.5773L61.5453 44.2666L62.3932 45.6689L58.6328 48.9802C58.1765 49.3824 57.6262 49.5994 57.0612 49.5999Z" fill="#003366"/>
-                                        <path d="M40.0013 50.666L38.9297 49.7709C39.3654 49.3644 39.8893 49.0392 40.4703 48.8148L51.5476 44.8983C51.6695 44.7529 51.7745 44.5969 51.8609 44.4329C51.8655 44.4227 51.8703 44.413 51.8756 44.4032C52.1279 43.8434 52.3098 43.2609 52.4181 42.666L53.1458 42.7771L53.863 42.9326C53.7356 43.6152 53.5228 44.2833 53.2285 44.9245C53.2246 44.933 53.2206 44.9411 53.2162 44.9496C53.0492 45.2726 52.835 45.5749 52.5791 45.8489C52.5 45.9341 52.3979 46.0002 52.2821 46.0413L41.0416 50.015C40.6493 50.1691 40.2957 50.3904 40.0013 50.666Z" fill="#003366"/>
-                                        <path d="M3.61067 62.933L2.12891 62.7994C2.51915 58.8292 3.31006 53.68 3.95804 51.9356C4.18279 51.3524 4.53297 50.821 4.98589 50.3756C5.43882 49.9303 5.98439 49.581 6.58729 49.3503L17.206 45.3819C17.3177 45.3401 17.4383 45.3248 17.5575 45.3374C17.6767 45.3499 17.791 45.3898 17.8906 45.4538L22.4967 48.4064C22.7127 48.5242 22.9579 48.5839 23.2065 48.5794C23.455 48.5748 23.6976 48.5061 23.9087 48.3805L28.324 45.4594C28.4236 45.3933 28.5386 45.3516 28.659 45.3379C28.7793 45.3243 28.9014 45.3391 29.0144 45.381L39.7724 49.3475C40.2274 49.5222 40.6521 49.7617 41.0322 50.0581C41.6732 50.551 42.1596 51.2038 42.4379 51.9444C43.0845 53.6888 43.873 58.8329 44.2622 62.7994L42.7802 62.933C42.3534 58.5806 41.5707 53.8655 41.0356 52.4221C40.8484 51.9272 40.522 51.4914 40.0924 51.1629C39.8304 50.9583 39.5377 50.7927 39.2242 50.6717L28.8465 46.8457L24.7234 49.5725C24.2711 49.8441 23.7494 49.9911 23.2156 49.9973C22.6817 50.0035 22.1564 49.8687 21.6974 49.6077L17.3855 46.8443L7.1408 50.6731C6.73355 50.8281 6.36472 51.063 6.05803 51.3627C5.75135 51.6624 5.51361 52.0203 5.36011 52.4133C4.8238 53.8571 4.03895 58.5764 3.61067 62.933Z" fill="#003366"/>
-                                        <path d="M11.8634 30.9331C11.812 28.821 11.7665 27.4814 11.7283 26.952C11.7271 26.9359 11.7266 26.9202 11.7266 26.9045C11.72 21.4259 14.2125 18.1482 18.394 18.1358C18.7542 18.1462 19.1073 18.0396 19.3945 17.8338C19.9521 17.5102 20.7156 17.0664 22.7859 17.0664H22.7971C27.2874 17.0664 30.5052 18.3314 32.3622 20.8265C33.5329 22.4 34.1266 24.4444 34.1266 26.9036C34.1266 26.9336 34.1246 26.9636 34.1205 26.9934C34.0752 27.3276 34.018 28.2828 34.0024 30.9317L32.5071 30.9234C32.5197 28.8012 32.5613 27.4353 32.6312 26.8617C32.6246 24.7183 32.1227 22.9621 31.1392 21.6409C29.5788 19.544 26.7716 18.4806 22.7968 18.4806H22.7864C21.1384 18.4806 20.6497 18.7646 20.177 19.039C19.6559 19.3825 19.0334 19.5613 18.3983 19.55C13.7348 19.5638 13.2229 24.6613 13.222 26.8797C13.2614 27.4455 13.3071 28.798 13.3582 30.9009L11.8634 30.9331Z" fill="#003366"/>
-                                        <path d="M23.1941 43.7329C22.7351 43.7369 22.2766 43.7058 21.8232 43.6398L21.6317 43.6128C20.6272 43.551 19.6604 43.237 18.8365 42.705C18.399 42.397 17.9792 42.0683 17.5789 41.7201L17.578 41.7192L17.5596 41.7036L17.5543 41.6988C16.3911 40.7217 15.4018 39.5827 14.6226 38.3236C14.6071 38.2969 14.5937 38.2692 14.5826 38.2407L13.8006 36.2727C13.7647 36.1825 13.7056 36.1016 13.6283 36.037C12.4866 35.0431 11.8062 33.6822 11.7291 32.2383C11.7131 31.9149 11.7726 31.592 11.9039 31.2916C12.0351 30.9911 12.2348 30.72 12.4897 30.4967C12.6452 30.3705 12.8195 30.2653 13.0072 30.1843C13.1378 30.128 13.2833 30.108 13.4261 30.1266C13.5688 30.1453 13.7026 30.2018 13.8109 30.2893C13.8699 30.3328 13.939 30.3631 14.0128 30.3779C14.9242 29.4751 15.6109 28.4006 16.025 27.2291C16.2526 26.6293 16.4284 26.014 16.5507 25.3887C16.6002 25.1857 16.7126 25.0002 16.8742 24.8546C17.0359 24.7091 17.2398 24.6096 17.4616 24.5682C17.6504 24.5249 17.8476 24.5217 18.038 24.559C18.2283 24.5962 18.407 24.6728 18.5604 24.783C19.8471 25.7152 24.5135 28.6908 30.5712 27.853C30.8416 27.8157 31.1173 27.8748 31.342 28.018C31.5667 28.1613 31.7235 28.378 31.7804 28.6239C31.9003 29.1375 32.1335 29.623 32.4656 30.0505C32.6154 30.2463 32.7115 30.202 32.7164 30.1994C32.8177 30.1497 32.9302 30.1224 33.045 30.1197C33.1598 30.117 33.2737 30.139 33.3777 30.1839C33.5772 30.2688 33.7608 30.3825 33.9214 30.5206C34.1703 30.7451 34.3645 31.0155 34.4913 31.3142C34.618 31.6128 34.6744 31.9328 34.6567 32.2529C34.5735 33.6925 33.8928 35.0478 32.7551 36.0397C32.6789 36.1035 32.6208 36.1835 32.586 36.2727L31.8042 38.2408C31.7929 38.2692 31.7795 38.2968 31.7642 38.3236C30.9854 39.5828 29.9963 40.7218 28.8332 41.6988C28.8252 41.7059 28.8173 41.7125 28.8089 41.7188C28.4077 42.0679 27.987 42.3976 27.5484 42.7063C26.7234 43.2374 25.7563 43.551 24.7515 43.6132L24.5629 43.6398C24.1102 43.7058 23.6524 43.7369 23.1941 43.7329ZM18.5739 40.7121C18.9428 41.0339 19.3299 41.3377 19.7335 41.6222C20.3634 42.0103 21.0964 42.2333 21.8538 42.2672L22.0444 42.2943C22.8065 42.3978 23.581 42.3976 24.343 42.2938L24.527 42.2677C25.2858 42.2338 26.0202 42.011 26.652 41.623C27.0556 41.3389 27.4426 41.0353 27.8113 40.7135C27.8233 40.7033 27.8354 40.6931 27.8479 40.6833C28.8651 39.8235 29.736 38.8279 30.4313 37.7299L31.1955 35.8058C31.312 35.5095 31.5056 35.2441 31.7595 35.0326C32.5897 34.2993 33.0947 33.3088 33.1766 32.2529C33.1964 31.9967 33.1122 31.7429 32.9402 31.5405C32.6152 31.5849 32.2832 31.5418 31.9842 31.4165C31.6853 31.2912 31.4322 31.089 31.2555 30.8342C30.8818 30.3522 30.6006 29.8148 30.4243 29.2454C24.3297 29.9513 19.5964 27.1995 17.9181 26.0453C17.7912 26.5999 17.6252 27.1463 17.4211 27.6811C16.943 29.0358 16.1412 30.2749 15.0743 31.3074C14.8622 31.5168 14.5839 31.6595 14.2787 31.7156C13.9736 31.7716 13.657 31.7381 13.3737 31.6198C13.2565 31.8098 13.1996 32.0263 13.2094 32.2445C13.2873 33.3036 13.7927 34.2976 14.6265 35.0318C14.879 35.2448 15.0725 35.5101 15.1909 35.8058L15.9554 37.7299C16.6541 38.8318 17.5291 39.8309 18.551 40.6935C18.5587 40.6997 18.5665 40.7055 18.5739 40.7121Z" fill="#003366"/>
-                                        <path d="M28.1184 45.8664C27.8904 44.3644 27.7634 42.8409 27.7388 41.3122L27.7305 41.1148L28.3533 41.0664L28.977 41.0735L28.9845 41.2301C29.009 42.6614 29.1246 44.0881 29.3305 45.4962L28.1184 45.8664Z" fill="#003366"/>
-                                        <path d="M18.0809 45.8664L16.5273 45.4998C16.834 44.0394 17.0132 42.5563 17.0629 41.0664L18.6607 41.1074C18.6099 42.7071 18.4159 44.2995 18.0809 45.8664Z" fill="#003366"/>
-                                        <path d="M35.7305 59.1999H34.2526V57.9049H29.2084V59.1999H27.7305V57.2191C27.7305 57.0372 27.8083 56.8627 27.9469 56.7341C28.0855 56.6055 28.2734 56.5332 28.4694 56.5332H34.9915C35.1875 56.5332 35.3754 56.6055 35.514 56.7341C35.6526 56.8627 35.7305 57.0372 35.7305 57.2191V59.1999Z" fill="#003366"/>
-                                      </svg>
-                                    <div class="flex flex-col gap-2 w-3/4">                
+                                <div
+                                    class="cardItem px-6 py-5 flex gap-6 items-center bg-card2 rounded-xl w-full lg:max-w-3xl shadow-shadowItem">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"
+                                        fill="none">
+                                        <path
+                                            d="M40 63C54.9117 63 67 50.9117 67 36C67 21.0883 54.9117 9 40 9C25.0883 9 13 21.0883 13 36C13 50.9117 25.0883 63 40 63Z"
+                                            fill="#C2DDDD" />
+                                        <path
+                                            d="M50.2375 19.7937C51.5555 18.5289 53.6085 17.6034 56.7968 17.5996C59.987 17.6034 62.038 18.5289 63.358 19.7937C63.3623 19.797 63.3662 19.8008 63.3695 19.805C72.5033 27.4616 67.2986 39.7703 67.5083 42.5486C67.6738 44.722 61.2626 44.2149 61.2626 44.2149C60.9844 43.5526 60.785 42.8621 60.6681 42.1566L60.6546 42.1434C62.0447 40.8513 63.1051 39.2667 63.7524 37.514C64.5317 35.499 64.9973 33.0297 65.3495 29.8272C63.5696 28.9676 62.117 24.9754 61.584 23.3336C61.5656 23.2743 61.5298 23.2214 61.4809 23.1813C61.432 23.1412 61.372 23.1156 61.3083 23.1076C61.2446 23.0996 61.1798 23.1096 61.1218 23.1363C61.0639 23.1631 61.0152 23.2054 60.9817 23.2582C58.1648 27.6652 54.128 28.6322 48.2075 29.4785C48.881 35.8477 49.9604 39.365 52.9409 42.1415L52.9274 42.1547C52.8093 42.8602 52.6092 43.5506 52.3309 44.2131V44.215C52.3309 44.215 45.9217 44.722 46.0853 42.5486C46.295 39.7684 41.0864 27.4503 50.2356 19.7937L50.2375 19.7937Z"
+                                            fill="#91C8C8" />
+                                        <path
+                                            d="M33.0635 26.8223C32.9696 27.5485 32.9495 29.8091 32.9434 30.8875L32.9418 30.8891C32.8403 30.7958 32.7243 30.7191 32.5982 30.6619C32.3899 30.7572 32.1527 30.7715 31.9342 30.7019C31.7156 30.6323 31.5318 30.4839 31.4195 30.2865C31.038 29.7595 30.7701 29.161 30.6321 28.5281C30.6153 28.4475 30.5678 28.3762 30.4992 28.3291C30.4307 28.282 30.3465 28.2625 30.2638 28.2747C24.1652 29.1755 19.4564 26.0807 17.9448 24.908C17.8816 24.8593 17.8079 24.8256 17.7294 24.8093C17.6509 24.7929 17.5696 24.7944 17.4918 24.8137C17.4107 24.8261 17.3347 24.8603 17.2721 24.9127C17.2096 24.9651 17.1629 25.0335 17.1374 25.1103C17.0114 25.8033 16.8295 26.4854 16.5935 27.1499C16.1583 28.4774 15.4264 29.6918 14.4518 30.7036C13.9325 31.2429 13.2623 30.6619 13.2623 30.6619C13.1415 30.7175 13.0294 30.7898 12.9294 30.8767C12.9063 29.8863 12.8509 27.5995 12.7969 26.8223C12.7938 24.1416 13.4918 18.6951 18.5381 18.6796C20.1452 18.675 19.6968 17.5996 22.7939 17.5996C32.2777 17.595 33.0635 23.8511 33.0635 26.8223Z"
+                                            fill="#91C8C8" />
+                                        <path
+                                            d="M50.2691 20.7996L49.785 20.3207L49.0625 20.0445L49.2676 19.8076C50.96 18.3552 53.4428 17.603 56.6127 17.5996C59.7834 17.603 62.2667 18.3551 63.9958 19.835L62.9183 20.7663C61.4852 19.5395 59.3637 18.9161 56.6127 18.9131C53.8629 18.9161 51.7422 19.5391 50.3116 20.7658C50.2992 20.7765 50.2823 20.7898 50.2691 20.7996Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M76.4004 62.9327C75.9213 58.2204 75.2513 53.8536 74.8074 52.5492C74.663 52.124 74.4268 51.7327 74.1143 51.4007C73.8018 51.0688 73.4198 50.8037 72.9934 50.6226L61.8377 46.3378C61.7217 46.2933 61.6194 46.2211 61.5407 46.1279C61.2879 45.8315 61.0757 45.5052 60.9092 45.1571C60.6063 44.4481 60.389 43.7083 60.2617 42.9519L61.6992 42.666C61.807 43.3171 61.9891 43.9549 62.2423 44.5679C62.332 44.7563 62.4415 44.9355 62.5691 45.1026L73.5621 49.3251C74.1821 49.5851 74.7379 49.9678 75.193 50.4481C75.648 50.9284 75.9922 51.4954 76.2028 52.1121C76.7638 53.7601 77.4558 58.8055 77.8617 62.7962L76.4004 62.9327Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M57.0869 44.2661C56.6774 44.2641 56.2688 44.229 55.8658 44.1612L55.6762 44.1333C54.6837 44.0035 53.7553 43.6017 53.0091 42.9789C52.8443 42.842 52.7075 42.7225 52.573 42.5989C49.1594 39.5232 48.115 35.4786 47.4648 29.5333C47.4451 29.3533 47.5007 29.1731 47.62 29.0302C47.7394 28.8874 47.9133 28.7929 48.1056 28.7663C53.9308 27.9609 57.9584 27.117 60.7548 22.8874C60.8656 22.7192 61.0264 22.5844 61.2176 22.4993C61.4089 22.4142 61.6226 22.3825 61.8328 22.408C62.043 22.4334 62.2409 22.515 62.4024 22.6428C62.5639 22.7706 62.6822 22.9392 62.743 23.1283C63.8275 26.3578 65.1701 28.6798 66.2442 29.1812C66.3816 29.2454 66.4947 29.3471 66.5684 29.4726C66.6421 29.5982 66.6729 29.7417 66.6567 29.884C66.26 33.3741 65.7383 35.7918 64.9654 37.7241C64.2589 39.5713 63.1023 41.2411 61.5862 42.6025C61.4534 42.723 61.3168 42.842 61.1764 42.9597C60.4246 43.5914 59.4874 44 58.4847 44.1333L58.2958 44.1612C58.0732 44.1951 57.8914 44.2194 57.7079 44.2372C57.5112 44.2551 57.3225 44.2638 57.0869 44.2661ZM49.044 30.0567C49.776 36.2383 50.9636 39.1921 53.6262 41.5901L53.6314 41.5952C53.7502 41.7042 53.8707 41.809 53.995 41.913C54.5287 42.3642 55.1971 42.654 55.9116 42.744L56.1017 42.772C56.4254 42.8283 56.7539 42.8576 57.0832 42.8594C57.258 42.8581 57.4069 42.8512 57.5554 42.8379C57.7055 42.8228 57.8612 42.8022 58.0557 42.7724L58.2466 42.744C58.9726 42.6508 59.6509 42.3541 60.1913 41.8933C60.2921 41.8081 60.4139 41.7019 60.5337 41.5933C61.8869 40.3763 62.919 38.8841 63.5491 37.2337C64.2444 35.4951 64.7275 33.3036 65.1034 30.1679C63.5299 29.0644 62.2958 26.3115 61.5648 24.3032C58.5873 28.2828 54.4463 29.2805 49.044 30.0567Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M63.0089 45.3324C62.2304 45.3324 61.6011 45.2918 61.3281 45.2708L61.451 43.8724C63.2812 44.0121 66.1908 43.9012 66.928 43.2175C66.9676 43.1873 66.9985 43.1484 67.018 43.1042C67.0375 43.06 67.0449 43.012 67.0396 42.9645C67.0632 41.9397 67.2044 40.9201 67.4606 39.9234C68.3922 35.2561 70.1262 26.5681 63.0556 20.8111C63.0385 20.7974 63.0221 20.7828 63.0065 20.7678L63.0057 20.7668C62.9693 20.7311 62.9369 20.6919 62.9093 20.6499L63.5361 20.2709L64.017 19.7324L64.0385 19.7557L64.0407 19.7534C71.7584 26.037 69.9221 35.2378 68.9355 40.181C68.7156 41.0617 68.5819 41.9593 68.536 42.8627C68.5572 43.1121 68.5187 43.3628 68.4232 43.5966C68.3277 43.8303 68.1778 44.0412 67.9842 44.214C66.9742 45.1502 64.6575 45.3324 63.0089 45.3324Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M50.6862 45.3324C49.141 45.3324 46.9702 45.1501 46.0227 44.2141C45.8409 44.0413 45.7001 43.8302 45.6104 43.5963C45.5207 43.3624 45.4844 43.1115 45.5041 42.8618C45.4612 41.9578 45.3358 41.0596 45.1296 40.1782C44.2042 35.2301 42.4819 26.0191 49.7303 19.7324L50.653 20.7914C44.0123 26.5513 45.6387 35.2484 46.5124 39.921C46.7527 40.9181 46.885 41.938 46.9071 42.9632C46.9022 43.0108 46.9093 43.0589 46.9276 43.1032C46.9459 43.1474 46.975 43.1864 47.0121 43.2168C47.7042 43.9011 50.4318 44.0126 52.1466 43.8719L52.2617 45.2708C52.006 45.2918 51.4158 45.3324 50.6862 45.3324Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M57.0612 49.5999C56.4947 49.5996 55.943 49.3813 55.4863 48.9768L51.7266 45.6689L52.574 44.2666L56.3347 47.5751C56.5448 47.7618 56.7988 47.8627 57.0597 47.8631C57.3206 47.8635 57.5748 47.7634 57.7853 47.5773L61.5453 44.2666L62.3932 45.6689L58.6328 48.9802C58.1765 49.3824 57.6262 49.5994 57.0612 49.5999Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M40.0013 50.666L38.9297 49.7709C39.3654 49.3644 39.8893 49.0392 40.4703 48.8148L51.5476 44.8983C51.6695 44.7529 51.7745 44.5969 51.8609 44.4329C51.8655 44.4227 51.8703 44.413 51.8756 44.4032C52.1279 43.8434 52.3098 43.2609 52.4181 42.666L53.1458 42.7771L53.863 42.9326C53.7356 43.6152 53.5228 44.2833 53.2285 44.9245C53.2246 44.933 53.2206 44.9411 53.2162 44.9496C53.0492 45.2726 52.835 45.5749 52.5791 45.8489C52.5 45.9341 52.3979 46.0002 52.2821 46.0413L41.0416 50.015C40.6493 50.1691 40.2957 50.3904 40.0013 50.666Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M3.61067 62.933L2.12891 62.7994C2.51915 58.8292 3.31006 53.68 3.95804 51.9356C4.18279 51.3524 4.53297 50.821 4.98589 50.3756C5.43882 49.9303 5.98439 49.581 6.58729 49.3503L17.206 45.3819C17.3177 45.3401 17.4383 45.3248 17.5575 45.3374C17.6767 45.3499 17.791 45.3898 17.8906 45.4538L22.4967 48.4064C22.7127 48.5242 22.9579 48.5839 23.2065 48.5794C23.455 48.5748 23.6976 48.5061 23.9087 48.3805L28.324 45.4594C28.4236 45.3933 28.5386 45.3516 28.659 45.3379C28.7793 45.3243 28.9014 45.3391 29.0144 45.381L39.7724 49.3475C40.2274 49.5222 40.6521 49.7617 41.0322 50.0581C41.6732 50.551 42.1596 51.2038 42.4379 51.9444C43.0845 53.6888 43.873 58.8329 44.2622 62.7994L42.7802 62.933C42.3534 58.5806 41.5707 53.8655 41.0356 52.4221C40.8484 51.9272 40.522 51.4914 40.0924 51.1629C39.8304 50.9583 39.5377 50.7927 39.2242 50.6717L28.8465 46.8457L24.7234 49.5725C24.2711 49.8441 23.7494 49.9911 23.2156 49.9973C22.6817 50.0035 22.1564 49.8687 21.6974 49.6077L17.3855 46.8443L7.1408 50.6731C6.73355 50.8281 6.36472 51.063 6.05803 51.3627C5.75135 51.6624 5.51361 52.0203 5.36011 52.4133C4.8238 53.8571 4.03895 58.5764 3.61067 62.933Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M11.8634 30.9331C11.812 28.821 11.7665 27.4814 11.7283 26.952C11.7271 26.9359 11.7266 26.9202 11.7266 26.9045C11.72 21.4259 14.2125 18.1482 18.394 18.1358C18.7542 18.1462 19.1073 18.0396 19.3945 17.8338C19.9521 17.5102 20.7156 17.0664 22.7859 17.0664H22.7971C27.2874 17.0664 30.5052 18.3314 32.3622 20.8265C33.5329 22.4 34.1266 24.4444 34.1266 26.9036C34.1266 26.9336 34.1246 26.9636 34.1205 26.9934C34.0752 27.3276 34.018 28.2828 34.0024 30.9317L32.5071 30.9234C32.5197 28.8012 32.5613 27.4353 32.6312 26.8617C32.6246 24.7183 32.1227 22.9621 31.1392 21.6409C29.5788 19.544 26.7716 18.4806 22.7968 18.4806H22.7864C21.1384 18.4806 20.6497 18.7646 20.177 19.039C19.6559 19.3825 19.0334 19.5613 18.3983 19.55C13.7348 19.5638 13.2229 24.6613 13.222 26.8797C13.2614 27.4455 13.3071 28.798 13.3582 30.9009L11.8634 30.9331Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M23.1941 43.7329C22.7351 43.7369 22.2766 43.7058 21.8232 43.6398L21.6317 43.6128C20.6272 43.551 19.6604 43.237 18.8365 42.705C18.399 42.397 17.9792 42.0683 17.5789 41.7201L17.578 41.7192L17.5596 41.7036L17.5543 41.6988C16.3911 40.7217 15.4018 39.5827 14.6226 38.3236C14.6071 38.2969 14.5937 38.2692 14.5826 38.2407L13.8006 36.2727C13.7647 36.1825 13.7056 36.1016 13.6283 36.037C12.4866 35.0431 11.8062 33.6822 11.7291 32.2383C11.7131 31.9149 11.7726 31.592 11.9039 31.2916C12.0351 30.9911 12.2348 30.72 12.4897 30.4967C12.6452 30.3705 12.8195 30.2653 13.0072 30.1843C13.1378 30.128 13.2833 30.108 13.4261 30.1266C13.5688 30.1453 13.7026 30.2018 13.8109 30.2893C13.8699 30.3328 13.939 30.3631 14.0128 30.3779C14.9242 29.4751 15.6109 28.4006 16.025 27.2291C16.2526 26.6293 16.4284 26.014 16.5507 25.3887C16.6002 25.1857 16.7126 25.0002 16.8742 24.8546C17.0359 24.7091 17.2398 24.6096 17.4616 24.5682C17.6504 24.5249 17.8476 24.5217 18.038 24.559C18.2283 24.5962 18.407 24.6728 18.5604 24.783C19.8471 25.7152 24.5135 28.6908 30.5712 27.853C30.8416 27.8157 31.1173 27.8748 31.342 28.018C31.5667 28.1613 31.7235 28.378 31.7804 28.6239C31.9003 29.1375 32.1335 29.623 32.4656 30.0505C32.6154 30.2463 32.7115 30.202 32.7164 30.1994C32.8177 30.1497 32.9302 30.1224 33.045 30.1197C33.1598 30.117 33.2737 30.139 33.3777 30.1839C33.5772 30.2688 33.7608 30.3825 33.9214 30.5206C34.1703 30.7451 34.3645 31.0155 34.4913 31.3142C34.618 31.6128 34.6744 31.9328 34.6567 32.2529C34.5735 33.6925 33.8928 35.0478 32.7551 36.0397C32.6789 36.1035 32.6208 36.1835 32.586 36.2727L31.8042 38.2408C31.7929 38.2692 31.7795 38.2968 31.7642 38.3236C30.9854 39.5828 29.9963 40.7218 28.8332 41.6988C28.8252 41.7059 28.8173 41.7125 28.8089 41.7188C28.4077 42.0679 27.987 42.3976 27.5484 42.7063C26.7234 43.2374 25.7563 43.551 24.7515 43.6132L24.5629 43.6398C24.1102 43.7058 23.6524 43.7369 23.1941 43.7329ZM18.5739 40.7121C18.9428 41.0339 19.3299 41.3377 19.7335 41.6222C20.3634 42.0103 21.0964 42.2333 21.8538 42.2672L22.0444 42.2943C22.8065 42.3978 23.581 42.3976 24.343 42.2938L24.527 42.2677C25.2858 42.2338 26.0202 42.011 26.652 41.623C27.0556 41.3389 27.4426 41.0353 27.8113 40.7135C27.8233 40.7033 27.8354 40.6931 27.8479 40.6833C28.8651 39.8235 29.736 38.8279 30.4313 37.7299L31.1955 35.8058C31.312 35.5095 31.5056 35.2441 31.7595 35.0326C32.5897 34.2993 33.0947 33.3088 33.1766 32.2529C33.1964 31.9967 33.1122 31.7429 32.9402 31.5405C32.6152 31.5849 32.2832 31.5418 31.9842 31.4165C31.6853 31.2912 31.4322 31.089 31.2555 30.8342C30.8818 30.3522 30.6006 29.8148 30.4243 29.2454C24.3297 29.9513 19.5964 27.1995 17.9181 26.0453C17.7912 26.5999 17.6252 27.1463 17.4211 27.6811C16.943 29.0358 16.1412 30.2749 15.0743 31.3074C14.8622 31.5168 14.5839 31.6595 14.2787 31.7156C13.9736 31.7716 13.657 31.7381 13.3737 31.6198C13.2565 31.8098 13.1996 32.0263 13.2094 32.2445C13.2873 33.3036 13.7927 34.2976 14.6265 35.0318C14.879 35.2448 15.0725 35.5101 15.1909 35.8058L15.9554 37.7299C16.6541 38.8318 17.5291 39.8309 18.551 40.6935C18.5587 40.6997 18.5665 40.7055 18.5739 40.7121Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M28.1184 45.8664C27.8904 44.3644 27.7634 42.8409 27.7388 41.3122L27.7305 41.1148L28.3533 41.0664L28.977 41.0735L28.9845 41.2301C29.009 42.6614 29.1246 44.0881 29.3305 45.4962L28.1184 45.8664Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M18.0809 45.8664L16.5273 45.4998C16.834 44.0394 17.0132 42.5563 17.0629 41.0664L18.6607 41.1074C18.6099 42.7071 18.4159 44.2995 18.0809 45.8664Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M35.7305 59.1999H34.2526V57.9049H29.2084V59.1999H27.7305V57.2191C27.7305 57.0372 27.8083 56.8627 27.9469 56.7341C28.0855 56.6055 28.2734 56.5332 28.4694 56.5332H34.9915C35.1875 56.5332 35.3754 56.6055 35.514 56.7341C35.6526 56.8627 35.7305 57.0372 35.7305 57.2191V59.1999Z"
+                                            fill="#003366" />
+                                    </svg>
+                                    <div class="flex flex-col gap-2 w-3/4">
                                         <h3 class="text-base text-primary">My Candidates</h3>
                                         <span class="text-primary text-3xl font-semibold">
                                             <?php
-                                                if($orders === []) {
-                                                    echo '0';
-                                                } else {
-                                                    echo $count_products;
-                                                };                                            
+                                                echo count($my_candidates);                                         
                                             ?>
                                         </span>
                                     </div>
                                 </div>
-                                <div class="cardItem px-6 py-5 flex gap-6 items-center bg-card3 rounded-xl w-full lg:max-w-sm shadow-shadowItem">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" fill="none">
-                                        <path d="M40 69C54.9117 69 67 56.9117 67 42C67 27.0883 54.9117 15 40 15C25.0883 15 13 27.0883 13 42C13 56.9117 25.0883 69 40 69Z" fill="#DCC2DD"/>
-                                        <path d="M32.1309 59.8709C32.1084 59.2703 32.0829 58.5894 31.9881 57.7621C31.3681 52.3159 28.6699 48.3042 23.9707 45.8399C22.8067 45.2263 21.4797 43.8527 20.309 42.641C19.7787 42.0922 19.2733 41.5726 18.7728 41.108C18.8781 39.8416 18.8813 38.5688 18.7824 37.3019C18.5821 35.5353 17.5857 34.0261 16.2314 33.4426C16.1942 33.2301 16.145 33.0199 16.084 32.813C15.9169 32.1775 15.6134 31.586 15.1948 31.0794C14.7761 30.5729 14.2523 30.1635 13.6596 29.8797C13.5832 29.8474 13.5046 29.8205 13.4244 29.7991C13.1492 29.7232 12.8659 29.6807 12.5806 29.6725C12.1952 29.1646 11.6865 28.7635 11.1028 28.5071L11.103 28.5064L11.099 28.5051L11.0977 28.5044C10.8081 28.3727 10.4842 28.336 10.1724 28.3993C9.8606 28.4625 9.57674 28.6227 9.36135 28.8568C9.0709 29.1271 8.88012 29.4874 8.81987 29.8795L8.07119 35.8045C8.05749 35.903 8.0523 36.0024 8.0557 36.1018C8.18048 39.2044 8.54284 42.2929 9.13958 45.3402C9.22147 45.8119 9.37876 46.2674 9.6054 46.6891C9.76389 46.9843 9.95399 47.2614 10.1724 47.5155C13.7587 51.8476 15.8971 54.1197 19.1341 57.5586L20.6421 59.1621C21.2373 59.874 21.6772 60.7023 21.9338 61.5941L22.5045 63.8929L23.9097 63.544L23.3391 61.2464C23.025 60.1128 22.4643 59.0627 21.6972 58.1711L20.1881 56.5665C16.9704 53.1475 14.8446 50.889 11.2785 46.5818C10.9122 46.1571 10.666 45.6423 10.5654 45.0906C9.98104 42.1096 9.6257 39.0882 9.50246 36.0529L9.50601 35.9957L10.25 30.1C10.2595 30.0325 10.2915 29.9701 10.3407 29.923C10.4226 29.8473 10.4635 29.8198 10.4628 29.8135C10.4879 29.8195 10.5124 29.8278 10.536 29.8384L10.8195 29.1724L10.5413 29.8404C10.9902 30.0452 11.3667 30.3808 11.6215 30.8034C11.9514 31.3224 12.1586 31.9099 12.2272 32.5211C12.3338 33.8702 12.3106 35.2264 12.1577 36.5711C12.1199 36.823 12.1362 37.0802 12.2054 37.3253L13.0028 40.1186C12.7757 40.482 12.65 40.8995 12.6389 41.3278C12.6277 41.7562 12.7315 42.1796 12.9394 42.5543C13.0373 42.7365 13.155 42.9073 13.2904 43.0636L19.8895 50.7155L20.9858 49.7702L14.3867 42.1183C14.2012 41.9366 14.0934 41.69 14.086 41.4305C14.0786 41.1709 14.1721 40.9185 14.347 40.7265C14.4606 40.5982 14.6062 40.5022 14.7689 40.4483C15.1004 40.3705 15.4492 40.4232 15.7429 40.5957C16.3908 40.9576 16.9881 41.4036 17.5193 41.9219L17.5588 41.9558C18.0772 42.4142 18.6553 43.013 19.2677 43.6469C20.514 44.9368 21.9269 46.3988 23.2972 47.121C27.5472 49.3497 29.9882 52.9844 30.5498 57.9264C30.6383 58.6991 30.6618 59.3225 30.6844 59.9253C30.6911 60.9032 30.805 61.8776 31.0242 62.8307L32.4302 62.4872C32.2351 61.6287 32.1348 60.7513 32.1309 59.8709ZM13.5893 36.7871C13.7619 35.3204 13.7879 33.8401 13.667 32.3683C13.6267 32.0462 13.5587 31.7281 13.4637 31.4177C14.0672 31.8661 14.502 32.5048 14.698 33.2306C14.7561 33.4243 14.8003 33.6218 14.8304 33.8218C14.8437 33.9154 14.8553 34.0209 14.8672 34.1359C14.9904 35.3773 15.0017 36.6273 14.901 37.8708C14.8728 38.1227 14.8986 38.3777 14.9768 38.6187L15.0915 38.9728C14.832 38.9627 14.5727 38.9958 14.3241 39.0707C14.2887 39.0822 14.2556 39.099 14.2209 39.1121L13.5992 36.9344C13.5854 36.8865 13.582 36.8363 13.5893 36.7871ZM16.7937 39.5291L16.354 38.1718C16.3394 38.1265 16.3345 38.0786 16.3397 38.0313C16.4228 37.1252 16.4415 36.2144 16.3958 35.3056C16.9316 35.9024 17.2632 36.6544 17.3425 37.4524C17.4063 38.2776 17.4237 39.1058 17.3946 39.933C17.2014 39.7882 17.0008 39.6534 16.7937 39.5291Z" fill="#003366"/>
-                                        <path d="M47.5781 62.4872L48.9841 62.8307C49.2033 61.8775 49.3172 60.9032 49.3239 59.9252C49.3465 59.3225 49.37 58.6991 49.4585 57.9264C50.0201 52.9844 52.4612 49.3496 56.7112 47.121C58.0815 46.3988 59.4943 44.9367 60.7407 43.6468C61.3531 43.013 61.9312 42.4142 62.4495 41.9558L62.4891 41.9219C63.0203 41.4035 63.6175 40.9576 64.2655 40.5956C64.5592 40.4232 64.9079 40.3704 65.2395 40.4483C65.4022 40.5022 65.5477 40.5982 65.6613 40.7265C65.8362 40.9185 65.9298 41.1708 65.9224 41.4304C65.915 41.69 65.8072 41.9366 65.6216 42.1183L59.0225 49.7702L60.1188 50.7154L66.7178 43.0635C66.8533 42.9072 66.971 42.7364 67.0689 42.5542C67.2768 42.1796 67.3806 41.7561 67.3694 41.3278C67.3583 40.8994 67.2326 40.4819 67.0055 40.1186L67.8029 37.3253C67.8721 37.0801 67.8884 36.823 67.8505 36.5711C67.6977 35.2264 67.6744 33.8702 67.7811 32.521C67.8497 31.9098 68.0569 31.3224 68.3868 30.8033C68.6415 30.3808 69.0181 30.0451 69.467 29.8404L69.1888 29.1724L69.4723 29.8384C69.4959 29.8278 69.5204 29.8195 69.5455 29.8135C69.5448 29.8198 69.5857 29.8473 69.6675 29.923C69.7168 29.9701 69.7488 30.0324 69.7583 30.0999L70.5023 35.9957L70.5058 36.0529C70.3826 39.0882 70.0273 42.1095 69.4429 45.0906C69.3423 45.6423 69.0961 46.1571 68.7298 46.5817C65.1638 50.8889 63.0379 53.1475 59.8202 56.5665L58.3111 58.171C57.544 59.0626 56.9833 60.1128 56.6692 61.2463L56.0986 63.544L57.5037 63.8929L58.0745 61.594C58.3311 60.7023 58.771 59.874 59.3662 59.1621L60.8742 57.5586C64.1111 54.1197 66.2496 51.8476 69.8359 47.5155C70.0543 47.2614 70.2444 46.9843 70.4029 46.6891C70.6295 46.2674 70.7868 45.8119 70.8687 45.3402C71.4655 42.2929 71.8278 39.2044 71.9526 36.1018C71.956 36.0024 71.9508 35.903 71.9371 35.8045L71.1884 29.8795C71.1282 29.4874 70.9374 29.1271 70.647 28.8568C70.4316 28.6227 70.1477 28.4625 69.8359 28.3993C69.5241 28.336 69.2003 28.3729 68.9107 28.5046L68.9093 28.505L68.9053 28.5063L68.9055 28.507C68.3218 28.7634 67.8131 29.1645 67.4277 29.6724C67.1424 29.6806 66.8591 29.7231 66.5839 29.799C66.5037 29.8204 66.4251 29.8473 66.3487 29.8796C65.756 30.1634 65.2322 30.5728 64.8135 31.0793C64.3949 31.5859 64.0914 32.1774 63.9243 32.813C63.8633 33.0199 63.8141 33.2301 63.7769 33.4425C62.4226 34.026 61.4262 35.5352 61.2259 37.3018C61.127 38.5687 61.1302 39.8415 61.2355 41.1079C60.735 41.5725 60.2296 42.0921 59.6993 42.6409C58.5286 43.8526 57.2016 45.2262 56.0376 45.8398C51.3384 48.3041 48.6402 52.3159 48.0202 57.7621C47.9254 58.5894 47.8999 59.2703 47.8774 59.8709C47.8735 60.7513 47.7732 61.6286 47.5781 62.4872ZM66.409 36.9343L65.7874 39.112C65.7527 39.0989 65.7196 39.0822 65.6842 39.0707C65.4356 38.9957 65.1763 38.9626 64.9168 38.9728L65.0315 38.6187C65.1097 38.3776 65.1355 38.1226 65.1073 37.8707C65.0066 36.6273 65.0179 35.3773 65.1411 34.1359C65.153 34.0209 65.1646 33.9154 65.1779 33.8218C65.208 33.6218 65.2522 33.4242 65.3103 33.2306C65.5063 32.5047 65.9412 31.8661 66.5447 31.4177C66.4496 31.7281 66.3816 32.0461 66.3414 32.3682C66.2204 33.8401 66.2465 35.3203 66.4191 36.787C66.4263 36.8363 66.4229 36.8865 66.409 36.9343ZM62.6137 39.9329C62.5846 39.1057 62.602 38.2776 62.6658 37.4524C62.7451 36.6543 63.0767 35.9023 63.6125 35.3056C63.5668 36.2144 63.5855 37.1252 63.6686 38.0313C63.6738 38.0786 63.6689 38.1264 63.6543 38.1717L63.2146 39.5291C63.0075 39.6533 62.8069 39.7881 62.6137 39.9329Z" fill="#003366"/>
-                                        <path opacity="0.8" d="M45.98 42.6496C44.1386 44.494 42.1797 46.2173 40.1156 47.8086L40.0034 47.8949L39.8911 47.8087C37.8268 46.2265 35.8684 44.5106 34.0285 42.6723C29.9271 38.5398 27.7601 34.8694 27.7617 32.0578C27.7639 28.2391 30.5639 25.3594 34.2747 25.3594C35.1461 25.3836 36.0009 25.6033 36.7759 26.0023C37.2048 26.2105 37.6169 26.4516 38.0087 26.7233C38.2609 26.8974 38.5104 27.0873 38.7502 27.2877L40.003 27.5743C40.003 27.5743 37.8607 28.6426 37.8676 28.8531C38.0203 29.1998 38.3025 29.4731 38.6539 29.6145C38.7617 29.6144 38.8683 29.5922 38.9672 29.5493C39.0661 29.5065 39.1551 29.4438 39.2289 29.3653L40.5646 27.9279C41.7266 26.743 43.7779 25.3594 45.7352 25.3594C49.4418 25.3594 52.2401 28.2393 52.2443 32.0583C52.2473 34.8444 50.0812 38.5068 45.98 42.6496Z" fill="#BA91C8"/>
-                                        <path d="M51.1118 26.5643C50.3874 25.8189 49.5191 25.2286 48.5595 24.8292C47.6 24.4297 46.5693 24.2295 45.53 24.2407C43.0768 24.2407 40.9288 25.8597 40.1192 26.5558L40.0033 26.6554L39.8874 26.5559C39.585 26.2958 39.269 26.0518 38.9409 25.825C38.4984 25.5183 38.0328 25.2463 37.5483 25.0114C36.5955 24.5266 35.5455 24.2631 34.4767 24.2407C33.4371 24.2296 32.406 24.4298 31.4461 24.8291C30.4862 25.2285 29.6174 25.8187 28.8924 26.564C27.4463 28.089 26.6514 30.1175 26.6764 32.219C26.6754 33.9951 27.3753 35.999 28.7566 38.1751C30.0358 40.1172 31.5184 41.9175 33.1793 43.5453C35.1677 45.5369 37.2999 47.3796 39.5587 49.0583C39.6885 49.1521 39.8445 49.2024 40.0045 49.2021C40.1646 49.2019 40.3205 49.151 40.4499 49.0569C42.707 47.3687 44.8385 45.5188 46.8275 43.5218C51.1434 39.1667 53.33 35.3638 53.3265 32.2186C53.3506 30.1177 52.5563 28.0899 51.1118 26.5643ZM45.766 42.4353C43.99 44.2141 42.1008 45.8762 40.11 47.4109L40.0019 47.4942L39.8935 47.4111C37.9026 45.885 36.0138 44.2302 34.2392 42.4571C30.2836 38.4716 28.1936 34.9316 28.1951 32.2198C28.1972 28.5368 30.8977 25.7595 34.4767 25.7595C35.3171 25.7828 36.1415 25.9947 36.8889 26.3795C37.3026 26.5803 37.7002 26.8128 38.078 27.0749C38.3213 27.2428 38.5619 27.426 38.7931 27.6192L38.9375 27.7397L38.1461 28.585C38.0449 28.6931 37.9775 28.8284 37.9522 28.9742C37.9269 29.1201 37.9448 29.2702 38.0037 29.406C38.0626 29.5419 38.1599 29.6575 38.2837 29.7388C38.4074 29.82 38.5522 29.8633 38.7003 29.8634C38.8042 29.8632 38.907 29.8418 39.0024 29.8005C39.0978 29.7592 39.1837 29.6988 39.2548 29.623L40.5431 28.2367C41.6638 27.0939 43.6423 25.7595 45.53 25.7595C49.1049 25.7595 51.8037 28.537 51.8077 32.2203C51.8107 34.9074 49.7215 38.4397 45.766 42.4353Z" fill="#003366"/>
-                                        <path d="M40.0125 50.0381C39.9149 50.0381 39.8183 50.0573 39.7282 50.0946C39.638 50.132 39.5561 50.1867 39.4871 50.2557C39.4181 50.3247 39.3634 50.4066 39.3261 50.4967C39.2887 50.5869 39.2695 50.6835 39.2695 50.781V54.7565C39.2695 54.9535 39.3478 55.1425 39.4871 55.2818C39.6265 55.4212 39.8154 55.4994 40.0125 55.4994C40.2095 55.4994 40.3985 55.4212 40.5378 55.2818C40.6772 55.1425 40.7554 54.9535 40.7554 54.7565V50.781C40.7554 50.6835 40.7362 50.5869 40.6989 50.4967C40.6615 50.4066 40.6068 50.3247 40.5378 50.2557C40.4688 50.1867 40.3869 50.132 40.2968 50.0946C40.2067 50.0573 40.1101 50.0381 40.0125 50.0381Z" fill="#003366"/>
-                                        <path d="M32.5704 46.5898C32.3959 46.4983 32.1922 46.4799 32.0041 46.5386C31.816 46.5973 31.6589 46.7284 31.5674 46.9029L29.7217 50.4238C29.6764 50.5103 29.6485 50.6047 29.6397 50.7019C29.631 50.7991 29.6414 50.897 29.6705 50.9902C29.6995 51.0833 29.7467 51.1698 29.8092 51.2447C29.8717 51.3196 29.9483 51.3815 30.0347 51.4268C30.1211 51.4721 30.2156 51.4999 30.3128 51.5087C30.41 51.5175 30.5079 51.5071 30.601 51.478C30.6942 51.4489 30.7807 51.4018 30.8556 51.3393C30.9305 51.2768 30.9924 51.2002 31.0377 51.1137L32.8835 47.5928C32.9288 47.5064 32.9566 47.4119 32.9654 47.3147C32.9742 47.2175 32.9637 47.1196 32.9347 47.0265C32.9056 46.9333 32.8585 46.8468 32.796 46.7719C32.7335 46.697 32.6568 46.6351 32.5704 46.5898Z" fill="#003366"/>
-                                        <path d="M48.4556 46.9029C48.4103 46.8165 48.3485 46.7399 48.2736 46.6774C48.1986 46.6149 48.1121 46.5677 48.019 46.5387C47.9259 46.5096 47.8279 46.4991 47.7308 46.5079C47.6336 46.5167 47.5391 46.5446 47.4527 46.5899C47.3663 46.6351 47.2896 46.697 47.2271 46.7719C47.1646 46.8469 47.1175 46.9334 47.0884 47.0265C47.0594 47.1196 47.0489 47.2176 47.0577 47.3147C47.0665 47.4119 47.0943 47.5064 47.1396 47.5928L48.9854 51.1138C49.0307 51.2002 49.0926 51.2768 49.1675 51.3393C49.2424 51.4018 49.3289 51.449 49.4221 51.478C49.5152 51.5071 49.6131 51.5175 49.7103 51.5088C49.8075 51.5 49.902 51.4721 49.9884 51.4268C50.0748 51.3815 50.1514 51.3197 50.2139 51.2448C50.2764 51.1698 50.3236 51.0833 50.3526 50.9902C50.3817 50.8971 50.3922 50.7991 50.3834 50.7019C50.3746 50.6048 50.3468 50.5103 50.3015 50.4239L48.4556 46.9029Z" fill="#003366"/>
-                                        <path d="M47.4527 23.6074C47.5391 23.6527 47.6336 23.6806 47.7308 23.6894C47.8279 23.6982 47.9259 23.6878 48.0191 23.6587C48.1122 23.6296 48.1987 23.5825 48.2736 23.52C48.3485 23.4574 48.4104 23.3807 48.4556 23.2943L50.3014 19.7733C50.3922 19.5989 50.4101 19.3956 50.3512 19.208C50.2923 19.0203 50.1614 18.8637 49.9873 18.7724C49.8131 18.6811 49.6099 18.6626 49.4221 18.7209C49.2343 18.7792 49.0773 18.9095 48.9854 19.0834L47.1396 22.6044C47.0943 22.6908 47.0665 22.7853 47.0577 22.8825C47.0489 22.9796 47.0594 23.0776 47.0884 23.1707C47.1175 23.2638 47.1646 23.3503 47.2271 23.4253C47.2896 23.5002 47.3663 23.5621 47.4527 23.6074Z" fill="#003366"/>
-                                        <path d="M31.5675 23.2944C31.6126 23.3811 31.6744 23.458 31.7493 23.5207C31.8243 23.5834 31.9108 23.6308 32.0041 23.66C32.0973 23.6892 32.1954 23.6998 32.2927 23.6911C32.3901 23.6823 32.4847 23.6545 32.5713 23.6091C32.6578 23.5637 32.7345 23.5017 32.7971 23.4267C32.8596 23.3516 32.9068 23.2649 32.9358 23.1716C32.9648 23.0783 32.9751 22.9802 32.9661 22.8829C32.9571 22.7855 32.9291 22.691 32.8835 22.6045L31.0377 19.0835C30.9462 18.909 30.7891 18.778 30.601 18.7193C30.4129 18.6606 30.2092 18.679 30.0347 18.7705C29.8602 18.862 29.7292 19.019 29.6705 19.2071C29.6118 19.3952 29.6302 19.5989 29.7217 19.7734L31.5675 23.2944Z" fill="#003366"/>
-                                        <path d="M40.0125 21.0971C40.1101 21.0971 40.2067 21.0779 40.2968 21.0405C40.3869 21.0032 40.4688 20.9485 40.5378 20.8795C40.6068 20.8105 40.6615 20.7286 40.6989 20.6385C40.7362 20.5483 40.7554 20.4517 40.7554 20.3541V16.3787C40.7554 16.1817 40.6772 15.9927 40.5378 15.8533C40.3985 15.714 40.2095 15.6357 40.0125 15.6357C39.8154 15.6357 39.6265 15.714 39.4871 15.8533C39.3478 15.9927 39.2695 16.1817 39.2695 16.3787V20.3541C39.2695 20.4517 39.2887 20.5483 39.3261 20.6385C39.3634 20.7286 39.4181 20.8105 39.4871 20.8795C39.5561 20.9485 39.638 21.0032 39.7282 21.0405C39.8183 21.0779 39.9149 21.0971 40.0125 21.0971Z" fill="#003366"/>
+                                <div
+                                    class="cardItem px-6 py-5 flex gap-6 items-center bg-card3 rounded-xl w-full lg:max-w-sm shadow-shadowItem">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"
+                                        fill="none">
+                                        <path
+                                            d="M40 69C54.9117 69 67 56.9117 67 42C67 27.0883 54.9117 15 40 15C25.0883 15 13 27.0883 13 42C13 56.9117 25.0883 69 40 69Z"
+                                            fill="#DCC2DD" />
+                                        <path
+                                            d="M32.1309 59.8709C32.1084 59.2703 32.0829 58.5894 31.9881 57.7621C31.3681 52.3159 28.6699 48.3042 23.9707 45.8399C22.8067 45.2263 21.4797 43.8527 20.309 42.641C19.7787 42.0922 19.2733 41.5726 18.7728 41.108C18.8781 39.8416 18.8813 38.5688 18.7824 37.3019C18.5821 35.5353 17.5857 34.0261 16.2314 33.4426C16.1942 33.2301 16.145 33.0199 16.084 32.813C15.9169 32.1775 15.6134 31.586 15.1948 31.0794C14.7761 30.5729 14.2523 30.1635 13.6596 29.8797C13.5832 29.8474 13.5046 29.8205 13.4244 29.7991C13.1492 29.7232 12.8659 29.6807 12.5806 29.6725C12.1952 29.1646 11.6865 28.7635 11.1028 28.5071L11.103 28.5064L11.099 28.5051L11.0977 28.5044C10.8081 28.3727 10.4842 28.336 10.1724 28.3993C9.8606 28.4625 9.57674 28.6227 9.36135 28.8568C9.0709 29.1271 8.88012 29.4874 8.81987 29.8795L8.07119 35.8045C8.05749 35.903 8.0523 36.0024 8.0557 36.1018C8.18048 39.2044 8.54284 42.2929 9.13958 45.3402C9.22147 45.8119 9.37876 46.2674 9.6054 46.6891C9.76389 46.9843 9.95399 47.2614 10.1724 47.5155C13.7587 51.8476 15.8971 54.1197 19.1341 57.5586L20.6421 59.1621C21.2373 59.874 21.6772 60.7023 21.9338 61.5941L22.5045 63.8929L23.9097 63.544L23.3391 61.2464C23.025 60.1128 22.4643 59.0627 21.6972 58.1711L20.1881 56.5665C16.9704 53.1475 14.8446 50.889 11.2785 46.5818C10.9122 46.1571 10.666 45.6423 10.5654 45.0906C9.98104 42.1096 9.6257 39.0882 9.50246 36.0529L9.50601 35.9957L10.25 30.1C10.2595 30.0325 10.2915 29.9701 10.3407 29.923C10.4226 29.8473 10.4635 29.8198 10.4628 29.8135C10.4879 29.8195 10.5124 29.8278 10.536 29.8384L10.8195 29.1724L10.5413 29.8404C10.9902 30.0452 11.3667 30.3808 11.6215 30.8034C11.9514 31.3224 12.1586 31.9099 12.2272 32.5211C12.3338 33.8702 12.3106 35.2264 12.1577 36.5711C12.1199 36.823 12.1362 37.0802 12.2054 37.3253L13.0028 40.1186C12.7757 40.482 12.65 40.8995 12.6389 41.3278C12.6277 41.7562 12.7315 42.1796 12.9394 42.5543C13.0373 42.7365 13.155 42.9073 13.2904 43.0636L19.8895 50.7155L20.9858 49.7702L14.3867 42.1183C14.2012 41.9366 14.0934 41.69 14.086 41.4305C14.0786 41.1709 14.1721 40.9185 14.347 40.7265C14.4606 40.5982 14.6062 40.5022 14.7689 40.4483C15.1004 40.3705 15.4492 40.4232 15.7429 40.5957C16.3908 40.9576 16.9881 41.4036 17.5193 41.9219L17.5588 41.9558C18.0772 42.4142 18.6553 43.013 19.2677 43.6469C20.514 44.9368 21.9269 46.3988 23.2972 47.121C27.5472 49.3497 29.9882 52.9844 30.5498 57.9264C30.6383 58.6991 30.6618 59.3225 30.6844 59.9253C30.6911 60.9032 30.805 61.8776 31.0242 62.8307L32.4302 62.4872C32.2351 61.6287 32.1348 60.7513 32.1309 59.8709ZM13.5893 36.7871C13.7619 35.3204 13.7879 33.8401 13.667 32.3683C13.6267 32.0462 13.5587 31.7281 13.4637 31.4177C14.0672 31.8661 14.502 32.5048 14.698 33.2306C14.7561 33.4243 14.8003 33.6218 14.8304 33.8218C14.8437 33.9154 14.8553 34.0209 14.8672 34.1359C14.9904 35.3773 15.0017 36.6273 14.901 37.8708C14.8728 38.1227 14.8986 38.3777 14.9768 38.6187L15.0915 38.9728C14.832 38.9627 14.5727 38.9958 14.3241 39.0707C14.2887 39.0822 14.2556 39.099 14.2209 39.1121L13.5992 36.9344C13.5854 36.8865 13.582 36.8363 13.5893 36.7871ZM16.7937 39.5291L16.354 38.1718C16.3394 38.1265 16.3345 38.0786 16.3397 38.0313C16.4228 37.1252 16.4415 36.2144 16.3958 35.3056C16.9316 35.9024 17.2632 36.6544 17.3425 37.4524C17.4063 38.2776 17.4237 39.1058 17.3946 39.933C17.2014 39.7882 17.0008 39.6534 16.7937 39.5291Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M47.5781 62.4872L48.9841 62.8307C49.2033 61.8775 49.3172 60.9032 49.3239 59.9252C49.3465 59.3225 49.37 58.6991 49.4585 57.9264C50.0201 52.9844 52.4612 49.3496 56.7112 47.121C58.0815 46.3988 59.4943 44.9367 60.7407 43.6468C61.3531 43.013 61.9312 42.4142 62.4495 41.9558L62.4891 41.9219C63.0203 41.4035 63.6175 40.9576 64.2655 40.5956C64.5592 40.4232 64.9079 40.3704 65.2395 40.4483C65.4022 40.5022 65.5477 40.5982 65.6613 40.7265C65.8362 40.9185 65.9298 41.1708 65.9224 41.4304C65.915 41.69 65.8072 41.9366 65.6216 42.1183L59.0225 49.7702L60.1188 50.7154L66.7178 43.0635C66.8533 42.9072 66.971 42.7364 67.0689 42.5542C67.2768 42.1796 67.3806 41.7561 67.3694 41.3278C67.3583 40.8994 67.2326 40.4819 67.0055 40.1186L67.8029 37.3253C67.8721 37.0801 67.8884 36.823 67.8505 36.5711C67.6977 35.2264 67.6744 33.8702 67.7811 32.521C67.8497 31.9098 68.0569 31.3224 68.3868 30.8033C68.6415 30.3808 69.0181 30.0451 69.467 29.8404L69.1888 29.1724L69.4723 29.8384C69.4959 29.8278 69.5204 29.8195 69.5455 29.8135C69.5448 29.8198 69.5857 29.8473 69.6675 29.923C69.7168 29.9701 69.7488 30.0324 69.7583 30.0999L70.5023 35.9957L70.5058 36.0529C70.3826 39.0882 70.0273 42.1095 69.4429 45.0906C69.3423 45.6423 69.0961 46.1571 68.7298 46.5817C65.1638 50.8889 63.0379 53.1475 59.8202 56.5665L58.3111 58.171C57.544 59.0626 56.9833 60.1128 56.6692 61.2463L56.0986 63.544L57.5037 63.8929L58.0745 61.594C58.3311 60.7023 58.771 59.874 59.3662 59.1621L60.8742 57.5586C64.1111 54.1197 66.2496 51.8476 69.8359 47.5155C70.0543 47.2614 70.2444 46.9843 70.4029 46.6891C70.6295 46.2674 70.7868 45.8119 70.8687 45.3402C71.4655 42.2929 71.8278 39.2044 71.9526 36.1018C71.956 36.0024 71.9508 35.903 71.9371 35.8045L71.1884 29.8795C71.1282 29.4874 70.9374 29.1271 70.647 28.8568C70.4316 28.6227 70.1477 28.4625 69.8359 28.3993C69.5241 28.336 69.2003 28.3729 68.9107 28.5046L68.9093 28.505L68.9053 28.5063L68.9055 28.507C68.3218 28.7634 67.8131 29.1645 67.4277 29.6724C67.1424 29.6806 66.8591 29.7231 66.5839 29.799C66.5037 29.8204 66.4251 29.8473 66.3487 29.8796C65.756 30.1634 65.2322 30.5728 64.8135 31.0793C64.3949 31.5859 64.0914 32.1774 63.9243 32.813C63.8633 33.0199 63.8141 33.2301 63.7769 33.4425C62.4226 34.026 61.4262 35.5352 61.2259 37.3018C61.127 38.5687 61.1302 39.8415 61.2355 41.1079C60.735 41.5725 60.2296 42.0921 59.6993 42.6409C58.5286 43.8526 57.2016 45.2262 56.0376 45.8398C51.3384 48.3041 48.6402 52.3159 48.0202 57.7621C47.9254 58.5894 47.8999 59.2703 47.8774 59.8709C47.8735 60.7513 47.7732 61.6286 47.5781 62.4872ZM66.409 36.9343L65.7874 39.112C65.7527 39.0989 65.7196 39.0822 65.6842 39.0707C65.4356 38.9957 65.1763 38.9626 64.9168 38.9728L65.0315 38.6187C65.1097 38.3776 65.1355 38.1226 65.1073 37.8707C65.0066 36.6273 65.0179 35.3773 65.1411 34.1359C65.153 34.0209 65.1646 33.9154 65.1779 33.8218C65.208 33.6218 65.2522 33.4242 65.3103 33.2306C65.5063 32.5047 65.9412 31.8661 66.5447 31.4177C66.4496 31.7281 66.3816 32.0461 66.3414 32.3682C66.2204 33.8401 66.2465 35.3203 66.4191 36.787C66.4263 36.8363 66.4229 36.8865 66.409 36.9343ZM62.6137 39.9329C62.5846 39.1057 62.602 38.2776 62.6658 37.4524C62.7451 36.6543 63.0767 35.9023 63.6125 35.3056C63.5668 36.2144 63.5855 37.1252 63.6686 38.0313C63.6738 38.0786 63.6689 38.1264 63.6543 38.1717L63.2146 39.5291C63.0075 39.6533 62.8069 39.7881 62.6137 39.9329Z"
+                                            fill="#003366" />
+                                        <path opacity="0.8"
+                                            d="M45.98 42.6496C44.1386 44.494 42.1797 46.2173 40.1156 47.8086L40.0034 47.8949L39.8911 47.8087C37.8268 46.2265 35.8684 44.5106 34.0285 42.6723C29.9271 38.5398 27.7601 34.8694 27.7617 32.0578C27.7639 28.2391 30.5639 25.3594 34.2747 25.3594C35.1461 25.3836 36.0009 25.6033 36.7759 26.0023C37.2048 26.2105 37.6169 26.4516 38.0087 26.7233C38.2609 26.8974 38.5104 27.0873 38.7502 27.2877L40.003 27.5743C40.003 27.5743 37.8607 28.6426 37.8676 28.8531C38.0203 29.1998 38.3025 29.4731 38.6539 29.6145C38.7617 29.6144 38.8683 29.5922 38.9672 29.5493C39.0661 29.5065 39.1551 29.4438 39.2289 29.3653L40.5646 27.9279C41.7266 26.743 43.7779 25.3594 45.7352 25.3594C49.4418 25.3594 52.2401 28.2393 52.2443 32.0583C52.2473 34.8444 50.0812 38.5068 45.98 42.6496Z"
+                                            fill="#BA91C8" />
+                                        <path
+                                            d="M51.1118 26.5643C50.3874 25.8189 49.5191 25.2286 48.5595 24.8292C47.6 24.4297 46.5693 24.2295 45.53 24.2407C43.0768 24.2407 40.9288 25.8597 40.1192 26.5558L40.0033 26.6554L39.8874 26.5559C39.585 26.2958 39.269 26.0518 38.9409 25.825C38.4984 25.5183 38.0328 25.2463 37.5483 25.0114C36.5955 24.5266 35.5455 24.2631 34.4767 24.2407C33.4371 24.2296 32.406 24.4298 31.4461 24.8291C30.4862 25.2285 29.6174 25.8187 28.8924 26.564C27.4463 28.089 26.6514 30.1175 26.6764 32.219C26.6754 33.9951 27.3753 35.999 28.7566 38.1751C30.0358 40.1172 31.5184 41.9175 33.1793 43.5453C35.1677 45.5369 37.2999 47.3796 39.5587 49.0583C39.6885 49.1521 39.8445 49.2024 40.0045 49.2021C40.1646 49.2019 40.3205 49.151 40.4499 49.0569C42.707 47.3687 44.8385 45.5188 46.8275 43.5218C51.1434 39.1667 53.33 35.3638 53.3265 32.2186C53.3506 30.1177 52.5563 28.0899 51.1118 26.5643ZM45.766 42.4353C43.99 44.2141 42.1008 45.8762 40.11 47.4109L40.0019 47.4942L39.8935 47.4111C37.9026 45.885 36.0138 44.2302 34.2392 42.4571C30.2836 38.4716 28.1936 34.9316 28.1951 32.2198C28.1972 28.5368 30.8977 25.7595 34.4767 25.7595C35.3171 25.7828 36.1415 25.9947 36.8889 26.3795C37.3026 26.5803 37.7002 26.8128 38.078 27.0749C38.3213 27.2428 38.5619 27.426 38.7931 27.6192L38.9375 27.7397L38.1461 28.585C38.0449 28.6931 37.9775 28.8284 37.9522 28.9742C37.9269 29.1201 37.9448 29.2702 38.0037 29.406C38.0626 29.5419 38.1599 29.6575 38.2837 29.7388C38.4074 29.82 38.5522 29.8633 38.7003 29.8634C38.8042 29.8632 38.907 29.8418 39.0024 29.8005C39.0978 29.7592 39.1837 29.6988 39.2548 29.623L40.5431 28.2367C41.6638 27.0939 43.6423 25.7595 45.53 25.7595C49.1049 25.7595 51.8037 28.537 51.8077 32.2203C51.8107 34.9074 49.7215 38.4397 45.766 42.4353Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M40.0125 50.0381C39.9149 50.0381 39.8183 50.0573 39.7282 50.0946C39.638 50.132 39.5561 50.1867 39.4871 50.2557C39.4181 50.3247 39.3634 50.4066 39.3261 50.4967C39.2887 50.5869 39.2695 50.6835 39.2695 50.781V54.7565C39.2695 54.9535 39.3478 55.1425 39.4871 55.2818C39.6265 55.4212 39.8154 55.4994 40.0125 55.4994C40.2095 55.4994 40.3985 55.4212 40.5378 55.2818C40.6772 55.1425 40.7554 54.9535 40.7554 54.7565V50.781C40.7554 50.6835 40.7362 50.5869 40.6989 50.4967C40.6615 50.4066 40.6068 50.3247 40.5378 50.2557C40.4688 50.1867 40.3869 50.132 40.2968 50.0946C40.2067 50.0573 40.1101 50.0381 40.0125 50.0381Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M32.5704 46.5898C32.3959 46.4983 32.1922 46.4799 32.0041 46.5386C31.816 46.5973 31.6589 46.7284 31.5674 46.9029L29.7217 50.4238C29.6764 50.5103 29.6485 50.6047 29.6397 50.7019C29.631 50.7991 29.6414 50.897 29.6705 50.9902C29.6995 51.0833 29.7467 51.1698 29.8092 51.2447C29.8717 51.3196 29.9483 51.3815 30.0347 51.4268C30.1211 51.4721 30.2156 51.4999 30.3128 51.5087C30.41 51.5175 30.5079 51.5071 30.601 51.478C30.6942 51.4489 30.7807 51.4018 30.8556 51.3393C30.9305 51.2768 30.9924 51.2002 31.0377 51.1137L32.8835 47.5928C32.9288 47.5064 32.9566 47.4119 32.9654 47.3147C32.9742 47.2175 32.9637 47.1196 32.9347 47.0265C32.9056 46.9333 32.8585 46.8468 32.796 46.7719C32.7335 46.697 32.6568 46.6351 32.5704 46.5898Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M48.4556 46.9029C48.4103 46.8165 48.3485 46.7399 48.2736 46.6774C48.1986 46.6149 48.1121 46.5677 48.019 46.5387C47.9259 46.5096 47.8279 46.4991 47.7308 46.5079C47.6336 46.5167 47.5391 46.5446 47.4527 46.5899C47.3663 46.6351 47.2896 46.697 47.2271 46.7719C47.1646 46.8469 47.1175 46.9334 47.0884 47.0265C47.0594 47.1196 47.0489 47.2176 47.0577 47.3147C47.0665 47.4119 47.0943 47.5064 47.1396 47.5928L48.9854 51.1138C49.0307 51.2002 49.0926 51.2768 49.1675 51.3393C49.2424 51.4018 49.3289 51.449 49.4221 51.478C49.5152 51.5071 49.6131 51.5175 49.7103 51.5088C49.8075 51.5 49.902 51.4721 49.9884 51.4268C50.0748 51.3815 50.1514 51.3197 50.2139 51.2448C50.2764 51.1698 50.3236 51.0833 50.3526 50.9902C50.3817 50.8971 50.3922 50.7991 50.3834 50.7019C50.3746 50.6048 50.3468 50.5103 50.3015 50.4239L48.4556 46.9029Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M47.4527 23.6074C47.5391 23.6527 47.6336 23.6806 47.7308 23.6894C47.8279 23.6982 47.9259 23.6878 48.0191 23.6587C48.1122 23.6296 48.1987 23.5825 48.2736 23.52C48.3485 23.4574 48.4104 23.3807 48.4556 23.2943L50.3014 19.7733C50.3922 19.5989 50.4101 19.3956 50.3512 19.208C50.2923 19.0203 50.1614 18.8637 49.9873 18.7724C49.8131 18.6811 49.6099 18.6626 49.4221 18.7209C49.2343 18.7792 49.0773 18.9095 48.9854 19.0834L47.1396 22.6044C47.0943 22.6908 47.0665 22.7853 47.0577 22.8825C47.0489 22.9796 47.0594 23.0776 47.0884 23.1707C47.1175 23.2638 47.1646 23.3503 47.2271 23.4253C47.2896 23.5002 47.3663 23.5621 47.4527 23.6074Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M31.5675 23.2944C31.6126 23.3811 31.6744 23.458 31.7493 23.5207C31.8243 23.5834 31.9108 23.6308 32.0041 23.66C32.0973 23.6892 32.1954 23.6998 32.2927 23.6911C32.3901 23.6823 32.4847 23.6545 32.5713 23.6091C32.6578 23.5637 32.7345 23.5017 32.7971 23.4267C32.8596 23.3516 32.9068 23.2649 32.9358 23.1716C32.9648 23.0783 32.9751 22.9802 32.9661 22.8829C32.9571 22.7855 32.9291 22.691 32.8835 22.6045L31.0377 19.0835C30.9462 18.909 30.7891 18.778 30.601 18.7193C30.4129 18.6606 30.2092 18.679 30.0347 18.7705C29.8602 18.862 29.7292 19.019 29.6705 19.2071C29.6118 19.3952 29.6302 19.5989 29.7217 19.7734L31.5675 23.2944Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M40.0125 21.0971C40.1101 21.0971 40.2067 21.0779 40.2968 21.0405C40.3869 21.0032 40.4688 20.9485 40.5378 20.8795C40.6068 20.8105 40.6615 20.7286 40.6989 20.6385C40.7362 20.5483 40.7554 20.4517 40.7554 20.3541V16.3787C40.7554 16.1817 40.6772 15.9927 40.5378 15.8533C40.3985 15.714 40.2095 15.6357 40.0125 15.6357C39.8154 15.6357 39.6265 15.714 39.4871 15.8533C39.3478 15.9927 39.2695 16.1817 39.2695 16.3787V20.3541C39.2695 20.4517 39.2887 20.5483 39.3261 20.6385C39.3634 20.7286 39.4181 20.8105 39.4871 20.8795C39.5561 20.9485 39.638 21.0032 39.7282 21.0405C39.8183 21.0779 39.9149 21.0971 40.0125 21.0971Z"
+                                            fill="#003366" />
                                     </svg>
                                     <div class="flex flex-col gap-2">
                                         <h3 class="text-base text-primary">My Candidates Succeed</h3>
                                         <span class="text-primary text-3xl font-semibold">
                                             <?php
-                                                if($orders === []) {
-                                                    echo '0';
-                                                } else {
-                                                    echo $count_succeed;  
-                                                }
+                                                echo count($topCandidates);
                                             
                                             ?>
                                         </span>
                                     </div>
                                 </div>
-                                <div class="cardItem px-6 py-5 flex gap-6 items-center bg-card1 rounded-xl w-full lg:max-w-sm shadow-shadowItem">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" fill="none">
-                                        <path d="M40 67C54.9117 67 67 54.9117 67 40C67 25.0883 54.9117 13 40 13C25.0883 13 13 25.0883 13 40C13 54.9117 25.0883 67 40 67Z" fill="#FCDBA6"/>
-                                        <path d="M42.312 72.1403C41.6356 72.141 40.9634 72.0371 40.3214 71.8326C36.1285 70.5922 32.0406 69.045 28.0937 67.2044C27.9677 67.1448 27.8473 67.0748 27.7339 66.9952L20.8554 62.2993C20.4073 61.9757 20.086 61.5163 19.9433 60.9955C19.7947 60.5863 19.7849 60.1424 19.9154 59.7275C20.0458 59.3126 20.3098 58.9482 20.6693 58.6865L21.9496 60.2194C21.9207 60.2408 21.8939 60.2648 21.8697 60.2911C21.878 60.2943 21.885 60.3608 21.9246 60.5073C21.9504 60.5965 22.0067 60.6747 22.0844 60.7293L28.9296 65.4009L28.9985 65.4419C32.8605 67.2411 36.86 68.7537 40.9622 69.9664C41.7164 70.1998 42.5218 70.2354 43.2951 70.0694C51.0387 68.5646 55.2701 67.4693 61.6752 65.8117L64.6805 65.035C66.3028 64.6888 67.9847 64.6915 69.6059 65.0427L72.8479 65.8334L72.3445 67.7386L69.1009 66.9473C67.8192 66.6823 66.4941 66.6775 65.2104 66.9332L62.2071 67.7092C55.7644 69.3771 51.5077 70.4788 43.7195 71.9919C43.2573 72.0902 42.7854 72.14 42.312 72.1403Z" fill="#003366"/>
-                                        <path d="M36.7983 64.2267L32.3432 63.3061C31.9915 63.2324 31.6603 63.0883 31.3717 62.8835C29.7983 61.8483 28.1241 60.9592 26.372 60.2287C25.5647 59.9218 24.6944 59.7942 23.8274 59.8555C23.1308 59.889 22.4611 60.122 21.9062 60.5239L20.6133 59.016C21.4873 58.364 22.5491 57.9802 23.6578 57.9154C24.8452 57.833 26.0367 58.0073 27.143 58.4255C29.0576 59.217 30.8845 60.188 32.5967 61.3242C32.6532 61.3641 32.718 61.392 32.7868 61.4059L37.2326 62.3247L36.7983 64.2267Z" fill="#003366"/>
-                                        <path d="M39.1022 65.809C38.5989 65.811 38.1013 65.7041 37.6445 65.4958C37.1877 65.2875 36.7828 64.983 36.4584 64.6036C36.134 64.2243 35.898 63.7794 35.767 63.3003C35.636 62.8212 35.6132 62.3197 35.7003 61.831C35.9101 60.8673 36.4938 60.0227 37.3268 59.4776C38.3599 58.8032 39.4832 58.2738 40.6643 57.9046C41.7129 57.5207 42.878 57.1949 44.1113 56.8502C46.3937 56.2125 48.9808 55.4898 50.5164 54.4681C56.6999 50.3351 63.4728 49.6646 70.6435 52.4771C71.7333 52.9036 72.5951 53.3189 73.3554 53.6852C74.4505 54.2577 75.606 54.7102 76.8011 55.0345L76.2923 56.9797C74.9637 56.6229 73.6788 56.1235 72.4608 55.4904C71.6978 55.1228 70.9086 54.7428 69.8908 54.3445C63.3846 51.791 57.2506 52.3941 51.6582 56.1321C49.8506 57.3349 47.0966 58.1047 44.667 58.7837C43.4731 59.1172 42.3455 59.4319 41.432 59.7654L41.3636 59.7916C40.3671 60.1015 39.4164 60.5398 38.5363 61.0951C38.127 61.3413 37.8295 61.7334 37.7056 62.1901C37.6643 62.4245 37.6867 62.6655 37.7703 62.8886C37.8923 63.2284 38.1432 63.5083 38.4702 63.6695C38.7973 63.8306 39.175 63.8604 39.5238 63.7526L53.4084 60.6968L53.8523 62.6577L39.9677 65.7135C39.6837 65.7767 39.3934 65.8087 39.1022 65.809Z" fill="#003366"/>
-                                        <path d="M37.6721 61.0613L35.6097 60.6952C35.2678 60.6347 34.9429 60.5032 34.6569 60.3095C33.2196 59.3991 31.7019 58.6175 30.1222 57.9741C29.9755 57.9151 29.8405 57.8618 29.7187 57.818C29.4577 57.7265 29.1903 57.6534 28.9186 57.5992C28.3287 57.45 27.7128 57.4279 27.1133 57.5344C26.5138 57.6408 25.9448 57.8733 25.4454 58.2158C25.1801 58.4626 24.9709 58.7616 24.8313 59.0933L22.9883 58.3713C23.2084 57.8329 23.5344 57.3425 23.9476 56.9279C24.0253 56.8464 24.1088 56.7703 24.1973 56.7002C24.9241 56.1773 25.758 55.8161 26.6411 55.6415C27.5243 55.4668 28.4356 55.483 29.3118 55.6889C29.6806 55.7622 30.0435 55.8616 30.3977 55.9864C30.5453 56.0397 30.7029 56.1019 30.8761 56.1717C32.5869 56.8669 34.2293 57.7146 35.7825 58.7043C35.8363 58.7406 35.8973 58.7652 35.9615 58.7767L38.0248 59.1427L37.6721 61.0613Z" fill="#003366"/>
-                                        <path d="M40.7528 59.4779C39.1914 58.5289 37.5389 57.7081 35.815 57.0251C34.148 56.4251 32.3069 56.5283 31.2264 57.2862L31.202 57.3273L29.3164 56.4568C29.441 56.2192 29.6203 56.0083 29.8425 55.8382C31.5298 54.6071 34.1846 54.3833 36.6162 55.2569C38.4902 55.9955 40.2852 56.8872 41.9788 57.921L40.7528 59.4779Z" fill="#003366"/>
-                                        <path d="M28.4605 39.6926C27.1018 39.6926 25.5204 38.4371 24.9539 37.9456C20.2636 34.2882 7.12676 24.5079 3.20312 23.584L3.68646 21.6814C8.85354 22.8986 25.5657 35.9039 26.2748 36.4567C26.8669 36.9996 27.561 37.4288 28.3201 37.7211C28.6149 37.3374 28.8277 36.9013 28.9464 36.4379C29.065 35.9746 29.0871 35.4931 29.0113 35.0215C28.4472 31.2538 22.5631 27.1546 20.348 25.611C17.6397 23.7262 18.0287 21.9256 18.5017 21.0208C18.7573 20.5467 19.1282 20.1393 19.5828 19.8333C20.0375 19.5273 20.5623 19.3318 21.1124 19.2635L32.295 17.7269C32.4912 17.6985 32.6897 17.688 32.8879 17.6956C33.2424 17.7035 33.5936 17.7637 33.9291 17.8742L50.7164 23.3831C52.4641 23.9047 53.7803 23.0331 54.111 22.2762C54.2551 21.946 54.1511 21.8421 54.0452 21.7808L34.0417 14.046C33.1478 13.6991 32.2058 13.4808 31.2459 13.3982C26.9157 12.9582 22.5616 12.7744 18.2081 12.8479C14.7789 12.9382 11.3811 12.198 8.32616 10.6953L6.45704 9.78544L7.37472 8.03711L9.24384 8.94698C11.9967 10.2966 15.0554 10.9645 18.1435 10.8904C22.5789 10.8123 27.0151 10.9982 31.4267 11.4471C32.5851 11.5468 33.722 11.8102 34.8008 12.2288L54.8629 19.9866C54.8983 20.0001 54.9329 20.0157 54.9665 20.0331C55.5094 20.3066 55.9199 20.7736 56.1104 21.3343C56.3009 21.8951 56.2563 22.5054 55.9862 23.035C55.2323 24.7629 52.8196 26.0617 50.0868 25.2456L33.2756 19.729C33.1321 19.682 32.9819 19.6566 32.8304 19.6538C32.7483 19.6497 32.666 19.6536 32.5847 19.6652L21.3978 21.2031C21.1728 21.2271 20.9571 21.3031 20.7692 21.4246C20.5812 21.5462 20.4266 21.7098 20.3186 21.9013C20.1981 22.1315 19.8309 22.8342 21.5401 24.024C24.1727 25.8584 30.3375 30.1533 31.0245 34.7422C31.1446 35.5108 31.0971 36.295 30.885 37.0449C30.6729 37.7948 30.3009 38.494 29.7926 39.0977C29.7747 39.12 29.7559 39.1417 29.736 39.1621C29.5756 39.3338 29.3786 39.4701 29.1584 39.5616C28.9383 39.6532 28.7002 39.6979 28.4605 39.6926Z" fill="#003366"/>
-                                        <path d="M47.1627 28.6103C46.1766 28.5971 45.2201 28.2551 44.4317 27.6337L32.4844 19.2773L33.5939 17.5342L45.5771 25.9172C45.8862 26.1971 46.2609 26.3855 46.6626 26.4629C47.0643 26.5403 47.4784 26.504 47.8622 26.3577C47.8225 26.2992 47.7776 26.2449 47.7279 26.1954L44.7579 23.4927L46.0684 21.9105L49.0801 24.6541C50.2212 25.8176 49.9861 26.9906 49.4508 27.6535C49.1565 27.9748 48.8001 28.2264 48.4055 28.3915C48.0109 28.5565 47.5871 28.6311 47.1627 28.6103Z" fill="#003366"/>
-                                        <path d="M30.1141 18.3991L28.6992 19.8145L30.4618 21.4649L31.8767 20.0495L30.1141 18.3991Z" fill="#003366"/>
-                                        <path d="M42.1756 30.1936C41.3729 30.1718 40.5827 30.0013 39.8503 29.6921C39.1179 29.3829 38.4577 28.941 37.9075 28.3918L30.1094 21.3086L31.5522 19.9082L39.3608 27.0009C39.7338 27.3866 40.1875 27.696 40.6935 27.9098C41.1996 28.1236 41.7471 28.2371 42.3019 28.2433C42.5243 28.2406 42.7443 28.1997 42.9511 28.1228L38.3044 23.2734L39.8465 21.9695L44.6496 26.9774C44.8202 27.1497 44.9519 27.3527 45.0367 27.5741C45.1214 27.7955 45.1575 28.0308 45.1427 28.2657C45.1279 28.5005 45.0625 28.7301 44.9505 28.9406C44.8386 29.1511 44.6823 29.3381 44.4912 29.4903C43.8332 29.9763 43.0121 30.2257 42.1756 30.1936Z"/>
-                                        <path d="M33.1874 29.4036C32.5406 29.3976 31.9034 29.2439 31.3224 28.9535C30.7414 28.6632 30.2315 28.2437 29.8301 27.7259C29.793 27.6777 29.7602 27.6263 29.7322 27.5721L27.4586 23.1582L24.5703 20.6297L25.8416 19.1162L28.8712 21.7687C28.9648 21.8506 29.0423 21.95 29.0997 22.0614L31.415 26.5557C31.8178 27.0332 32.3855 27.3336 32.9999 27.3942C33.2052 27.4198 33.4134 27.4048 33.6132 27.3501L30.3538 21.4059L31.1998 20.9217L31.8932 20.2111L31.8958 20.2137C31.9591 20.2782 32.0134 20.3514 32.0572 20.4311L35.418 26.557C35.6457 26.9618 35.7087 27.4416 35.5936 27.8933C35.4785 28.345 35.1944 28.7325 34.8025 28.9726C34.3142 29.2676 33.7546 29.4169 33.1874 29.4036Z"/>
-                                        <path d="M46.6581 36.5273C45.0531 36.5273 43.6478 37.2229 42.7718 38.3987C41.8958 37.2229 40.4905 36.5273 38.8855 36.5273C37.6078 36.5288 36.3829 37.0409 35.4795 37.9514C34.576 38.8619 34.0678 40.0964 34.0664 41.384C34.0664 46.8674 42.1336 51.3058 42.4772 51.4891C42.5677 51.5382 42.669 51.5639 42.7718 51.5639C42.8746 51.5639 42.9758 51.5382 43.0664 51.4891C43.4099 51.3058 51.4772 46.8674 51.4772 41.384C51.4757 40.0964 50.9675 38.8619 50.0641 37.9514C49.1607 37.0409 47.9358 36.5288 46.6581 36.5273ZM42.7718 50.2201C41.3525 49.3866 35.31 45.5898 35.31 41.384C35.3113 40.4288 35.6884 39.513 36.3586 38.8375C37.0289 38.162 37.9376 37.7819 38.8855 37.7807C40.3972 37.7807 41.6665 38.5922 42.1966 39.8957C42.2435 40.0106 42.3231 40.1089 42.4256 40.1781C42.528 40.2473 42.6485 40.2843 42.7718 40.2843C42.8951 40.2843 43.0156 40.2473 43.118 40.1781C43.2204 40.1089 43.3001 40.0106 43.347 39.8957C43.8771 38.5899 45.1463 37.7807 46.6581 37.7807C47.606 37.7819 48.5147 38.162 49.185 38.8375C49.8552 39.513 50.2323 40.4288 50.2335 41.384C50.2335 45.5835 44.1895 49.3859 42.7718 50.2201Z" fill="#FFADDE"/>
-                                        <path d="M42.7718 50.2201C41.3525 49.3866 35.31 45.5898 35.31 41.384C35.3113 40.4288 35.6884 39.513 36.3586 38.8375C37.0289 38.162 37.9376 37.7819 38.8855 37.7807C40.3972 37.7807 41.6665 38.5922 42.1966 39.8957C42.2435 40.0106 42.3231 40.1089 42.4256 40.1781C42.528 40.2473 42.6485 40.2843 42.7718 40.2843C42.8951 40.2843 43.0156 40.2473 43.118 40.1781C43.2204 40.1089 43.3001 40.0106 43.347 39.8957C43.8771 38.5899 45.1463 37.7807 46.6581 37.7807C47.606 37.7819 48.5147 38.162 49.185 38.8375C49.8552 39.513 50.2323 40.4288 50.2335 41.384C50.2335 45.5835 44.1895 49.3859 42.7718 50.2201Z" fill="#FFADDE"/>
-                                        <path d="M46.6581 36.394H46.6583C47.9716 36.3955 49.2304 36.922 50.1587 37.8575C51.087 38.7931 51.609 40.0613 51.6105 41.3839V41.384C51.6105 44.1877 49.5526 46.7026 47.4888 48.5241C45.4182 50.3516 43.3054 51.5127 43.1291 51.6068C43.0193 51.6661 42.8965 51.6972 42.7718 51.6972C42.6469 51.6972 42.524 51.6661 42.4141 51.6066C42.414 51.6065 42.4138 51.6064 42.4136 51.6063L42.4772 51.4891C42.1336 51.3058 34.0664 46.8674 34.0664 41.384L46.6581 36.394ZM46.6581 36.394C45.0771 36.394 43.6795 37.0534 42.7718 38.181L46.6581 36.394ZM42.0731 39.9459L42.0731 39.946C42.1299 40.0853 42.2265 40.2046 42.3509 40.2886C42.4753 40.3727 42.6218 40.4176 42.7718 40.4176C42.9217 40.4176 43.0682 40.3727 43.1926 40.2886C43.317 40.2046 43.4137 40.0853 43.4704 39.946L43.4705 39.9459C43.9782 38.6951 45.1952 37.914 46.658 37.914C47.5702 37.9152 48.445 38.281 49.0903 38.9314C49.7357 39.5818 50.099 40.4639 50.1002 41.3842C50.1001 43.4242 48.6275 45.3905 46.9432 46.9667C45.3164 48.489 43.5223 49.6195 42.7717 50.0653C42.0204 49.62 40.2263 48.4909 38.5998 46.9693C36.9157 45.3939 35.4434 43.4273 35.4434 41.3841C35.4446 40.4638 35.8079 39.5818 36.4533 38.9314C37.0986 38.281 37.9733 37.9152 38.8855 37.914C40.3482 37.914 41.5653 38.6973 42.0731 39.9459Z"  stroke-width="0.266667"/>
+                                <div
+                                    class="cardItem px-6 py-5 flex gap-6 items-center bg-card1 rounded-xl w-full lg:max-w-sm shadow-shadowItem">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"
+                                        fill="none">
+                                        <path
+                                            d="M40 67C54.9117 67 67 54.9117 67 40C67 25.0883 54.9117 13 40 13C25.0883 13 13 25.0883 13 40C13 54.9117 25.0883 67 40 67Z"
+                                            fill="#FCDBA6" />
+                                        <path
+                                            d="M42.312 72.1403C41.6356 72.141 40.9634 72.0371 40.3214 71.8326C36.1285 70.5922 32.0406 69.045 28.0937 67.2044C27.9677 67.1448 27.8473 67.0748 27.7339 66.9952L20.8554 62.2993C20.4073 61.9757 20.086 61.5163 19.9433 60.9955C19.7947 60.5863 19.7849 60.1424 19.9154 59.7275C20.0458 59.3126 20.3098 58.9482 20.6693 58.6865L21.9496 60.2194C21.9207 60.2408 21.8939 60.2648 21.8697 60.2911C21.878 60.2943 21.885 60.3608 21.9246 60.5073C21.9504 60.5965 22.0067 60.6747 22.0844 60.7293L28.9296 65.4009L28.9985 65.4419C32.8605 67.2411 36.86 68.7537 40.9622 69.9664C41.7164 70.1998 42.5218 70.2354 43.2951 70.0694C51.0387 68.5646 55.2701 67.4693 61.6752 65.8117L64.6805 65.035C66.3028 64.6888 67.9847 64.6915 69.6059 65.0427L72.8479 65.8334L72.3445 67.7386L69.1009 66.9473C67.8192 66.6823 66.4941 66.6775 65.2104 66.9332L62.2071 67.7092C55.7644 69.3771 51.5077 70.4788 43.7195 71.9919C43.2573 72.0902 42.7854 72.14 42.312 72.1403Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M36.7983 64.2267L32.3432 63.3061C31.9915 63.2324 31.6603 63.0883 31.3717 62.8835C29.7983 61.8483 28.1241 60.9592 26.372 60.2287C25.5647 59.9218 24.6944 59.7942 23.8274 59.8555C23.1308 59.889 22.4611 60.122 21.9062 60.5239L20.6133 59.016C21.4873 58.364 22.5491 57.9802 23.6578 57.9154C24.8452 57.833 26.0367 58.0073 27.143 58.4255C29.0576 59.217 30.8845 60.188 32.5967 61.3242C32.6532 61.3641 32.718 61.392 32.7868 61.4059L37.2326 62.3247L36.7983 64.2267Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M39.1022 65.809C38.5989 65.811 38.1013 65.7041 37.6445 65.4958C37.1877 65.2875 36.7828 64.983 36.4584 64.6036C36.134 64.2243 35.898 63.7794 35.767 63.3003C35.636 62.8212 35.6132 62.3197 35.7003 61.831C35.9101 60.8673 36.4938 60.0227 37.3268 59.4776C38.3599 58.8032 39.4832 58.2738 40.6643 57.9046C41.7129 57.5207 42.878 57.1949 44.1113 56.8502C46.3937 56.2125 48.9808 55.4898 50.5164 54.4681C56.6999 50.3351 63.4728 49.6646 70.6435 52.4771C71.7333 52.9036 72.5951 53.3189 73.3554 53.6852C74.4505 54.2577 75.606 54.7102 76.8011 55.0345L76.2923 56.9797C74.9637 56.6229 73.6788 56.1235 72.4608 55.4904C71.6978 55.1228 70.9086 54.7428 69.8908 54.3445C63.3846 51.791 57.2506 52.3941 51.6582 56.1321C49.8506 57.3349 47.0966 58.1047 44.667 58.7837C43.4731 59.1172 42.3455 59.4319 41.432 59.7654L41.3636 59.7916C40.3671 60.1015 39.4164 60.5398 38.5363 61.0951C38.127 61.3413 37.8295 61.7334 37.7056 62.1901C37.6643 62.4245 37.6867 62.6655 37.7703 62.8886C37.8923 63.2284 38.1432 63.5083 38.4702 63.6695C38.7973 63.8306 39.175 63.8604 39.5238 63.7526L53.4084 60.6968L53.8523 62.6577L39.9677 65.7135C39.6837 65.7767 39.3934 65.8087 39.1022 65.809Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M37.6721 61.0613L35.6097 60.6952C35.2678 60.6347 34.9429 60.5032 34.6569 60.3095C33.2196 59.3991 31.7019 58.6175 30.1222 57.9741C29.9755 57.9151 29.8405 57.8618 29.7187 57.818C29.4577 57.7265 29.1903 57.6534 28.9186 57.5992C28.3287 57.45 27.7128 57.4279 27.1133 57.5344C26.5138 57.6408 25.9448 57.8733 25.4454 58.2158C25.1801 58.4626 24.9709 58.7616 24.8313 59.0933L22.9883 58.3713C23.2084 57.8329 23.5344 57.3425 23.9476 56.9279C24.0253 56.8464 24.1088 56.7703 24.1973 56.7002C24.9241 56.1773 25.758 55.8161 26.6411 55.6415C27.5243 55.4668 28.4356 55.483 29.3118 55.6889C29.6806 55.7622 30.0435 55.8616 30.3977 55.9864C30.5453 56.0397 30.7029 56.1019 30.8761 56.1717C32.5869 56.8669 34.2293 57.7146 35.7825 58.7043C35.8363 58.7406 35.8973 58.7652 35.9615 58.7767L38.0248 59.1427L37.6721 61.0613Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M40.7528 59.4779C39.1914 58.5289 37.5389 57.7081 35.815 57.0251C34.148 56.4251 32.3069 56.5283 31.2264 57.2862L31.202 57.3273L29.3164 56.4568C29.441 56.2192 29.6203 56.0083 29.8425 55.8382C31.5298 54.6071 34.1846 54.3833 36.6162 55.2569C38.4902 55.9955 40.2852 56.8872 41.9788 57.921L40.7528 59.4779Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M28.4605 39.6926C27.1018 39.6926 25.5204 38.4371 24.9539 37.9456C20.2636 34.2882 7.12676 24.5079 3.20312 23.584L3.68646 21.6814C8.85354 22.8986 25.5657 35.9039 26.2748 36.4567C26.8669 36.9996 27.561 37.4288 28.3201 37.7211C28.6149 37.3374 28.8277 36.9013 28.9464 36.4379C29.065 35.9746 29.0871 35.4931 29.0113 35.0215C28.4472 31.2538 22.5631 27.1546 20.348 25.611C17.6397 23.7262 18.0287 21.9256 18.5017 21.0208C18.7573 20.5467 19.1282 20.1393 19.5828 19.8333C20.0375 19.5273 20.5623 19.3318 21.1124 19.2635L32.295 17.7269C32.4912 17.6985 32.6897 17.688 32.8879 17.6956C33.2424 17.7035 33.5936 17.7637 33.9291 17.8742L50.7164 23.3831C52.4641 23.9047 53.7803 23.0331 54.111 22.2762C54.2551 21.946 54.1511 21.8421 54.0452 21.7808L34.0417 14.046C33.1478 13.6991 32.2058 13.4808 31.2459 13.3982C26.9157 12.9582 22.5616 12.7744 18.2081 12.8479C14.7789 12.9382 11.3811 12.198 8.32616 10.6953L6.45704 9.78544L7.37472 8.03711L9.24384 8.94698C11.9967 10.2966 15.0554 10.9645 18.1435 10.8904C22.5789 10.8123 27.0151 10.9982 31.4267 11.4471C32.5851 11.5468 33.722 11.8102 34.8008 12.2288L54.8629 19.9866C54.8983 20.0001 54.9329 20.0157 54.9665 20.0331C55.5094 20.3066 55.9199 20.7736 56.1104 21.3343C56.3009 21.8951 56.2563 22.5054 55.9862 23.035C55.2323 24.7629 52.8196 26.0617 50.0868 25.2456L33.2756 19.729C33.1321 19.682 32.9819 19.6566 32.8304 19.6538C32.7483 19.6497 32.666 19.6536 32.5847 19.6652L21.3978 21.2031C21.1728 21.2271 20.9571 21.3031 20.7692 21.4246C20.5812 21.5462 20.4266 21.7098 20.3186 21.9013C20.1981 22.1315 19.8309 22.8342 21.5401 24.024C24.1727 25.8584 30.3375 30.1533 31.0245 34.7422C31.1446 35.5108 31.0971 36.295 30.885 37.0449C30.6729 37.7948 30.3009 38.494 29.7926 39.0977C29.7747 39.12 29.7559 39.1417 29.736 39.1621C29.5756 39.3338 29.3786 39.4701 29.1584 39.5616C28.9383 39.6532 28.7002 39.6979 28.4605 39.6926Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M47.1627 28.6103C46.1766 28.5971 45.2201 28.2551 44.4317 27.6337L32.4844 19.2773L33.5939 17.5342L45.5771 25.9172C45.8862 26.1971 46.2609 26.3855 46.6626 26.4629C47.0643 26.5403 47.4784 26.504 47.8622 26.3577C47.8225 26.2992 47.7776 26.2449 47.7279 26.1954L44.7579 23.4927L46.0684 21.9105L49.0801 24.6541C50.2212 25.8176 49.9861 26.9906 49.4508 27.6535C49.1565 27.9748 48.8001 28.2264 48.4055 28.3915C48.0109 28.5565 47.5871 28.6311 47.1627 28.6103Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M30.1141 18.3991L28.6992 19.8145L30.4618 21.4649L31.8767 20.0495L30.1141 18.3991Z"
+                                            fill="#003366" />
+                                        <path
+                                            d="M42.1756 30.1936C41.3729 30.1718 40.5827 30.0013 39.8503 29.6921C39.1179 29.3829 38.4577 28.941 37.9075 28.3918L30.1094 21.3086L31.5522 19.9082L39.3608 27.0009C39.7338 27.3866 40.1875 27.696 40.6935 27.9098C41.1996 28.1236 41.7471 28.2371 42.3019 28.2433C42.5243 28.2406 42.7443 28.1997 42.9511 28.1228L38.3044 23.2734L39.8465 21.9695L44.6496 26.9774C44.8202 27.1497 44.9519 27.3527 45.0367 27.5741C45.1214 27.7955 45.1575 28.0308 45.1427 28.2657C45.1279 28.5005 45.0625 28.7301 44.9505 28.9406C44.8386 29.1511 44.6823 29.3381 44.4912 29.4903C43.8332 29.9763 43.0121 30.2257 42.1756 30.1936Z" />
+                                        <path
+                                            d="M33.1874 29.4036C32.5406 29.3976 31.9034 29.2439 31.3224 28.9535C30.7414 28.6632 30.2315 28.2437 29.8301 27.7259C29.793 27.6777 29.7602 27.6263 29.7322 27.5721L27.4586 23.1582L24.5703 20.6297L25.8416 19.1162L28.8712 21.7687C28.9648 21.8506 29.0423 21.95 29.0997 22.0614L31.415 26.5557C31.8178 27.0332 32.3855 27.3336 32.9999 27.3942C33.2052 27.4198 33.4134 27.4048 33.6132 27.3501L30.3538 21.4059L31.1998 20.9217L31.8932 20.2111L31.8958 20.2137C31.9591 20.2782 32.0134 20.3514 32.0572 20.4311L35.418 26.557C35.6457 26.9618 35.7087 27.4416 35.5936 27.8933C35.4785 28.345 35.1944 28.7325 34.8025 28.9726C34.3142 29.2676 33.7546 29.4169 33.1874 29.4036Z" />
+                                        <path
+                                            d="M46.6581 36.5273C45.0531 36.5273 43.6478 37.2229 42.7718 38.3987C41.8958 37.2229 40.4905 36.5273 38.8855 36.5273C37.6078 36.5288 36.3829 37.0409 35.4795 37.9514C34.576 38.8619 34.0678 40.0964 34.0664 41.384C34.0664 46.8674 42.1336 51.3058 42.4772 51.4891C42.5677 51.5382 42.669 51.5639 42.7718 51.5639C42.8746 51.5639 42.9758 51.5382 43.0664 51.4891C43.4099 51.3058 51.4772 46.8674 51.4772 41.384C51.4757 40.0964 50.9675 38.8619 50.0641 37.9514C49.1607 37.0409 47.9358 36.5288 46.6581 36.5273ZM42.7718 50.2201C41.3525 49.3866 35.31 45.5898 35.31 41.384C35.3113 40.4288 35.6884 39.513 36.3586 38.8375C37.0289 38.162 37.9376 37.7819 38.8855 37.7807C40.3972 37.7807 41.6665 38.5922 42.1966 39.8957C42.2435 40.0106 42.3231 40.1089 42.4256 40.1781C42.528 40.2473 42.6485 40.2843 42.7718 40.2843C42.8951 40.2843 43.0156 40.2473 43.118 40.1781C43.2204 40.1089 43.3001 40.0106 43.347 39.8957C43.8771 38.5899 45.1463 37.7807 46.6581 37.7807C47.606 37.7819 48.5147 38.162 49.185 38.8375C49.8552 39.513 50.2323 40.4288 50.2335 41.384C50.2335 45.5835 44.1895 49.3859 42.7718 50.2201Z"
+                                            fill="#FFADDE" />
+                                        <path
+                                            d="M42.7718 50.2201C41.3525 49.3866 35.31 45.5898 35.31 41.384C35.3113 40.4288 35.6884 39.513 36.3586 38.8375C37.0289 38.162 37.9376 37.7819 38.8855 37.7807C40.3972 37.7807 41.6665 38.5922 42.1966 39.8957C42.2435 40.0106 42.3231 40.1089 42.4256 40.1781C42.528 40.2473 42.6485 40.2843 42.7718 40.2843C42.8951 40.2843 43.0156 40.2473 43.118 40.1781C43.2204 40.1089 43.3001 40.0106 43.347 39.8957C43.8771 38.5899 45.1463 37.7807 46.6581 37.7807C47.606 37.7819 48.5147 38.162 49.185 38.8375C49.8552 39.513 50.2323 40.4288 50.2335 41.384C50.2335 45.5835 44.1895 49.3859 42.7718 50.2201Z"
+                                            fill="#FFADDE" />
+                                        <path
+                                            d="M46.6581 36.394H46.6583C47.9716 36.3955 49.2304 36.922 50.1587 37.8575C51.087 38.7931 51.609 40.0613 51.6105 41.3839V41.384C51.6105 44.1877 49.5526 46.7026 47.4888 48.5241C45.4182 50.3516 43.3054 51.5127 43.1291 51.6068C43.0193 51.6661 42.8965 51.6972 42.7718 51.6972C42.6469 51.6972 42.524 51.6661 42.4141 51.6066C42.414 51.6065 42.4138 51.6064 42.4136 51.6063L42.4772 51.4891C42.1336 51.3058 34.0664 46.8674 34.0664 41.384L46.6581 36.394ZM46.6581 36.394C45.0771 36.394 43.6795 37.0534 42.7718 38.181L46.6581 36.394ZM42.0731 39.9459L42.0731 39.946C42.1299 40.0853 42.2265 40.2046 42.3509 40.2886C42.4753 40.3727 42.6218 40.4176 42.7718 40.4176C42.9217 40.4176 43.0682 40.3727 43.1926 40.2886C43.317 40.2046 43.4137 40.0853 43.4704 39.946L43.4705 39.9459C43.9782 38.6951 45.1952 37.914 46.658 37.914C47.5702 37.9152 48.445 38.281 49.0903 38.9314C49.7357 39.5818 50.099 40.4639 50.1002 41.3842C50.1001 43.4242 48.6275 45.3905 46.9432 46.9667C45.3164 48.489 43.5223 49.6195 42.7717 50.0653C42.0204 49.62 40.2263 48.4909 38.5998 46.9693C36.9157 45.3939 35.4434 43.4273 35.4434 41.3841C35.4446 40.4638 35.8079 39.5818 36.4533 38.9314C37.0986 38.281 37.9733 37.9152 38.8855 37.914C40.3482 37.914 41.5653 38.6973 42.0731 39.9459Z"
+                                            stroke-width="0.266667" />
                                     </svg>
                                     <div class="flex flex-col gap-2">
                                         <h3 class="text-base text-primary">Successful procedures</h3>
-                                        <span class="text-primary text-3xl font-semibold">
+                                        <span class="text-primary text-3xl font-semibold">0
                                             <?php
-                                                if($orders === []) {
-                                                    echo '0';
-                                                } else {
-                                                    echo $count_succeed;  
-                                                }
+                                                // if($orders === []) {
+                                                //     echo '0';
+                                                // } else {
+                                                //     echo $count_succeed;  
+                                                // }
                                             
                                             ?>
                                         </span>
@@ -506,37 +632,52 @@
                                     </div>';
                                 } else {
                                     ?>
-                                    
-                                    <div class="grid grid-cols-1 lg:grid-cols-10 gap-y-4 lg:gap-4">
-                                        <div class="col-span-7 bg-white p-6 rounded-xl shadow-shadowItem">
-                                            <div class="flex flex-col gap-6">
-                                                <span class="text-textColor font-medium text-xl">New Candidates</span>
-<!--                                                <div class="chart-container w-full flex" style="height:326px; background-position: center;  width: 100%; background-image:url('https://staging.childfreebc.com/wp-content/uploads/2023/11/foo1.svg'); background-size: cover; background-repeat: no-repeat;">-->
-                                                <div class="chart-container w-full flex" style="height:326px; background-position: center;  width: 100%; background-image:url('https://childfreebc.com/wp-content/uploads/2023/11/foo1.svg'); background-size: cover; background-repeat: no-repeat;">
-                                                    <!-- <canvas id="statisticsChart"></canvas> -->
-                                                </div>
-                                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-10 gap-y-4 lg:gap-4">
+                                <div class="col-span-7 bg-white p-6 rounded-xl shadow-shadowItem">
+                                    <div class="flex flex-col gap-6">
+                                        <span class="text-textColor font-medium text-xl">New Candidates</span>
+                                        <!--                                                <div class="chart-container w-full flex" style="height:326px; background-position: center;  width: 100%; background-image:url('https://staging.childfreebc.com/wp-content/uploads/2023/11/foo1.svg'); background-size: cover; background-repeat: no-repeat;">-->
+                                        <div class="chart-container w-full flex"
+                                            style="height:326px; background-position: center;  width: 100%; background-image:url('https://childfreebc.com/wp-content/uploads/2023/11/foo1.svg'); background-size: cover; background-repeat: no-repeat;">
+                                            <!-- <canvas id="statisticsChart"></canvas> -->
                                         </div>
-                                        <div class="col-span-3 bg-white p-6 rounded-xl shadow-shadowItem h-fit"> 
-                                            <div class="flex flex-col gap-6">
-                                                <span class="text-textColor font-medium text-xl">My Latest Candidates</span>
-                                                <div class="flex flex-col">    
-                                                    <div class="flex gap-4"> 
-                                                        <div class="rounded-md mask mask-squircle w-12 h-12">
-                                                            <?php echo $user_image ?>
-                                                        </div>
-                                                        <div class="flex flex-col gap-1">
-                                                            <span class="text-primary text-base font-normal"><?php echo $product_name ?></span>
-                                                            <span class="flex text-sm font-normal text-info gap-2" style="color: #8497AB !important">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
-                                                                    <path d="M13 2.5H11.5V2C11.5 1.86739 11.4473 1.74021 11.3536 1.64645C11.2598 1.55268 11.1326 1.5 11 1.5C10.8674 1.5 10.7402 1.55268 10.6464 1.64645C10.5527 1.74021 10.5 1.86739 10.5 2V2.5H5.5V2C5.5 1.86739 5.44732 1.74021 5.35355 1.64645C5.25979 1.55268 5.13261 1.5 5 1.5C4.86739 1.5 4.74021 1.55268 4.64645 1.64645C4.55268 1.74021 4.5 1.86739 4.5 2V2.5H3C2.73478 2.5 2.48043 2.60536 2.29289 2.79289C2.10536 2.98043 2 3.23478 2 3.5V13.5C2 13.7652 2.10536 14.0196 2.29289 14.2071C2.48043 14.3946 2.73478 14.5 3 14.5H13C13.2652 14.5 13.5196 14.3946 13.7071 14.2071C13.8946 14.0196 14 13.7652 14 13.5V3.5C14 3.23478 13.8946 2.98043 13.7071 2.79289C13.5196 2.60536 13.2652 2.5 13 2.5ZM4.5 3.5V4C4.5 4.13261 4.55268 4.25979 4.64645 4.35355C4.74021 4.44732 4.86739 4.5 5 4.5C5.13261 4.5 5.25979 4.44732 5.35355 4.35355C5.44732 4.25979 5.5 4.13261 5.5 4V3.5H10.5V4C10.5 4.13261 10.5527 4.25979 10.6464 4.35355C10.7402 4.44732 10.8674 4.5 11 4.5C11.1326 4.5 11.2598 4.44732 11.3536 4.35355C11.4473 4.25979 11.5 4.13261 11.5 4V3.5H13V5.5H3V3.5H4.5ZM13 13.5H3V6.5H13V13.5Z" fill="#8497AB"></path>
-                                                                </svg>
-                                                                <?php echo $formatted_order_date ?>
-                                                            </span>
-                                                        </div>
-                                                        <div class="flex items-center">
-                                                            <?php
-                                                                switch ($product->sex) {
+                                    </div>
+                                </div>
+                                <div class="col-span-3 bg-white p-6 rounded-xl shadow-shadowItem h-fit">
+                                    <div class="flex flex-col gap-6">
+                                        <span class="text-textColor font-medium text-xl">My Latest Candidates</span>
+                                        <?php 
+                                        $latest = end($my_candidates);
+                                        $candidate = $latest['candidate'];
+                                        
+                                        $user_image = get_the_post_thumbnail_url($latest['candidate_id'], 'full');
+                                        $sex = get_post_meta($latest['candidate_id'], '_sex', true);
+                                        $date = $latest['date_added'];
+                                        ?>
+                                        <div class="flex flex-col">
+                                            <div class="flex gap-4">
+                                                <div class="rounded-md mask mask-squircle w-12 h-12">
+                                                    <img src="<?php echo $user_image; ?>" alt="">
+                                                    
+                                                </div>
+                                                <div class="flex flex-col gap-1">
+                                                    <span
+                                                        class="text-primary text-base font-normal"><?php echo $latest['candidate']; ?></span>
+                                                    <span class="flex text-sm font-normal text-info gap-2"
+                                                        style="color: #8497AB !important">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17"
+                                                            viewBox="0 0 16 17" fill="none">
+                                                            <path
+                                                                d="M13 2.5H11.5V2C11.5 1.86739 11.4473 1.74021 11.3536 1.64645C11.2598 1.55268 11.1326 1.5 11 1.5C10.8674 1.5 10.7402 1.55268 10.6464 1.64645C10.5527 1.74021 10.5 1.86739 10.5 2V2.5H5.5V2C5.5 1.86739 5.44732 1.74021 5.35355 1.64645C5.25979 1.55268 5.13261 1.5 5 1.5C4.86739 1.5 4.74021 1.55268 4.64645 1.64645C4.55268 1.74021 4.5 1.86739 4.5 2V2.5H3C2.73478 2.5 2.48043 2.60536 2.29289 2.79289C2.10536 2.98043 2 3.23478 2 3.5V13.5C2 13.7652 2.10536 14.0196 2.29289 14.2071C2.48043 14.3946 2.73478 14.5 3 14.5H13C13.2652 14.5 13.5196 14.3946 13.7071 14.2071C13.8946 14.0196 14 13.7652 14 13.5V3.5C14 3.23478 13.8946 2.98043 13.7071 2.79289C13.5196 2.60536 13.2652 2.5 13 2.5ZM4.5 3.5V4C4.5 4.13261 4.55268 4.25979 4.64645 4.35355C4.74021 4.44732 4.86739 4.5 5 4.5C5.13261 4.5 5.25979 4.44732 5.35355 4.35355C5.44732 4.25979 5.5 4.13261 5.5 4V3.5H10.5V4C10.5 4.13261 10.5527 4.25979 10.6464 4.35355C10.7402 4.44732 10.8674 4.5 11 4.5C11.1326 4.5 11.2598 4.44732 11.3536 4.35355C11.4473 4.25979 11.5 4.13261 11.5 4V3.5H13V5.5H3V3.5H4.5ZM13 13.5H3V6.5H13V13.5Z"
+                                                                fill="#8497AB"></path>
+                                                        </svg>
+                                                        <?php echo $date; ?>
+                                                    </span>
+                                                </div>
+                                                <div class="flex items-center">
+                                                    <?php
+                                                                switch ($sex) {
                                                                     case 'male':
                                                                         echo '<span class="py-1 px-2 border rounded-full" style="font-family: Be Vietnam Pro; font-size: 12px; font-style: normal; font-weight: 500; line-height: 150%; color: #0B46A0; border-color: #0B46A0; background: #EDF3FE;">Vasectomy</span>';
                                                                         break;
@@ -547,58 +688,97 @@
                                                                         echo '<span>Default<span>';
                                                                     break;
                                                                 }
-                                                            ?> 
-                                                        </div>
-                                                    </div>
+                                                            ?>
                                                 </div>
-                                                <button class="w-full px-4 py-2.5 text-base bg-white rounded-lg border border-primary text-primary font-medium hover:bg-white hover:scale-105 hover:text-primary viewBtn">View All</button>
                                             </div>
                                         </div>
+                                        <button
+                                            class="w-full px-4 py-2.5 text-base bg-white rounded-lg border border-primary text-primary font-medium hover:bg-white hover:scale-105 hover:text-primary viewBtn">View
+                                            All</button>
+                                    </div>
+                                </div>
 
-                                        <!-- Second row grid -->
+                                <!-- Second row grid -->
 
-                                        <div class="col-span-7 bg-white p-6 shadow-shadowItem rounded-xl">
-                                            
-                                            <div class="flex flex-col gap-6">
-                                                <div class="flex w-full justify-between items-center flex-wrap gap-4">
-                                                    <span class="text-textColor font-medium text-xl">My Top Candidates Status</span>
-                                                    <button class="px-4 py-2.5 text-base bg-white rounded-lg border border-primary text-primary font-medium viewBtn hover:bg-white hover:scale-105 hover:text-primary">View All</button>
-                                                </div>
-                                                
-                                                <div class="overflow-x-auto" style="border-radius: 8px 8px 0 0;">
-                                                    <table class="table rounded-t-lg">
-                                                        
-                                                        <thead class="h-14">
-                                                        <tr class="text-xs font-semibold bg-primary bg-opacity-5 text-info border-b border-borderColor" style="color: #8497AB !important">
-                                                            <th>Candidate</th>
-                                                            <th>Progress</th>
-                                                            <th class="text-center">My Donations</th>
-                                                            <th class="text-center">Status</th>
-                                                        </tr>
-                                                        </thead>
-                                                        <tbody>
+                                <div class="col-span-7 bg-white p-6 shadow-shadowItem rounded-xl">
 
-                                                        <tr class="h-14 border-0 <?php echo $is_even ? 'bg-primary bg-opacity-5' : 'bg-white'; ?>">
-                                            <td>
-                                                <div class="flex items-center space-x-4">
-                                                    <div class="avatar">
-                                                        <div class="mask mask-squircle w-6 h-6">
-                                                            <?php echo $user_image ?>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <div class="font-normal text-primary text-sm underline"><?php echo $product_name ?></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="flex gap-2 items-center h-14">
-                                                <span class="text-sm font-medium text-textColor"><?php echo $product_raised ?> raised</span>
-                                                <progress class="progress progress-primary w-36" value="<?php echo ($product_raised / $product_goal) * 100 ?>" max="100"></progress>
-                                                <span class="text-sm font-medium text-textValue">of $<?php echo $product->goal ?></span>
-                                            </td>
-                                            <td class="text-center">
-                                                <?php
-                                                    switch ($product->sex) {
+                                    <div class="flex flex-col gap-6">
+                                        <div class="flex w-full justify-between items-center flex-wrap gap-4">
+                                            <span class="text-textColor font-medium text-xl">My Top Candidates Status</span>
+                                            <button
+                                                class="px-4 py-2.5 text-base bg-white rounded-lg border border-primary text-primary font-medium viewBtn hover:bg-white hover:scale-105 hover:text-primary">View
+                                                All</button>
+                                        </div>
+
+                                        <div class="overflow-x-auto" style="border-radius: 8px 8px 0 0;">
+                                            <table class="table rounded-t-lg">
+
+                                                <thead class="h-14">
+                                                    <tr class="text-xs font-semibold bg-primary bg-opacity-5 text-info border-b border-borderColor"
+                                                        style="color: #8497AB !important">
+                                                        <th>Candidate</th>
+                                                        <th>Progress</th>
+                                                        <th class="text-center">Procedure</th>
+                                                        <th class="text-center">Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php 
+                                                    if(count($topCandidates) > 0){
+                                                        $count = 0;
+                                                        foreach($topCandidates as $top){ 
+                                                            $candidate = $top['candidate'];
+                                                            $candidate_status = $top['candidate_status'];
+                                                            $url = get_permalink($top['candidate_id']);
+                                                            $count++;
+                                                            $is_even = ($count % 2 == 0) ? true : false;
+                                                            $user_image = get_the_post_thumbnail_url($top['candidate_id'], 'full');
+                                                            $sex = get_post_meta($top['candidate_id'], '_sex', true);
+                                                            $raised_amount = intval(get_post_meta($top['candidate_id'], '_amount_raised', true));
+                                                            $goal = intval(get_post_meta($top['candidate_id'], '_goal', true));
+                                                            
+                                                           
+                                                            $procedure_status = '';
+                                                            if ($top['procedure_status'] != 'Cancelled'){
+                                                                $procedure_status = ($raised_amount >= $goal) ? 'Completed' : 'In progress';
+                                                            } else {
+                                                                $procedure_status = $top['procedure_status'];
+                                                            }
+                                                            
+                                                            
+                                                            
+                                                            ?>
+
+                                                          <tr class="h-14 border-0 <?php echo $is_even ? 'bg-primary bg-opacity-5' : 'bg-white'; ?>">
+                                                        <td>
+                                                            <div class="flex items-center space-x-4">
+                                                                <div class="avatar">
+                                                                    <div class="mask mask-squircle w-6 h-6">
+                                                                        <img src="<?php echo $user_image ?>" alt="">
+                                                                        
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                    <div
+                                                                        class="font-normal text-primary text-sm underline">
+                                                                        <a href="<?php echo $url;?>"><?php echo $candidate ;?></a>
+                                                                        </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="flex gap-2 items-center h-14">
+                                                            <span
+                                                                class="text-sm font-medium text-textColor"><?php echo $raised_amount ;?>
+                                                                raised</span>
+                                                            <progress class="progress progress-primary w-36"
+                                                                value="<?php echo ($raised_amount / $goal) * 100 ?>"
+                                                                max="100"></progress>
+                                                            <span class="text-sm font-medium text-textValue">of
+                                                                $<?php echo $goal; ?></span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <?php
+                                                    switch ($sex) {
                                                         case 'male':
                                                             echo '<span class="py-1 px-2 border rounded-full" style="font-family: Be Vietnam Pro; font-size: 12px; font-style: normal; font-weight: 500; line-height: 150%; color: #0B46A0; border-color: #0B46A0; background: #EDF3FE;">Vasectomy</span>';
                                                             break;
@@ -606,749 +786,246 @@
                                                             echo '<span class="py-1 px-2 border rounded-full" style="font-family: Be Vietnam Pro; font-size: 12px; font-style: normal;font-weight: 500; line-height: 150%; color: #8802A9; border-color: #8802A9; background: #F3E6F6; white-space: nowrap;">Tubal Ligation</span>';
                                                             break;
                                                         default:
-                                                            echo '<span>Default<span>';
+                                                            echo '';
                                                         break;
                                                     }
-                                                ?>       
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="badge badge-outline <?php
-                                                    if (($product_raised / $product_goal) * 100 === 100 || $product_raised >= $product_goal) {
+                                                ?>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <div class="badge badge-outline <?php
+                                                    if (($raised_amount / $goal) * 100 === 100 || $raised_amount >= $goal) {
                                                         echo 'bg-success badge-success text-success border-success';
                                                     } else {
                                                         echo 'bg-alert badge-warning text-alert border-alert';
                                                     }
                                                 ?> bg-opacity-10 text-xs font-medium p-3 whitespace-nowrap"><?php
-                                                    echo ($product_raised / $product_goal) * 100 === 100 || $product_raised >= $product_goal ? 'Completed' : 'In progress';
+                                                    echo ($raised_amount / $goal) * 100 === 100 || $raised_amount >= $goal ? 'Completed' : 'In progress';
                                                 ?></div>
-                                            </td>
-                                            </tr>
+                                                        </td>
+                                                    </tr>  
+                                                    <?php    }
+                                                    } else { ?>
+                                                        <tr colspan=4>No top candidates</tr>
+                                                 <?php   } 
                                                     
-                                                        </tbody>													
-                                                    </table>
-                                                </div>
+                                                                
+                                                    ?>
+                                                    
+                                                    
 
-                                            </div>
-                                            
-
-                                        </div> 
-
-                                        <div class="col-span-3 bg-white p-6 shadow-shadowItem rounded-xl"> 
-                                            <div class="flex flex-col gap-6">
-                                                <span class="text-textColor font-medium text-xl">Candidates Overview</span>
-<!--                                                <div class="chart-container w-full flex" style="height:326px; background-position: center; width: 100%; background-image:url('https://staging.childfreebc.com/wp-content/uploads/2023/11/foo2.svg'); background-size: cover; background-repeat: no-repeat; background-position: center;">-->
-                                                <div class="chart-container w-full flex" style="height:326px; background-position: center; width: 100%; background-image:url('https://childfreebc.com/wp-content/uploads/2023/11/foo2.svg'); background-size: cover; background-repeat: no-repeat; background-position: center;">
-                                                </div>
-                                                
-                                            </div>
+                                                </tbody>
+                                            </table>
                                         </div>
 
                                     </div>
-                                    <?php
+
+
+                                </div>
+
+                                <div class="col-span-3 bg-white p-6 shadow-shadowItem rounded-xl">
+                                    <div class="flex flex-col gap-6">
+                                        <span class="text-textColor font-medium text-xl">Candidates Overview</span>
+
+                                        <div class="chart-container w-full flex"
+                                            style="height:326px; background-position: center; width: 100%; background-image:url('https://childfreebc.com/wp-content/uploads/2023/11/foo2.svg'); background-size: cover; background-repeat: no-repeat; background-position: center;">
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <?php
                                 }
                             
                             ?>
 
-                            
+
                         </div>
-                        
+
                     </div>
                 </div>
 
-                <!-- <div id="tabRequests" class="tabContent hidden">
-                    <div class="flex w-full flex-col gap-8 items-end xl:items-start">
-                        <a href="#tab2" id="reqBack" class="text-primary w-32 px-4 py-2 flex items-center gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <g clip-path="url(#clip0_2152_40054)">
-                                        <path d="M15 4.5L7.5 12L15 19.5" stroke="#143A62" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </g>
-                                    <defs>
-                                        <clipPath id="clip0_2152_40054">
-                                        <rect width="24" height="24" fill="white" transform="matrix(0 -1 -1 0 24 24)"/>
-                                        </clipPath>
-                                    </defs>
-                                </svg>
-                                Back
-                        </a>
-                        <div class="flex w-full flex-col gap-4">
-                            <div class="flex items-center text-lg gap-1 font-semibold pl-5 xl:pl-0">
-                                <h2 class="text-textColor">Request</h2>
-                                <span class="text-textValue">(3)</span>
-                            </div>
-                            <div class="requests-wrapper flex flex-col gap-4 overflow-y-auto h-full max-h-490 reqCards-scroll p-2">
-                                <div class="w-full flex flex-col px-4 py-3 rounded-lg gap-4 shadowCard">
-                                    <div class="flex w-full items-center flex-wrap gap-4">
-                                        <h2 class="text-lg text-primary font-bold">Tredinnick S.</h2>
-                                        <div class="badge bg-badgeM badgeM text-blueMain py-3">Seeking Vasectomy</div>
-                                        <div class="flex items-center gap-4 flex-wrap flex-wrap">
-                                            <div class="badge bg-badgeM badgeM text-blueMain flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36905)">
-                                                        <path d="M6.5 14C8.98528 14 11 11.9853 11 9.5C11 7.01472 8.98528 5 6.5 5C4.01472 5 2 7.01472 2 9.5C2 11.9853 4.01472 14 6.5 14Z" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M9.68359 6.31812L13.5017 2.5" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M10.5 2.5H13.5V5.5" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36905">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                Male
-                                            </div>
-                                            <div class="badge flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36908)">
-                                                        <path d="M13 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V13C2.5 13.2761 2.72386 13.5 3 13.5H13C13.2761 13.5 13.5 13.2761 13.5 13V3C13.5 2.72386 13.2761 2.5 13 2.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M11 1.5V3.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M5 1.5V3.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M2.5 5.5H13.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36908">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                26 years old
-                                            </div>
-                                            <div class="badge flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36911)">
-                                                        <path d="M3.5 14.5H12.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M8 8.5C9.10457 8.5 10 7.60457 10 6.5C10 5.39543 9.10457 4.5 8 4.5C6.89543 4.5 6 5.39543 6 6.5C6 7.60457 6.89543 8.5 8 8.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M13 6.5C13 11 8 14.5 8 14.5C8 14.5 3 11 3 6.5C3 5.17392 3.52678 3.90215 4.46447 2.96447C5.40215 2.02678 6.67392 1.5 8 1.5C9.32608 1.5 10.5979 2.02678 11.5355 2.96447C12.4732 3.90215 13 5.17392 13 6.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36911">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                Houston, TX
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex w-full justify-between flex-wrap gap-4">
-                                        <div class="flex flex-col gap-2 w-full xl:max-w-md">
-                                            <span>Progress Towards Goal</span>
-                                            <progress class="progress progress-primary w-full" value="70" max="100"></progress>
-                                            <div class="flex w-full justify-between">
-                                                <span class="text-textColor font-semibold">$2,010 raised</span>
-                                                <span class="text-textValue">of $2,370</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex gap-3 items-center">
-                                            <button class="px-4 py-2 bg-primary rounded-xl text-white border-primary hover:scale-105">Aprove</button>
-                                            <button class="px-4 py-2 bg-white border-warning rounded-xl text-warning hover:scale-105 hover:bg-red-200 hover:border-red-200 hover:text-red-500">Decline</button>
-                                        </div>
-                                    </div>
-                                    <div></div>
-                                </div>
-                                <div class="w-full flex flex-col px-4 py-3 rounded-lg gap-4 shadowCard">
-                                    <div class="flex w-full items-center flex-wrap gap-4">
-                                        <h2 class="text-lg text-primary font-bold">Eleanor Pena</h2>
-                                        <div class="badge bg-badgeF badgeF text-accent py-3">Seeking Tubal Ligation</div>
-                                        <div class="flex items-center gap-4">
-                                            <div class="badge bg-badgeF badgeF text-accent flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_40779)">
-                                                        <path d="M8 10.5C10.4853 10.5 12.5 8.48528 12.5 6C12.5 3.51472 10.4853 1.5 8 1.5C5.51472 1.5 3.5 3.51472 3.5 6C3.5 8.48528 5.51472 10.5 8 10.5Z" stroke="#8802A9" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M8 10.5V15" stroke="#8802A9" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M5.5 13H10.5" stroke="#8802A9" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_40779">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                Female
-                                            </div>
-                                            <div class="badge flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36908)">
-                                                        <path d="M13 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V13C2.5 13.2761 2.72386 13.5 3 13.5H13C13.2761 13.5 13.5 13.2761 13.5 13V3C13.5 2.72386 13.2761 2.5 13 2.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M11 1.5V3.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M5 1.5V3.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M2.5 5.5H13.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36908">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                26 years old
-                                            </div>
-                                            <div class="badge flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36911)">
-                                                        <path d="M3.5 14.5H12.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M8 8.5C9.10457 8.5 10 7.60457 10 6.5C10 5.39543 9.10457 4.5 8 4.5C6.89543 4.5 6 5.39543 6 6.5C6 7.60457 6.89543 8.5 8 8.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M13 6.5C13 11 8 14.5 8 14.5C8 14.5 3 11 3 6.5C3 5.17392 3.52678 3.90215 4.46447 2.96447C5.40215 2.02678 6.67392 1.5 8 1.5C9.32608 1.5 10.5979 2.02678 11.5355 2.96447C12.4732 3.90215 13 5.17392 13 6.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36911">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                Houston, TX
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex w-full justify-between flex-wrap gap-4">
-                                        <div class="flex flex-col gap-2 w-full xl:max-w-md">
-                                            <span>Progress Towards Goal</span>
-                                            <progress class="progress progress-primary w-full" value="70" max="100"></progress>
-                                            <div class="flex w-full justify-between">
-                                                <span class="text-textColor font-semibold">$2,010 raised</span>
-                                                <span class="text-textValue">of $2,370</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex gap-3 items-center">
-                                            <button class="px-4 py-2 bg-primary rounded-xl text-white border-primary hover:scale-105">Aprove</button>
-                                            <button class="px-4 py-2 bg-white border-warning rounded-xl text-warning hover:scale-105 hover:bg-red-200 hover:border-red-200 hover:text-red-500">Decline</button>
-                                        </div>
-                                    </div>
-                                    <div></div>
-                                </div>
-                                <div class="w-full flex flex-col px-4 py-3 rounded-lg gap-4 shadowCard">
-                                    <div class="flex w-full items-center flex-wrap gap-4">
-                                        <h2 class="text-lg text-primary font-bold">Esther Howard</h2>
-                                        <div class="badge bg-badgeM badgeM text-blueMain py-3">Seeking Vasectomy</div>
-                                        <div class="flex items-center gap-4 flex-wrap">
-                                            <div class="badge bg-badgeM badgeM text-blueMain flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36905)">
-                                                        <path d="M6.5 14C8.98528 14 11 11.9853 11 9.5C11 7.01472 8.98528 5 6.5 5C4.01472 5 2 7.01472 2 9.5C2 11.9853 4.01472 14 6.5 14Z" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M9.68359 6.31812L13.5017 2.5" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M10.5 2.5H13.5V5.5" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36905">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                Male
-                                            </div>
-                                            <div class="badge flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36908)">
-                                                        <path d="M13 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V13C2.5 13.2761 2.72386 13.5 3 13.5H13C13.2761 13.5 13.5 13.2761 13.5 13V3C13.5 2.72386 13.2761 2.5 13 2.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M11 1.5V3.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M5 1.5V3.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M2.5 5.5H13.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36908">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                26 years old
-                                            </div>
-                                            <div class="badge flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36911)">
-                                                        <path d="M3.5 14.5H12.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M8 8.5C9.10457 8.5 10 7.60457 10 6.5C10 5.39543 9.10457 4.5 8 4.5C6.89543 4.5 6 5.39543 6 6.5C6 7.60457 6.89543 8.5 8 8.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M13 6.5C13 11 8 14.5 8 14.5C8 14.5 3 11 3 6.5C3 5.17392 3.52678 3.90215 4.46447 2.96447C5.40215 2.02678 6.67392 1.5 8 1.5C9.32608 1.5 10.5979 2.02678 11.5355 2.96447C12.4732 3.90215 13 5.17392 13 6.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36911">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                Houston, TX
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex w-full justify-between flex-wrap gap-4">
-                                        <div class="flex flex-col gap-2 w-full xl:max-w-md">
-                                            <span>Progress Towards Goal</span>
-                                            <progress class="progress progress-primary w-full" value="70" max="100"></progress>
-                                            <div class="flex w-full justify-between">
-                                                <span class="text-textColor font-semibold">$2,010 raised</span>
-                                                <span class="text-textValue">of $2,370</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex gap-3 items-center">
-                                            <button class="px-4 py-2 bg-primary rounded-xl text-white border-primary hover:scale-105">Aprove</button>
-                                            <button class="px-4 py-2 bg-white border-warning rounded-xl text-warning hover:scale-105 hover:bg-red-200 hover:border-red-200 hover:text-red-500">Decline</button>
-                                        </div>
-                                    </div>
-                                    <div></div>
-                                </div>
-                                <div class="w-full flex flex-col px-4 py-3 rounded-lg gap-4 shadowCard">
-                                    <div class="flex w-full items-center flex-wrap gap-4">
-                                        <h2 class="text-lg text-primary font-bold">Esther Howard</h2>
-                                        <div class="badge bg-badgeM badgeM text-blueMain py-3">Seeking Vasectomy</div>
-                                        <div class="flex items-center gap-4 flex-wrap">
-                                            <div class="badge bg-badgeM badgeM text-blueMain flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36905)">
-                                                        <path d="M6.5 14C8.98528 14 11 11.9853 11 9.5C11 7.01472 8.98528 5 6.5 5C4.01472 5 2 7.01472 2 9.5C2 11.9853 4.01472 14 6.5 14Z" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M9.68359 6.31812L13.5017 2.5" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M10.5 2.5H13.5V5.5" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36905">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                Male
-                                            </div>
-                                            <div class="badge flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36908)">
-                                                        <path d="M13 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V13C2.5 13.2761 2.72386 13.5 3 13.5H13C13.2761 13.5 13.5 13.2761 13.5 13V3C13.5 2.72386 13.2761 2.5 13 2.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M11 1.5V3.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M5 1.5V3.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M2.5 5.5H13.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36908">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                26 years old
-                                            </div>
-                                            <div class="badge flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36911)">
-                                                        <path d="M3.5 14.5H12.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M8 8.5C9.10457 8.5 10 7.60457 10 6.5C10 5.39543 9.10457 4.5 8 4.5C6.89543 4.5 6 5.39543 6 6.5C6 7.60457 6.89543 8.5 8 8.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M13 6.5C13 11 8 14.5 8 14.5C8 14.5 3 11 3 6.5C3 5.17392 3.52678 3.90215 4.46447 2.96447C5.40215 2.02678 6.67392 1.5 8 1.5C9.32608 1.5 10.5979 2.02678 11.5355 2.96447C12.4732 3.90215 13 5.17392 13 6.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36911">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                Houston, TX
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex w-full justify-between flex-wrap gap-4">
-                                        <div class="flex flex-col gap-2 w-full xl:max-w-md">
-                                            <span>Progress Towards Goal</span>
-                                            <progress class="progress progress-primary w-full" value="70" max="100"></progress>
-                                            <div class="flex w-full justify-between">
-                                                <span class="text-textColor font-semibold">$2,010 raised</span>
-                                                <span class="text-textValue">of $2,370</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex gap-3 items-center">
-                                            <button class="px-4 py-2 bg-primary rounded-xl text-white border-primary hover:scale-105">Aprove</button>
-                                            <button class="px-4 py-2 bg-white border-warning rounded-xl text-warning hover:scale-105 hover:bg-red-200 hover:border-red-200 hover:text-red-500">Decline</button>
-                                        </div>
-                                    </div>
-                                    <div></div>
-                                </div>
-                                <div class="w-full flex flex-col px-4 py-3 rounded-lg gap-4 shadowCard">
-                                    <div class="flex w-full items-center flex-wrap gap-4">
-                                        <h2 class="text-lg text-primary font-bold">Esther Howard</h2>
-                                        <div class="badge bg-badgeM badgeM text-blueMain py-3">Seeking Vasectomy</div>
-                                        <div class="flex items-center gap-4 flex-wrap">
-                                            <div class="badge bg-badgeM badgeM text-blueMain flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36905)">
-                                                        <path d="M6.5 14C8.98528 14 11 11.9853 11 9.5C11 7.01472 8.98528 5 6.5 5C4.01472 5 2 7.01472 2 9.5C2 11.9853 4.01472 14 6.5 14Z" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M9.68359 6.31812L13.5017 2.5" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M10.5 2.5H13.5V5.5" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36905">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                Male
-                                            </div>
-                                            <div class="badge flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36908)">
-                                                        <path d="M13 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V13C2.5 13.2761 2.72386 13.5 3 13.5H13C13.2761 13.5 13.5 13.2761 13.5 13V3C13.5 2.72386 13.2761 2.5 13 2.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M11 1.5V3.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M5 1.5V3.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M2.5 5.5H13.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36908">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                26 years old
-                                            </div>
-                                            <div class="badge flex items-center gap-1 py-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                    <g clip-path="url(#clip0_2152_36911)">
-                                                        <path d="M3.5 14.5H12.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M8 8.5C9.10457 8.5 10 7.60457 10 6.5C10 5.39543 9.10457 4.5 8 4.5C6.89543 4.5 6 5.39543 6 6.5C6 7.60457 6.89543 8.5 8 8.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M13 6.5C13 11 8 14.5 8 14.5C8 14.5 3 11 3 6.5C3 5.17392 3.52678 3.90215 4.46447 2.96447C5.40215 2.02678 6.67392 1.5 8 1.5C9.32608 1.5 10.5979 2.02678 11.5355 2.96447C12.4732 3.90215 13 5.17392 13 6.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2152_36911">
-                                                        <rect width="16" height="16" fill="white"/>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                                Houston, TX
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex w-full justify-between flex-wrap gap-4">
-                                        <div class="flex flex-col gap-2 w-full xl:max-w-md">
-                                            <span>Progress Towards Goal</span>
-                                            <progress class="progress progress-primary w-full" value="70" max="100"></progress>
-                                            <div class="flex w-full justify-between">
-                                                <span class="text-textColor font-semibold">$2,010 raised</span>
-                                                <span class="text-textValue">of $2,370</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex gap-3 items-center">
-                                            <button class="px-4 py-2 bg-primary rounded-xl text-white border-primary hover:scale-105">Aprove</button>
-                                            <button class="px-4 py-2 bg-white border-warning rounded-xl text-warning hover:scale-105 hover:bg-red-200 hover:border-red-200 hover:text-red-500">Decline</button>
-                                        </div>
-                                    </div>
-                                    <div></div>
-                                </div>                  
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
+
 
                 <div id="tab2" class="tabContent hidden">
                     <?php
-                        $args = array(
-                            'role'       => 'candidate',
-                        );
-                        $candidates_query = new WP_User_Query( $args );
-                        $candidate_providers = $candidates_query->get_results();
-
-                        $meta_keys = array();
-                        foreach ($candidate_providers as $user) {
-                            // Get user meta keys
-                            $user_meta_keys = get_user_meta($user->ID);
-                            $meta_keys = array_merge($meta_keys, array_keys($user_meta_keys));
-                        }
-
-                        $meta_keys = array_unique($meta_keys);
-                        $result_array = array();
-                        // Loop through each user
-                        foreach ($candidate_providers as $user) {
-                            $user_meta = get_user_meta($user->ID);
-                            $provider_data = array(
-                                'candidate_provider' => array(
-                                    'data' => (array) $user,
-                                    'meta' => $user_meta
-                                ),
-                                'meta_keys' => array_keys($user_meta)
-                            );
-
-                            $result_array[] = $provider_data;
-                        }
-
-                        $json_result = json_encode($result_array);
-
-                        echo "<script>";
-                        echo "console.log(" . $json_result . ");";
-                        echo "</script>";
-
-                        $candidate_ids = [];
-                        $currRequests = array();
-
-                        foreach ($requests as $object) {
-                            foreach ($object as $key => $value) {
-                                if (strpos($key, 'candidates_for_physicians_') === 0 && strpos($key, '_candidate') !== false) {
-                                    if (is_numeric($value[0])) {
-                                        $candidate_ids[] = $value[0];
-                                    }
-                                }
-                            }
-                        }
-
-                        $candidate_ids = array_values(array_unique($candidate_ids));
-
-                        echo "<script>";
-                        echo "console.log('User candidate_ids:');";
-                        echo "console.log(" . json_encode($candidate_ids) . ");";
-                        echo "</script>";
-
-                        // get candidates info
-                        $args = array(
-                            'post_type'      => 'product',
-                            'posts_per_page' => -1,
-                            'meta_query'     => array(
-                                array(
-                                    'value'   => $candidate_ids,
-                                    'compare' => 'IN',
-                                ),
-                            ),
-                        );
                         
-                        $products_query = new WP_Query($args);
-                        if ($products_query->have_posts()) {
-                            echo "<script>";
-                            echo "console.log('Filtered Products:');";
-                            echo "console.log(" . json_encode($products_query->posts) . ");";
-                            echo "</script>";
-                        } else {
-                            echo "<script>";
-                            echo "console.log('No products found for the provided candidate IDs.');";
-                            echo "</script>";
-                        }
+                
 
-                        $candidates = $products_query->posts;
+          
                     ?>
                     <div class="flex flex-col lg:flex-row w-full justify-between items-center mb-8">
                         <div class="flex w-full flex-col">
-                            <div class="requests-wrapper flex w-full flex-col px-2 md:p-6 rounded-lg gap-4 shadowCard">
-                                <div class="w-full flex justify-end gap-4 md:justify-between items-center flex-col sm:flex-row">
+                            <div class="requests-wrapper flex w-full flex-col px-2 md:p-6 rounded-lg gap-4 shadowCard h-60">
+                                <div
+                                    class="w-full flex justify-end gap-4 md:justify-between items-center flex-col sm:flex-row">
                                     <div class="flex items-center text-lg gap-1 pl-6 xl:pl-0">
                                         <h2 class="text-textColor font-semibold">Request</h2>
-                                        <span class="text-textValue">(<?php echo count($candidates); ?>)</span>
+
+                                        <span class="text-textValue">(<?php echo count($candidateInProgress); ?>)</span>
                                     </div>
-                                    <button 
-                                            class="px-4 py-2.5 text-base bg-white rounded-lg border border-primary text-primary font-medium hover:bg-white hover:scale-105 hover:text-primary "
-                                            onclick="allRequests.showModal()"
-                                        >
-                                            View All
+                                    <button
+                                        class="px-4 py-2.5 text-base bg-white rounded-lg border border-primary text-primary font-medium hover:bg-white hover:scale-105 hover:text-primary "
+                                        onclick="allRequests.showModal()">
+                                        View All
                                     </button>
                                 </div>
                                 <?php 
-                                    if($candidates) { // sended Requests                                    
-                                    ?>
-                                        <div class="flex w-full flex-col gap-4 overflow-y-auto h-40 p-2 reqCards-scroll">
-                                            <!-- <div class="w-full flex flex-col px-4 py-3 rounded-lg gap-4 shadowCard">
-                                                <div class="flex w-full items-center flex-wrap gap-4">
-                                                    <h2 class="text-lg text-primary font-bold">Tredinnick S.</h2>
-                                                    <div class="badge bg-badgeM badgeM border-badgeM text-blueMain py-3">Seeking Vasectomy</div>
-                                                    <div class="flex items-center gap-4 flex-wrap">
-                                                        <div class="badge bg-badgeM badgeM border-badgeM text-blueMain flex items-center gap-1 py-3">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                                <g clip-path="url(#clip0_2152_36905)">
-                                                                    <path d="M6.5 14C8.98528 14 11 11.9853 11 9.5C11 7.01472 8.98528 5 6.5 5C4.01472 5 2 7.01472 2 9.5C2 11.9853 4.01472 14 6.5 14Z" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                    <path d="M9.68359 6.31812L13.5017 2.5" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                    <path d="M10.5 2.5H13.5V5.5" stroke="#0B46A0" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                </g>
-                                                                <defs>
-                                                                    <clipPath id="clip0_2152_36905">
-                                                                    <rect width="16" height="16" fill="white"/>
-                                                                    </clipPath>
-                                                                </defs>
-                                                            </svg>
-                                                            Male
-                                                        </div>
-                                                        <div class="badge flex items-center gap-1 py-3 bg-slate-100 border-slate-100">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                                <g clip-path="url(#clip0_2152_36908)">
-                                                                    <path d="M13 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V13C2.5 13.2761 2.72386 13.5 3 13.5H13C13.2761 13.5 13.5 13.2761 13.5 13V3C13.5 2.72386 13.2761 2.5 13 2.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                    <path d="M11 1.5V3.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                    <path d="M5 1.5V3.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                    <path d="M2.5 5.5H13.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                </g>
-                                                                <defs>
-                                                                    <clipPath id="clip0_2152_36908">
-                                                                    <rect width="16" height="16" fill="white"/>
-                                                                    </clipPath>
-                                                                </defs>
-                                                            </svg>
-                                                            26 years old
-                                                        </div>
-                                                        <div class="badge flex items-center gap-1 py-3 bg-slate-100 border-slate-100">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                                <g clip-path="url(#clip0_2152_36911)">
-                                                                    <path d="M3.5 14.5H12.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                    <path d="M8 8.5C9.10457 8.5 10 7.60457 10 6.5C10 5.39543 9.10457 4.5 8 4.5C6.89543 4.5 6 5.39543 6 6.5C6 7.60457 6.89543 8.5 8 8.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                    <path d="M13 6.5C13 11 8 14.5 8 14.5C8 14.5 3 11 3 6.5C3 5.17392 3.52678 3.90215 4.46447 2.96447C5.40215 2.02678 6.67392 1.5 8 1.5C9.32608 1.5 10.5979 2.02678 11.5355 2.96447C12.4732 3.90215 13 5.17392 13 6.5Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                </g>
-                                                                <defs>
-                                                                    <clipPath id="clip0_2152_36911">
-                                                                    <rect width="16" height="16" fill="white"/>
-                                                                    </clipPath>
-                                                                </defs>
-                                                            </svg>
-                                                            Houston, TX
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="flex w-full justify-between flex-wrap gap-4">
-                                                    <div class="flex flex-col gap-2 w-full xl:max-w-md">
-                                                        <span>Progress Towards Goal</span>
-                                                        <progress class="progress progress-primary w-full" value="70" max="100"></progress>
-                                                        <div class="flex w-full justify-between">
-                                                            <span class="text-textColor font-semibold">$2,010 raised</span>
-                                                            <span class="text-textValue">of $2,370</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex gap-3 items-center">
-                                                        <button class="px-4 py-2 bg-primary rounded-xl text-white border-primary hover:scale-105">Aprove</button>
-                                                        <button class="px-4 py-2 bg-white border-warning rounded-xl text-warning hover:scale-105 hover:bg-red-200 hover:border-red-200 hover:text-red-500">Decline</button>
-                                                    </div>
-                                                </div>
-                                                <div></div>
-                                            </div> -->
-                                            <?php foreach ($candidates as $candidate) : ?>
-                                                <div class="w-full flex flex-col px-4 py-3 rounded-lg gap-4 shadowCard">
-                                                    <div class="flex w-full items-center flex-wrap gap-4">
-                                                        <h2 class="text-lg text-primary font-bold"><?php echo $candidate->post_title; ?></h2>
-                                                    </div>
-                                                    <div class="flex w-full justify-between flex-wrap gap-4">
-                                                        <div class="flex flex-col gap-2 w-full xl:max-w-md">
-                                                            <!-- <div class="flex w-full justify-between">
-                                                                <span class="text-textColor font-semibold">$2,010 raised</span>
-                                                                <span class="text-textValue">of $2,370</span>
-                                                            </div> -->
-                                                        </div>
-                                                        <div class="flex gap-3 items-center">
-                                                            <span>Sended request</span>
-                                                            <!-- <button class="px-4 py-2 bg-primary rounded-xl text-white border-primary hover:scale-105">Approve</button>
-                                                            <button class="px-4 py-2 bg-white border-warning rounded-xl text-warning hover:scale-105 hover:bg-red-200 hover:border-red-200 hover:text-red-500">Decline</button> -->
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        </div>
-                                        <?php
-                                    } else {
-                                        ?>
-                                        <div class="text-center text-2xl text-textValue py-5 w-full">No request</div>
-                                        <?php
-                                    }
-                                ?>
+                                set_query_var( 'candidateInProgress', array($candidateInProgress[0] ));
+                                get_template_part( 'parts/ph_requests' ); ?>
                             </div>
+
+
+                            <!--  My Candidates Status -->
 
                             <div class="flex flex-row w-full mt-8 flex-col xl:flex-row">
                                 <div class="flex gap-5 items-center w-full justify-start mb-6">
                                     <h1 class="text-3xl font-medium text-textColor">My Candidates Status</h1>
-                                </div>  
+                                </div>
                                 <div class="flex items-center gap-6 flex-wrap lg:flex-nowrap justify-start">
-                                    <select class="block bg-white w-56 h-12 px-4 border-primary text-primary rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-900 sm:max-w-xs sm:text-sm sm:leading-6">
+                                    <select
+                                        class="block bg-white w-56 h-12 px-4 border-primary text-primary rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-900 sm:max-w-xs sm:text-sm sm:leading-6">
                                         <option disabled="" selected="">Show per page: 10</option>
                                         <option>25</option>
                                         <option>50</option>
                                         <option>100</option>
-                                    </select>                             
-                                    <select class="block bg-white w-56 h-12 px-4 border-primary text-primary rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-900 sm:max-w-xs sm:text-sm sm:leading-6">
+                                    </select>
+                                    <select
+                                        class="block bg-white w-56 h-12 px-4 border-primary text-primary rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-900 sm:max-w-xs sm:text-sm sm:leading-6">
                                         <option disabled="" selected="">Sort by: All</option>
                                         <option>Cancelled</option>
                                         <option>In progress</option>
                                         <option>Completed</option>
                                     </select>
-                                </div> 
+                                </div>
                             </div>
-                        </div>                         
+                        </div>
                     </div>
 
 
                     <?php
                         $user_id = get_current_user_id();
                         $candidate_details = get_field('candidates_for_physicians', 'user_' . $user_id);
-                      
+                        
                       //  echo($user_id);
-                     // print_r($candidate_details);
-                        if($candidate_details) { // change condition to !$candidate_details
+                     // print_r($active_classmy_candidates);
+                        if(!$my_candidates) { // change condition to !$candidate_details
                             echo '<div class="w-full flex items-center justify-center my-12">
                             <span class="text-3xl text-textValue">No Candidates</span>
                             </div>';
                         } else { 
-                           // print_r($candidate_details);
+                            //print_r($my_candidates);
                             ?>
-                            <div class="overflow-x-auto">
-                                <table class="table">
-                                    <!-- head -->
-                                    <thead>
-                                        <tr class="text-xs font-semibold bg-primary bg-opacity-5 text-info border-b border-borderColor h-14">
-                                            <th>Candidate</th>
-                                            <th>Progress</th>
-                                            <th>Status</th>
-                                            <th>Procedure</th>
-                                            <th>Procedure Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                        <?php 
-                            foreach ($candidate_details as $candidate_detail) {
-                                $candidate = $candidate_detail['candidate']->post_title;
+                    <div class="overflow-x-auto">
+                        <table class="table">
+                            <!-- head -->
+                            <thead>
+                                <tr
+                                    class="text-xs font-semibold bg-primary bg-opacity-5 text-info border-b border-borderColor h-14">
+                                    <th>Candidate</th>
+                                    <th>Progress</th>
+                                    <th>Status</th>
+                                    <th>Procedure</th>
+                                    <th>Procedure Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php 
+                                $count = 0;
+                            foreach ($my_candidates as $candidate_detail) {
+                                $candidate = $candidate_detail['candidate'];
                                 $candidate_status = $candidate_detail['candidate_status'];
-                                $procedure_status= $candidate_detail['procedure_status'];
-                                
-                                
-                            
+                                $url = get_permalink($candidate_detail['candidate_id']);
+                                $count++;
+                                $is_even = ($count % 2 == 0) ? true : false;
+                                $user_image = get_the_post_thumbnail_url($candidate_detail['candidate_id'], 'full');
+                                $raised_amount = intval(get_post_meta($candidate_detail['candidate_id'], '_amount_raised', true));
+                                $goal = intval(get_post_meta($candidate_detail['candidate_id'], '_goal', true));
+                                $sex = get_post_meta($candidate_detail['candidate_id'], '_sex', true);
+                                $procedure = ($sex == 'male') ? 'Seeking Vasectomy' : 'Tubal Ligation';
+                                $procedure_status = '';
+                                if ($candidate_detail['procedure_status'] != 'Cancelled'){
+                                    $procedure_status = ($raised_amount >= $goal) ? 'Completed' : 'In progress';
+                                } else {
+                                    $procedure_status = $candidate_detail['procedure_status'];
+                                }
                             ?>
 
-                     
-                                        <tr class="h-14 border-0 <?php //echo $is_even ? 'bg-primary bg-opacity-5' : 'bg-white'; ?>">
-                                            <td>
-                                                <div class="flex items-center space-x-4">
-                                                    <div class="avatar">
-                                                        <div class="mask mask-squircle w-6 h-6">
-                                                            <?php// echo $user_image ?>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <div class="font-normal text-primary text-sm underline"><?php echo $candidate; ?></div>
-                                                    </div>
+
+                                <tr
+                                    class="h-14 border-0 <?php echo $is_even ? 'bg-primary bg-opacity-5' : 'bg-white'; ?>">
+                                    <td>
+                                        <div class="flex items-center space-x-4">
+                                            <div class="avatar">
+                                                <div class="mask mask-squircle w-6 h-6">
+                                                    <img src="<?php echo $user_image;?>" alt="">
                                                 </div>
-                                            </td>
-                                            <td class="flex gap-2 items-center h-14">
-                                                <span class="text-sm font-medium text-textColor"><?php// echo $product_raised ?> raised</span>
-                                                <progress class="progress progress-primary w-36" value="<?php// echo ($product_raised / $product_goal) * 100 ?>" max="100"></progress>
-                                                <span class="text-sm font-medium text-textValue">of $<?php //echo $product->goal ?></span>
-                                            </td>
-                                            <td>
-                                                <div class="badge badge-outline <?php/*
-                                                    if (($product_raised / $product_goal) * 100 === 100 || $product_raised >= $product_goal) {
+                                            </div>
+                                            <div>
+                                                <div class="font-normal text-primary text-sm underline">
+                                                    <a href="<?php echo $url; ?>"><?php echo $candidate; ?></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="flex gap-2 items-center h-14">
+                                        <span class="text-sm font-medium text-textColor"><?php echo $raised_amount; ?>
+                                            raised</span>
+                                        <progress class="progress progress-primary w-36"
+                                            value="<?php echo ($raised_amount / $goal) * 100 ?>"
+                                            max="100"></progress>
+                                        <span class="text-sm font-medium text-textValue">of
+                                            $<?php echo $goal; ?></span>
+                                    </td>
+                                    <td>
+                                        <div class="badge badge-outline <?php
+                                                    if (($raised_amount / $goal) * 100 === 100 || $raised_amount>= $goal) {
                                                         echo 'bg-success badge-success text-success border-success';
                                                     } else {
                                                         echo 'bg-alert badge-warning text-alert border-alert';
                                                     }
-                                                */?> bg-opacity-10 text-xs font-medium p-3 whitespace-nowrap"><?php
-                                                   // echo ($product_raised / $product_goal) * 100 === 100 || $product_raised >= $product_goal ? 'Completed' : 'In progress';
-                                                ?></div>
-                                            </td>
-                                            <td class="text-left">
-                                                <?php/*
-                                                    switch ($product->sex) {
-                                                        case 'male':
-                                                            echo '<span class="py-1 px-2 border rounded-full" style="font-family: Be Vietnam Pro; font-size: 12px; font-style: normal; font-weight: 500; line-height: 150%; color: #0B46A0; border-color: #0B46A0; background: #EDF3FE;">Vasectomy</span>';
-                                                            break;
-                                                        case 'female':
-                                                            echo '<span class="py-1 px-2 border rounded-full" style="font-family: Be Vietnam Pro; font-size: 12px; font-style: normal;font-weight: 500; line-height: 150%; color: #8802A9; border-color: #8802A9; background: #F3E6F6; white-space: nowrap;">Tubal Ligation</span>';
-                                                            break;
-                                                        default:
-                                                            echo '<span>Default<span>';
-                                                        break;
-                                                    }
-                                               */ ?>      
-                                            </td>
-                                            <td>
-                                                <div class="badge py-4 px-6 border-primary rounded-xl">
-                                                    <?php echo $procedure_status; ?>
-                                                </div>
-                                            </td> 
-                                            </tr>   
-                                            
-                                            <?php } ?>   
-                                            
-                                            
-                                    </tbody>
-                                </table>
-                            </div>
-                            <?php
+                                                ?> bg-opacity-10 text-xs font-medium p-3 whitespace-nowrap">
+                                                <?php echo $procedure_status; ?></div>
+                                    </td>
+                                    <td class="text-left">
+                                        <?php
+                                            switch ($sex) {
+                                                case 'male':
+                                                    echo '<span class="py-1 px-2 border rounded-full" style="font-family: Be Vietnam Pro; font-size: 12px; font-style: normal; font-weight: 500; line-height: 150%; color: #0B46A0; border-color: #0B46A0; background: #EDF3FE;">Vasectomy</span>';
+                                                    break;
+                                                case 'female':
+                                                    echo '<span class="py-1 px-2 border rounded-full" style="font-family: Be Vietnam Pro; font-size: 12px; font-style: normal;font-weight: 500; line-height: 150%; color: #8802A9; border-color: #8802A9; background: #F3E6F6; white-space: nowrap;">Tubal Ligation</span>';
+                                                    break;
+                                                default:
+                                                    echo '';
+                                                break;
+                                            }
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php 
+                                        if ($raised_amount >= $goal){ ?>
+                                            <button class="px-4 py-2 bg-primary rounded-xl text-center text-white border-primary hover:scale-105 mark_as_done" data-candidate-it="<?php echo $candidate_detail['candidate_id'];?>">
+                                                Mark as done
+                                            </button>
+
+                                        <?php 
+                                        }?>
+                                        
+                                    </td>
+                                </tr>
+
+                                <?php } ?>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <?php
                             }
                             ?>
-                            <div class="w-full flex justify-center mt-8 gap-3.5 items-center">
-                                <?php
+                    <div class="w-full flex justify-center mt-8 gap-3.5 items-center">
+                        <?php
                 
                                 $total_items = 1;
                                 $items_per_page = 10; 
@@ -1385,60 +1062,71 @@
                                     </svg>'; 
                                 }
                                 ?>
-                            </div>
+                    </div>
 
-                        <?php
+                    <?php
                         
                     
                     ?>
                 </div>
 
                 <div id="tab3" class="tabContent hidden">
-                    
-                    <div class="flex flex-col lg:flex-row w-full justify-between lg:items-center mb-8">
+
+                    <!-- <div class="flex flex-col lg:flex-row w-full justify-between lg:items-center mb-8">
                         <div class="flex gap-5 items-center mb-8">
-                            
+
                             <h1 class="text-3xl font-medium text-textColor pl-20 xl:pl-0">Search Candidates</h1>
                         </div>
                         <div class="flex flex-col 2xl:flex-row gap-6 xl:items-center">
                             <div class="w-full relative xl:max-w-sm">
-                                <input type="text" placeholder="Search by Name" class="border bg-white border-borderColor rounded-xl py-3 px-4 pr-12 w-full" />
+                                <input type="text" placeholder="Search by Name"
+                                    class="border bg-white border-borderColor rounded-xl py-3 px-4 pr-12 w-full" />
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none">
                                         <g clip-path="url(#clip0_1354_9153)">
-                                          <path d="M10.5 18C14.6421 18 18 14.6421 18 10.5C18 6.35786 14.6421 3 10.5 3C6.35786 3 3 6.35786 3 10.5C3 14.6421 6.35786 18 10.5 18Z" stroke="#76787A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                          <path d="M15.8037 15.8035L21.0003 21" stroke="#76787A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path
+                                                d="M10.5 18C14.6421 18 18 14.6421 18 10.5C18 6.35786 14.6421 3 10.5 3C6.35786 3 3 6.35786 3 10.5C3 14.6421 6.35786 18 10.5 18Z"
+                                                stroke="#76787A" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="M15.8037 15.8035L21.0003 21" stroke="#76787A" stroke-width="1.5"
+                                                stroke-linecap="round" stroke-linejoin="round" />
                                         </g>
                                         <defs>
-                                          <clipPath id="clip0_1354_9153">
-                                            <rect width="24" height="24" fill="white"/>
-                                          </clipPath>
+                                            <clipPath id="clip0_1354_9153">
+                                                <rect width="24" height="24" fill="white" />
+                                            </clipPath>
                                         </defs>
                                     </svg>
                                 </div>
-                            </div>                               
+                            </div>
                             <div class="flex items-center gap-1.5 flex-wrap lg:flex-nowrap">
-                                <select class="select select-bordered w-56  border-borderColor rounded-xl bg-white text-primary">
+                                <select
+                                    class="select select-bordered w-56  border-borderColor rounded-xl bg-white text-primary">
                                     <option disabled="" selected="">Sort by: Newest</option>
                                     <option>value1</option>
                                     <option>value2</option>
                                 </select>
-                                <select class="select select-bordered w-56  border-borderColor rounded-xl bg-white text-primary">
+                                <select
+                                    class="select select-bordered w-56  border-borderColor rounded-xl bg-white text-primary">
                                     <option disabled="" selected="">Show per page: 9</option>
                                     <option>25</option>
                                     <option>50</option>
                                     <option>100</option>
-                                </select>                                       
-                                <button id="accordionButton" class="bg-white btn text-primary border  border-borderColor rounded-xl">
+                                </select>
+                                <button id="accordionButton"
+                                    class="bg-white btn text-primary border  border-borderColor rounded-xl">
                                     Filters
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none">
                                         <g clip-path="url(#clip0_1304_68848)">
-                                          <path d="M19.5 9L12 16.5L4.5 9" stroke="#143A62" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M19.5 9L12 16.5L4.5 9" stroke="#143A62" stroke-width="1.5"
+                                                stroke-linecap="round" stroke-linejoin="round" />
                                         </g>
                                         <defs>
-                                          <clipPath id="clip0_1304_68848">
-                                            <rect width="24" height="24" fill="white"/>
-                                          </clipPath>
+                                            <clipPath id="clip0_1304_68848">
+                                                <rect width="24" height="24" fill="white" />
+                                            </clipPath>
                                         </defs>
                                     </svg>
                                 </button>
@@ -1455,28 +1143,32 @@
                                 <div class="flex flex-col w-full gap-2">
                                     <h4 class="flex gap-1.5 text-base text-textColor">
                                         Distance
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                            <path d="M13.125 16.875C13.125 17.0975 13.059 17.315 12.9354 17.5C12.8118 17.685 12.6361 17.8292 12.4305 17.9144C12.225 17.9995 11.9988 18.0218 11.7805 17.9784C11.5623 17.935 11.3618 17.8278 11.2045 17.6705C11.0472 17.5132 10.94 17.3127 10.8966 17.0945C10.8532 16.8762 10.8755 16.65 10.9606 16.4445C11.0458 16.2389 11.19 16.0632 11.375 15.9396C11.56 15.816 11.7775 15.75 12 15.75C12.2984 15.75 12.5845 15.8685 12.7955 16.0795C13.0065 16.2905 13.125 16.5766 13.125 16.875ZM12 6.75C9.93188 6.75 8.25 8.26406 8.25 10.125V10.5C8.25 10.6989 8.32902 10.8897 8.46967 11.0303C8.61033 11.171 8.80109 11.25 9 11.25C9.19892 11.25 9.38968 11.171 9.53033 11.0303C9.67099 10.8897 9.75 10.6989 9.75 10.5V10.125C9.75 9.09375 10.7597 8.25 12 8.25C13.2403 8.25 14.25 9.09375 14.25 10.125C14.25 11.1562 13.2403 12 12 12C11.8011 12 11.6103 12.079 11.4697 12.2197C11.329 12.3603 11.25 12.5511 11.25 12.75V13.5C11.25 13.6989 11.329 13.8897 11.4697 14.0303C11.6103 14.171 11.8011 14.25 12 14.25C12.1989 14.25 12.3897 14.171 12.5303 14.0303C12.671 13.8897 12.75 13.6989 12.75 13.5V13.4325C14.46 13.1184 15.75 11.7544 15.75 10.125C15.75 8.26406 14.0681 6.75 12 6.75ZM21.75 12C21.75 13.9284 21.1782 15.8134 20.1068 17.4168C19.0355 19.0202 17.5127 20.2699 15.7312 21.0078C13.9496 21.7458 11.9892 21.9389 10.0979 21.5627C8.20656 21.1865 6.46928 20.2579 5.10571 18.8943C3.74215 17.5307 2.81355 15.7934 2.43735 13.9021C2.06114 12.0108 2.25422 10.0504 2.99218 8.26884C3.73013 6.48726 4.97982 4.96451 6.58319 3.89317C8.18657 2.82183 10.0716 2.25 12 2.25C14.585 2.25273 17.0634 3.28084 18.8913 5.10872C20.7192 6.93661 21.7473 9.41498 21.75 12ZM20.25 12C20.25 10.3683 19.7661 8.77325 18.8596 7.41655C17.9531 6.05984 16.6646 5.00242 15.1571 4.37799C13.6497 3.75357 11.9909 3.59019 10.3905 3.90852C8.79017 4.22685 7.32016 5.01259 6.16637 6.16637C5.01259 7.32015 4.22685 8.79016 3.90853 10.3905C3.5902 11.9908 3.75358 13.6496 4.378 15.1571C5.00242 16.6646 6.05984 17.9531 7.41655 18.8596C8.77326 19.7661 10.3683 20.25 12 20.25C14.1873 20.2475 16.2843 19.3775 17.8309 17.8309C19.3775 16.2843 20.2475 14.1873 20.25 12Z" fill="#76787A"/>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none">
+                                            <path
+                                                d="M13.125 16.875C13.125 17.0975 13.059 17.315 12.9354 17.5C12.8118 17.685 12.6361 17.8292 12.4305 17.9144C12.225 17.9995 11.9988 18.0218 11.7805 17.9784C11.5623 17.935 11.3618 17.8278 11.2045 17.6705C11.0472 17.5132 10.94 17.3127 10.8966 17.0945C10.8532 16.8762 10.8755 16.65 10.9606 16.4445C11.0458 16.2389 11.19 16.0632 11.375 15.9396C11.56 15.816 11.7775 15.75 12 15.75C12.2984 15.75 12.5845 15.8685 12.7955 16.0795C13.0065 16.2905 13.125 16.5766 13.125 16.875ZM12 6.75C9.93188 6.75 8.25 8.26406 8.25 10.125V10.5C8.25 10.6989 8.32902 10.8897 8.46967 11.0303C8.61033 11.171 8.80109 11.25 9 11.25C9.19892 11.25 9.38968 11.171 9.53033 11.0303C9.67099 10.8897 9.75 10.6989 9.75 10.5V10.125C9.75 9.09375 10.7597 8.25 12 8.25C13.2403 8.25 14.25 9.09375 14.25 10.125C14.25 11.1562 13.2403 12 12 12C11.8011 12 11.6103 12.079 11.4697 12.2197C11.329 12.3603 11.25 12.5511 11.25 12.75V13.5C11.25 13.6989 11.329 13.8897 11.4697 14.0303C11.6103 14.171 11.8011 14.25 12 14.25C12.1989 14.25 12.3897 14.171 12.5303 14.0303C12.671 13.8897 12.75 13.6989 12.75 13.5V13.4325C14.46 13.1184 15.75 11.7544 15.75 10.125C15.75 8.26406 14.0681 6.75 12 6.75ZM21.75 12C21.75 13.9284 21.1782 15.8134 20.1068 17.4168C19.0355 19.0202 17.5127 20.2699 15.7312 21.0078C13.9496 21.7458 11.9892 21.9389 10.0979 21.5627C8.20656 21.1865 6.46928 20.2579 5.10571 18.8943C3.74215 17.5307 2.81355 15.7934 2.43735 13.9021C2.06114 12.0108 2.25422 10.0504 2.99218 8.26884C3.73013 6.48726 4.97982 4.96451 6.58319 3.89317C8.18657 2.82183 10.0716 2.25 12 2.25C14.585 2.25273 17.0634 3.28084 18.8913 5.10872C20.7192 6.93661 21.7473 9.41498 21.75 12ZM20.25 12C20.25 10.3683 19.7661 8.77325 18.8596 7.41655C17.9531 6.05984 16.6646 5.00242 15.1571 4.37799C13.6497 3.75357 11.9909 3.59019 10.3905 3.90852C8.79017 4.22685 7.32016 5.01259 6.16637 6.16637C5.01259 7.32015 4.22685 8.79016 3.90853 10.3905C3.5902 11.9908 3.75358 13.6496 4.378 15.1571C5.00242 16.6646 6.05984 17.9531 7.41655 18.8596C8.77326 19.7661 10.3683 20.25 12 20.25C14.1873 20.2475 16.2843 19.3775 17.8309 17.8309C19.3775 16.2843 20.2475 14.1873 20.25 12Z"
+                                                fill="#76787A" />
                                         </svg>
                                     </h4>
-                                    <input type="text" placeholder="Enter Zip Code" class="input w-full border border-borderColor bg-white max-w-md" />
+                                    <input type="text" placeholder="Enter Zip Code"
+                                        class="input w-full border border-borderColor bg-white max-w-md" />
                                 </div>
                                 <div class="flex items-center mt-2 flex-wrap gap-2">
                                     <label class="cursor-pointer flex items-center gap-1.5 w-40">
                                         <input type="radio" name="radio-10" class="radio checked:bg-primary" checked />
-                                        <span class="label-text">Exact</span> 
+                                        <span class="label-text">Exact</span>
                                     </label>
                                     <label class="cursor-pointer flex items-center gap-1.5 w-40">
                                         <input type="radio" name="radio-10" class="radio checked:bg-primary" checked />
-                                        <span class="label-text">25 Miles</span> 
+                                        <span class="label-text">25 Miles</span>
                                     </label>
                                     <label class="cursor-pointer flex items-center gap-1.5 w-40">
                                         <input type="radio" name="radio-10" class="radio checked:bg-primary" checked />
-                                        <span class="label-text">50 Miles</span> 
+                                        <span class="label-text">50 Miles</span>
                                     </label>
                                     <label class="cursor-pointer flex items-center gap-1.5 w-40">
                                         <input type="radio" name="radio-10" class="radio checked:bg-primary" checked />
-                                        <span class="label-text">100 Miles</span> 
+                                        <span class="label-text">100 Miles</span>
                                     </label>
                                 </div>
                             </div>
@@ -1488,35 +1180,37 @@
                                     <div class="flex flex-col gap-1">
                                         <label class="cursor-pointer flex items-center gap-2.5 w-20">
                                             <input type="checkbox" class="h-4 w-4 rounded border-0 bg-primary gender">
-                                            <span class="label-text">Male</span> 
+                                            <span class="label-text">Male</span>
                                         </label>
                                         <label class="cursor-pointer flex items-center gap-2.5 w-20">
                                             <input type="checkbox" class="h-4 w-4 rounded border-0 bg-primary gender">
-                                            <span class="label-text">Female</span> 
+                                            <span class="label-text">Female</span>
                                         </label>
                                     </div>
                                 </div>
-                                
-                            </div> 
+
+                            </div>
                         </div>
                         <div class="flex flex-col md:flex-row gap-4 md:gap-12 my-8 w-full">
                             <div class="flex flex-col w-full gap-4">
                                 <h4 class="flex gap-1.5 text-base text-textColor">
                                     Progress to Goal
                                 </h4>
-                                <input type="range" min="0" max="100" value="40" class="range range-xs range-primary" /> 
+                                <input type="range" min="0" max="100" value="40" class="range range-xs range-primary" />
                                 <div class="flex items-center gap-3">
                                     <div class="w-full flex flex-col">
                                         <label class="label">
                                             <span class="label-text">From</span>
                                         </label>
-                                        <input type="text" value="$1,000" class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
+                                        <input type="text" value="$1,000"
+                                            class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
                                     </div>
                                     <div class="w-full flex flex-col">
                                         <label class="label">
                                             <span class="label-text">To</span>
                                         </label>
-                                        <input type="text" value="$3,000" class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
+                                        <input type="text" value="$3,000"
+                                            class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
                                     </div>
                                 </div>
                             </div>
@@ -1524,49 +1218,53 @@
                                 <h4 class="flex gap-1.5 text-base text-textColor">
                                     Age
                                 </h4>
-                                <input type="range" min="0" max="100" value="40" class="range range-xs range-primary" /> 
+                                <input type="range" min="0" max="100" value="40" class="range range-xs range-primary" />
                                 <div class="flex items-center gap-3">
                                     <div class="w-full flex flex-col">
                                         <label class="label">
                                             <span class="label-text">From</span>
                                         </label>
-                                        <input type="text" value="18" class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
+                                        <input type="text" value="18"
+                                            class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
                                     </div>
                                     <div class="w-full flex flex-col">
                                         <label class="label">
                                             <span class="label-text">To</span>
                                         </label>
-                                        <input type="text" value="35" class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
+                                        <input type="text" value="35"
+                                            class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
                                     </div>
                                 </div>
                             </div>
-                        </div>                          
-                    </div>
+                        </div>
+                    </div> -->
                     <!-- <div class="flex w-full h-full items-center justify-center flex-col gap-4">
 =
                         <img src="https://childfreebc.com/wp-content/uploads/2023/11/search-candidate-foo-1.png" alt="Coming soon" />
                         <span style="color: #76787A;">Feature Coming Soon</span>
                     </div> -->
-                        <div id="candidate_list">
-                            <?php echo do_shortcode('[elementor-template id="62119"]');?>
-                        </div>
+                    <div id="candidate_list">
+                        <?php echo do_shortcode('[elementor-template id="62119"]');?>
+                    </div>
 
                 </div>
 
-                <div id="tab4" class="tabContent hidden">  
+                <div id="tab4" class="tabContent hidden">
 
                     <div class="flex w-full justify-between items-center mb-8 flex-col lg:flex-row">
-                        <div class="flex gap-5 items-center w-full justify-start mb-6">     
+                        <div class="flex gap-5 items-center w-full justify-start mb-6">
                             <h1 class="text-3xl font-medium text-textColor pl-20 xl:pl-0">Procedure Notes</h1>
-                        </div>                            
+                        </div>
                         <div class="flex items-center gap-6 flex-wrap md:flex-nowrap md:justify-end w-full">
-                            <select class="select select-bordered w-56  border-borderColor rounded-xl bg-white text-primary">
+                            <select
+                                class="select select-bordered w-56  border-borderColor rounded-xl bg-white text-primary">
                                 <option disabled="" selected="">Show per page: 10</option>
                                 <option>25</option>
                                 <option>50</option>
                                 <option>100</option>
                             </select>
-                            <select class="select select-bordered w-40 border-borderColor rounded-xl bg-white text-primary">
+                            <select
+                                class="select select-bordered w-40 border-borderColor rounded-xl bg-white text-primary">
                                 <option disabled="" selected="">Status: All</option>
                                 <option>Cancelled</option>
                                 <option>In progress</option>
@@ -1575,29 +1273,208 @@
                         </div>
                     </div>
 
-                    <div class="flex w-full h-full items-center justify-center flex-col gap-4">
-<!--                        <img src="https://staging.childfreebc.com/wp-content/uploads/2023/11/search-candidate-foo-1.png" alt="Coming soon" />-->
-                        <img src="https://childfreebc.com/wp-content/uploads/2023/11/search-candidate-foo-1.png" alt="Coming soon" />
-                        <span style="color: #76787A;">Feature Coming Soon</span>
+                    <?php
+                        $user_id = get_current_user_id();
+                        $candidate_details = get_field('candidates_for_physicians', 'user_' . $user_id);
+                        
+                      //  echo($user_id);
+                     // print_r($active_classmy_candidates);
+                        if(!$my_candidates) { // change condition to !$candidate_details
+                            echo '<div class="w-full flex items-center justify-center my-12">
+                            <span class="text-3xl text-textValue">No Candidates</span>
+                            </div>';
+                        } else { 
+                            //print_r($my_candidates);
+                            ?>
+                    <div class="overflow-x-auto">
+                        <table class="table table-auto">
+                            <!-- head -->
+                            <thead>
+                                <tr
+                                    class="text-xs font-semibold bg-primary bg-opacity-5 text-info border-b border-borderColor h-14">
+                                    <th>Candidate</th>
+                                    <th>Procedure</th>
+
+                                    <th>Procedure Date</th>
+                                    <th>Total Notes</th>
+                                    <th>Last Note Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php 
+                                $count = 0;
+                            foreach ($my_candidates as $candidate_detail) {
+                                $candidate = $candidate_detail['candidate'];
+                                $candidate_status = $candidate_detail['candidate_status'];
+                                $url = get_permalink($candidate_detail['candidate_id']);
+                                $count++;
+                                $is_even = ($count % 2 == 0) ? true : false;
+                                $user_image = get_the_post_thumbnail_url($candidate_detail['candidate_id'], 'full');
+                                $raised_amount = intval(get_post_meta($candidate_detail['candidate_id'], '_amount_raised', true));
+                                $goal = intval(get_post_meta($candidate_detail['candidate_id'], '_goal', true));
+                                $sex = get_post_meta($candidate_detail['candidate_id'], '_sex', true);
+                                $procedure = ($sex == 'male') ? 'Seeking Vasectomy' : 'Tubal Ligation';
+                                $procedure_status = '';
+                                if ($candidate_detail['procedure_status'] != 'Cancelled'){
+                                    $procedure_status = ($raised_amount >= $goal) ? 'Completed' : 'In progress';
+                                } else {
+                                    $procedure_status = $candidate_detail['procedure_status'];
+                                }
+                            ?>
+
+
+                                <tr class="h-14 border-0 <?php echo $is_even ? 'bg-primary bg-opacity-5' : 'bg-white'; ?>">
+                                    <td>
+                                        <div class="flex items-center space-x-4">
+                                            <div class="avatar">
+                                                <div class="mask mask-squircle w-6 h-6">
+                                                    <img src="<?php echo $user_image;?>" alt="">
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="font-normal text-primary text-sm underline">
+                                                    <a href="<?php echo $url; ?>"><?php echo $candidate; ?></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="">
+                                        <?php
+                                            switch ($sex) {
+                                                case 'male':
+                                                    echo '<span class="py-1 px-2 border rounded-full" style="font-family: Be Vietnam Pro; font-size: 12px; font-style: normal; font-weight: 500; line-height: 150%; color: #0B46A0; border-color: #0B46A0; background: #EDF3FE;">Vasectomy</span>';
+                                                    break;
+                                                case 'female':
+                                                    echo '<span class="py-1 px-2 border rounded-full" style="font-family: Be Vietnam Pro; font-size: 12px; font-style: normal;font-weight: 500; line-height: 150%; color: #8802A9; border-color: #8802A9; background: #F3E6F6; white-space: nowrap;">Tubal Ligation</span>';
+                                                    break;
+                                                default:
+                                                    echo '';
+                                                break;
+                                            }
+                                        ?>
+                                    </td>
+                                    <td class="text-left">
+                                        <div class="flex gap-2 items-center">
+                                            <span class="mt-1 font-medium text-textValue">
+                                                <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M13.8008 2H12.3008V1.5C12.3008 1.36739 12.2481 1.24021 12.1543 1.14645C12.0606 1.05268 11.9334 1 11.8008 1C11.6682 1 11.541 1.05268 11.4472 1.14645C11.3535 1.24021 11.3008 1.36739 11.3008 1.5V2H6.30078V1.5C6.30078 1.36739 6.2481 1.24021 6.15433 1.14645C6.06057 1.05268 5.93339 1 5.80078 1C5.66817 1 5.541 1.05268 5.44723 1.14645C5.35346 1.24021 5.30078 1.36739 5.30078 1.5V2H3.80078C3.53556 2 3.28121 2.10536 3.09367 2.29289C2.90614 2.48043 2.80078 2.73478 2.80078 3V13C2.80078 13.2652 2.90614 13.5196 3.09367 13.7071C3.28121 13.8946 3.53556 14 3.80078 14H13.8008C14.066 14 14.3204 13.8946 14.5079 13.7071C14.6954 13.5196 14.8008 13.2652 14.8008 13V3C14.8008 2.73478 14.6954 2.48043 14.5079 2.29289C14.3204 2.10536 14.066 2 13.8008 2ZM5.30078 3V3.5C5.30078 3.63261 5.35346 3.75979 5.44723 3.85355C5.541 3.94732 5.66817 4 5.80078 4C5.93339 4 6.06057 3.94732 6.15433 3.85355C6.2481 3.75979 6.30078 3.63261 6.30078 3.5V3H11.3008V3.5C11.3008 3.63261 11.3535 3.75979 11.4472 3.85355C11.541 3.94732 11.6682 4 11.8008 4C11.9334 4 12.0606 3.94732 12.1543 3.85355C12.2481 3.75979 12.3008 3.63261 12.3008 3.5V3H13.8008V5H3.80078V3H5.30078ZM13.8008 13H3.80078V6H13.8008V13Z" fill="#76787A"/>
+                                                </svg>
+                                            </span>
+                                            <span class="text-sm font-medium text-textColor"><?php echo  the_field('procedure_date', $candidate_detail['candidate_id']);?></span>
+                                        </div>
+
+                                        
+                                        
+                                    </td>
+                                    <td>
+                                        <div class=" text-xs font-medium p-3 whitespace-nowrap">
+                                            23
+                                        </div>
+                                    </td>
+                                   
+                                    <td class="">
+                                        <div class="flex gap-2 items-center">
+                                            <span class="text-sm font-medium text-textValue mt-1">
+                                                <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M13.8008 2H12.3008V1.5C12.3008 1.36739 12.2481 1.24021 12.1543 1.14645C12.0606 1.05268 11.9334 1 11.8008 1C11.6682 1 11.541 1.05268 11.4472 1.14645C11.3535 1.24021 11.3008 1.36739 11.3008 1.5V2H6.30078V1.5C6.30078 1.36739 6.2481 1.24021 6.15433 1.14645C6.06057 1.05268 5.93339 1 5.80078 1C5.66817 1 5.541 1.05268 5.44723 1.14645C5.35346 1.24021 5.30078 1.36739 5.30078 1.5V2H3.80078C3.53556 2 3.28121 2.10536 3.09367 2.29289C2.90614 2.48043 2.80078 2.73478 2.80078 3V13C2.80078 13.2652 2.90614 13.5196 3.09367 13.7071C3.28121 13.8946 3.53556 14 3.80078 14H13.8008C14.066 14 14.3204 13.8946 14.5079 13.7071C14.6954 13.5196 14.8008 13.2652 14.8008 13V3C14.8008 2.73478 14.6954 2.48043 14.5079 2.29289C14.3204 2.10536 14.066 2 13.8008 2ZM5.30078 3V3.5C5.30078 3.63261 5.35346 3.75979 5.44723 3.85355C5.541 3.94732 5.66817 4 5.80078 4C5.93339 4 6.06057 3.94732 6.15433 3.85355C6.2481 3.75979 6.30078 3.63261 6.30078 3.5V3H11.3008V3.5C11.3008 3.63261 11.3535 3.75979 11.4472 3.85355C11.541 3.94732 11.6682 4 11.8008 4C11.9334 4 12.0606 3.94732 12.1543 3.85355C12.2481 3.75979 12.3008 3.63261 12.3008 3.5V3H13.8008V5H3.80078V3H5.30078ZM13.8008 13H3.80078V6H13.8008V13Z" fill="#76787A"/>
+                                                </svg>
+                                            </span>
+                                            <span class="text-sm font-medium text-textColor">23 Feb 2023, 2:50 PM</span>
+                                        </div>
+                                        
+                                        
+                                    </td>
+
+                                    <td class="">
+                                        <div class="flex gap-2">
+                                            <span class="text-sm font-medium text-textValue add_note" data-user-id="<?php echo $candidate_detail['candidate_id']; ?>">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M21 12C21 12.1989 20.921 12.3897 20.7803 12.5303C20.6397 12.671 20.4489 12.75 20.25 12.75H12.75V20.25C12.75 20.4489 12.671 20.6397 12.5303 20.7803C12.3897 20.921 12.1989 21 12 21C11.8011 21 11.6103 20.921 11.4697 20.7803C11.329 20.6397 11.25 20.4489 11.25 20.25V12.75H3.75C3.55109 12.75 3.36032 12.671 3.21967 12.5303C3.07902 12.3897 3 12.1989 3 12C3 11.8011 3.07902 11.6103 3.21967 11.4697C3.36032 11.329 3.55109 11.25 3.75 11.25H11.25V3.75C11.25 3.55109 11.329 3.36032 11.4697 3.21967C11.6103 3.07902 11.8011 3 12 3C12.1989 3 12.3897 3.07902 12.5303 3.21967C12.671 3.36032 12.75 3.55109 12.75 3.75V11.25H20.25C20.4489 11.25 20.6397 11.329 20.7803 11.4697C20.921 11.6103 21 11.8011 21 12Z" fill="#003366"/>
+                                                </svg>
+
+                                            </span>
+                                            <span class="text-sm font-medium text-textValue edit_note">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M8.25 9C8.25 8.80109 8.32902 8.61032 8.46967 8.46967C8.61032 8.32902 8.80109 8.25 9 8.25H15C15.1989 8.25 15.3897 8.32902 15.5303 8.46967C15.671 8.61032 15.75 8.80109 15.75 9C15.75 9.19891 15.671 9.38968 15.5303 9.53033C15.3897 9.67098 15.1989 9.75 15 9.75H9C8.80109 9.75 8.61032 9.67098 8.46967 9.53033C8.32902 9.38968 8.25 9.19891 8.25 9ZM9 12.75H15C15.1989 12.75 15.3897 12.671 15.5303 12.5303C15.671 12.3897 15.75 12.1989 15.75 12C15.75 11.8011 15.671 11.6103 15.5303 11.4697C15.3897 11.329 15.1989 11.25 15 11.25H9C8.80109 11.25 8.61032 11.329 8.46967 11.4697C8.32902 11.6103 8.25 11.8011 8.25 12C8.25 12.1989 8.32902 12.3897 8.46967 12.5303C8.61032 12.671 8.80109 12.75 9 12.75ZM12 14.25H9C8.80109 14.25 8.61032 14.329 8.46967 14.4697C8.32902 14.6103 8.25 14.8011 8.25 15C8.25 15.1989 8.32902 15.3897 8.46967 15.5303C8.61032 15.671 8.80109 15.75 9 15.75H12C12.1989 15.75 12.3897 15.671 12.5303 15.5303C12.671 15.3897 12.75 15.1989 12.75 15C12.75 14.8011 12.671 14.6103 12.5303 14.4697C12.3897 14.329 12.1989 14.25 12 14.25ZM21 4.5V14.6897C21.0006 14.8867 20.9621 15.082 20.8866 15.264C20.8111 15.446 20.7002 15.6112 20.5603 15.75L15.75 20.5603C15.6112 20.7002 15.446 20.8111 15.264 20.8866C15.082 20.9621 14.8867 21.0006 14.6897 21H4.5C4.10218 21 3.72064 20.842 3.43934 20.5607C3.15804 20.2794 3 19.8978 3 19.5V4.5C3 4.10218 3.15804 3.72064 3.43934 3.43934C3.72064 3.15804 4.10218 3 4.5 3H19.5C19.8978 3 20.2794 3.15804 20.5607 3.43934C20.842 3.72064 21 4.10218 21 4.5ZM4.5 19.5H14.25V15C14.25 14.8011 14.329 14.6103 14.4697 14.4697C14.6103 14.329 14.8011 14.25 15 14.25H19.5V4.5H4.5V19.5ZM15.75 15.75V18.4406L18.4397 15.75H15.75Z" fill="#8497AB"/>
+                                                </svg>
+
+
+                                            </span>
+                                        </div>
+                                        
+                                        
+                                    </td>
+                                </tr>
+
+                                <?php } ?>
+
+
+                            </tbody>
+                        </table>
                     </div>
-                                     
+                    <?php
+                            }
+                            ?>
+                    <div class="w-full flex justify-center mt-8 gap-3.5 items-center">
+                        <?php
+                
+                                $total_items = 1;
+                                $items_per_page = 10; 
+                                $total_pages = ceil($total_items / $items_per_page);
+                                
+                                for ($i = 1; $i <= $total_pages; $i++) {
+                                    $active_class = $i === $page ? 'active' : '';
+                                    echo '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="cursor-pointer">
+                                        <g clip-path="url(#clip0_1049_13851)">
+                                        <path d="M15 4.5L7.5 12L15 19.5" stroke="#333333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M15 4.5L7.5 12L15 19.5" stroke="black" stroke-opacity="0.2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M15 4.5L7.5 12L15 19.5" stroke="black" stroke-opacity="0.2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M15 4.5L7.5 12L15 19.5" stroke="black" stroke-opacity="0.2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </g>
+                                        <defs>
+                                        <clipPath id="clip0_1049_13851">
+                                            <rect width="24" height="24" fill="white" transform="matrix(0 -1 -1 0 24 24)"/>
+                                        </clipPath>
+                                        </defs>
+                                    </svg>';
+                                    echo '<a href="?page=' . $i . '" class="page-link w-10 h-10 border-0 bg-transparent flex items-center justify-center ' . $active_class . '">' . $i . '</a>';
+                                    echo '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="cursor-pointer">
+                                        <g clip-path="url(#clip0_1049_13883)">
+                                        <path d="M9 4.5L16.5 12L9 19.5" stroke="#333333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M9 4.5L16.5 12L9 19.5" stroke="black" stroke-opacity="0.2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M9 4.5L16.5 12L9 19.5" stroke="black" stroke-opacity="0.2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M9 4.5L16.5 12L9 19.5" stroke="black" stroke-opacity="0.2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </g>
+                                        <defs>
+                                        <clipPath id="clip0_1049_13883">
+                                            <rect width="24" height="24" fill="white" transform="matrix(0 -1 1 0 0 24)"/>
+                                        </clipPath>
+                                        </defs>
+                                    </svg>'; 
+                                }
+                                ?>
+                    </div>
+
                 </div>
 
                 <div id="tab5" class="tabContent hidden">
 
                     <div class="flex w-full justify-between items-center mb-8 lg:mb-0 flex-col md:flex-row">
                         <div class="flex gap-5 items-center w-full justify-start mb-6">
-                            
+
                             <h1 class="text-3xl font-medium text-textColor pl-20 xl:pl-0">Notification</h1>
                         </div>
                         <div class="flex items-center gap-6 flex-wrap md:flex-nowrap md:justify-end w-full">
-                            <select class="select select-bordered w-56  border-borderColor rounded-xl bg-white text-primary">
+                            <select
+                                class="select select-bordered w-56  border-borderColor rounded-xl bg-white text-primary">
                                 <option disabled="" selected="">Show her page: 10</option>
                                 <option>25</option>
                                 <option>50</option>
                                 <option>100</option>
                             </select>
-                            <select class="select select-bordered w-40  border-borderColor rounded-xl bg-white text-primary">
+                            <select
+                                class="select select-bordered w-40  border-borderColor rounded-xl bg-white text-primary">
                                 <option disabled="" selected="">Status: All</option>
                                 <option>Cancelled</option>
                                 <option>In progress</option>
@@ -1607,11 +1484,11 @@
                     </div>
 
                     <div class="flex w-full h-full items-center justify-center flex-col gap-4">
-<!--                        <img src="https://staging.childfreebc.com/wp-content/uploads/2023/11/foo2-1.png" alt="Coming soon" />-->
+                        <!--                        <img src="https://staging.childfreebc.com/wp-content/uploads/2023/11/foo2-1.png" alt="Coming soon" />-->
                         <img src="https://childfreebc.com/wp-content/uploads/2023/11/foo2-1.png" alt="Coming soon" />
                         <span style="color: #76787A;">Feature Coming Soon</span>
                     </div>
-                                                    
+
 
                 </div>
 
@@ -1620,78 +1497,90 @@
                         <div class="flex gap-5 items-center w-full justify-start mb-6">
                             <h1 class="text-3xl font-medium text-textColor pl-20 xl:pl-0">Influencer Referrals</h1>
                         </div>
-                    </div>                                                
+                    </div>
                     <?php
                         
                         if(!$foundRef) {
                             ?>
-                                <div class="flex items-center w-full justify-center h-full text-3xl text-textValue my-12">No referrals</div>
-                            <?php
+                    <div class="flex items-center w-full justify-center h-full text-3xl text-textValue my-12">No
+                        referrals</div>
+                    <?php
                         } else {
                             ?>
-                                <div class="flex w-full h-full justify-start flex-col md:flex-row gap-8">
-                                    <div class="w-full flex items-center flex-col md:flex-row gap-2 rounded-xl p-4 gap-6" style="background-color: #EDF3FE;">
-                                        <div class="flex flex-col gap-2">
-                                            <div class="flex items-center text-xl gap-1">
-                                                <span>Referral</span>
-                                                <span>Bonus Program</span>
-                                            </div>
-                                            <p>If ChildFree by Choice is a cause you can get behind, please help spread the word through our Referral Bonus Program. For any Donors that put your Username down in </p>
-                                            <div class="flex items-center flex-wrap gap-2">
-                                                <span>Step 2 of Donation checkout, you receive </span>
-                                                <span class="py-1 px-2.5 bg-accentBg rounded-full font-medium" style="color: #8802A9;">10%</span>
-                                                <span>of the Donation Amount.</span>
-                                                <span>To request payout of your referral bonus please email at <a class="underline text-primary" href="mailto:info@childfreebc.com">info@childfreebc.com</a></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-col gap-6 rounded-xl w-full lg:max-w-sm p-4" style="background-color: #F2E5FF;">
-                                        <span class="text-base text-primary">Raised with referrals</span>
-                                        <span class="text-primary text-3xl font-semibold">$10</span>
-                                    </div>
+                    <div class="flex w-full h-full justify-start flex-col md:flex-row gap-8">
+                        <div class="w-full flex items-center flex-col md:flex-row gap-2 rounded-xl p-4 gap-6"
+                            style="background-color: #EDF3FE;">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center text-xl gap-1">
+                                    <span>Referral</span>
+                                    <span>Bonus Program</span>
                                 </div>
-                                <div class="flex flex-col gap-4">
-                                    <h2 class="text-3xl font-medium text-textColor my-6">Your referral bonus</h2>
+                                <p>If ChildFree by Choice is a cause you can get behind, please help spread the word
+                                    through our Referral Bonus Program. For any Donors that put your Username down in
+                                </p>
+                                <div class="flex items-center flex-wrap gap-2">
+                                    <span>Step 2 of Donation checkout, you receive </span>
+                                    <span class="py-1 px-2.5 bg-accentBg rounded-full font-medium"
+                                        style="color: #8802A9;">10%</span>
+                                    <span>of the Donation Amount.</span>
+                                    <span>To request payout of your referral bonus please email at <a
+                                            class="underline text-primary"
+                                            href="mailto:info@childfreebc.com">info@childfreebc.com</a></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-6 rounded-xl w-full lg:max-w-sm p-4"
+                            style="background-color: #F2E5FF;">
+                            <span class="text-base text-primary">Raised with referrals</span>
+                            <span class="text-primary text-3xl font-semibold">$10</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-4">
+                        <h2 class="text-3xl font-medium text-textColor my-6">Your referral bonus</h2>
 
-                                    <div class="overflow-x-auto" style="border-radius: 8px 8px 0 0;">
-                                        <table class="table rounded-t-lg">
-                                            
-                                            <thead class="h-14">
-                                                <tr class="text-xs font-semibold bg-primary bg-opacity-5 text-info border-b border-borderColor" style="color: #8497AB !important">
-                                                    <th>Candidate Name</th>
-                                                    <th>Donor</th>
-                                                    <th>Donation Amount</th>
-                                                    <th>Referral bonus</th>
-                                                    <th>Date</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr class="h-14 border-0 bg-white">
-                                                    <td class="h-14">
-                                                        <div class="flex items-center space-x-4">
-                                                            <div class="font-normal text-primary text-sm underline">Candidate Name</div>
-                                                        </div>
-                                                    </td>
-                                                    <td class="h-14">
-                                                        <div class="flex items-center space-x-4">
-                                                            <div class="font-normal text-primary text-sm underline"><?php echo $ref_user_name ?></div>
-                                                        </div>
-                                                    </td>
-                                                    <td class="flex gap-2 items-center h-14">
-                                                        <span class="text-sm font-medium text-textColor">$100</span>
-                                                    </td>
-                                                    <td class="flex gap-2 items-center h-14">
-                                                        <span class="text-sm font-medium text-textColor">$10</span>
-                                                    </td>
-                                                    <td class="h-14">
-                                                        <span class="text-sm font-medium text-textColor"><?php echo $formatted_ref_order_date ?></span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>													
-                                        </table>
-                                    </div> 
-                                </div>
-                            <?php
+                        <div class="overflow-x-auto" style="border-radius: 8px 8px 0 0;">
+                            <table class="table rounded-t-lg">
+
+                                <thead class="h-14">
+                                    <tr class="text-xs font-semibold bg-primary bg-opacity-5 text-info border-b border-borderColor"
+                                        style="color: #8497AB !important">
+                                        <th>Candidate Name</th>
+                                        <th>Donor</th>
+                                        <th>Donation Amount</th>
+                                        <th>Referral bonus</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="h-14 border-0 bg-white">
+                                        <td class="h-14">
+                                            <div class="flex items-center space-x-4">
+                                                <div class="font-normal text-primary text-sm underline">Candidate Name
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="h-14">
+                                            <div class="flex items-center space-x-4">
+                                                <div class="font-normal text-primary text-sm underline">
+                                                    <?php echo $ref_user_name ?></div>
+                                            </div>
+                                        </td>
+                                        <td class="flex gap-2 items-center h-14">
+                                            <span class="text-sm font-medium text-textColor">$100</span>
+                                        </td>
+                                        <td class="flex gap-2 items-center h-14">
+                                            <span class="text-sm font-medium text-textColor">$10</span>
+                                        </td>
+                                        <td class="h-14">
+                                            <span
+                                                class="text-sm font-medium text-textColor"><?php echo $formatted_ref_order_date ?></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <?php
                         }
                     ?>
                 </div>
@@ -1702,16 +1591,26 @@
                             <h1 class="text-3xl font-medium text-textColor pl-20 xl:pl-0">Account Details</h1>
                         </div>
                         <button class="btn text-white border-0 bg-primary hidden sm:flex">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none">
                                 <g clip-path="url(#clip0_1068_61413)">
-                                <path d="M3.75 8.56031V19.5C3.75 19.6989 3.82902 19.8897 3.96967 20.0303C4.11032 20.171 4.30109 20.25 4.5 20.25H19.5C19.6989 20.25 19.8897 20.171 20.0303 20.0303C20.171 19.8897 20.25 19.6989 20.25 19.5V4.5C20.25 4.30109 20.171 4.11032 20.0303 3.96967C19.8897 3.82902 19.6989 3.75 19.5 3.75H8.56031C8.36166 3.75009 8.17117 3.82899 8.03063 3.96938L3.96938 8.03063C3.82899 8.17117 3.75009 8.36166 3.75 8.56031Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M12 17.25C13.6569 17.25 15 15.9069 15 14.25C15 12.5931 13.6569 11.25 12 11.25C10.3431 11.25 9 12.5931 9 14.25C9 15.9069 10.3431 17.25 12 17.25Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M8.25 8.25H15.75C15.9489 8.25 16.1397 8.17098 16.2803 8.03033C16.421 7.88968 16.5 7.69891 16.5 7.5V3.75" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path
+                                        d="M3.75 8.56031V19.5C3.75 19.6989 3.82902 19.8897 3.96967 20.0303C4.11032 20.171 4.30109 20.25 4.5 20.25H19.5C19.6989 20.25 19.8897 20.171 20.0303 20.0303C20.171 19.8897 20.25 19.6989 20.25 19.5V4.5C20.25 4.30109 20.171 4.11032 20.0303 3.96967C19.8897 3.82902 19.6989 3.75 19.5 3.75H8.56031C8.36166 3.75009 8.17117 3.82899 8.03063 3.96938L3.96938 8.03063C3.82899 8.17117 3.75009 8.36166 3.75 8.56031Z"
+                                        stroke="white" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M12 17.25C13.6569 17.25 15 15.9069 15 14.25C15 12.5931 13.6569 11.25 12 11.25C10.3431 11.25 9 12.5931 9 14.25C9 15.9069 10.3431 17.25 12 17.25Z"
+                                        stroke="white" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M8.25 8.25H15.75C15.9489 8.25 16.1397 8.17098 16.2803 8.03033C16.421 7.88968 16.5 7.69891 16.5 7.5V3.75"
+                                        stroke="white" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
                                 </g>
                                 <defs>
-                                <clipPath id="clip0_1068_61413">
-                                    <rect width="24" height="24" fill="white"/>
-                                </clipPath>
+                                    <clipPath id="clip0_1068_61413">
+                                        <rect width="24" height="24" fill="white" />
+                                    </clipPath>
                                 </defs>
                             </svg>
                             Save Changes
@@ -1727,35 +1626,48 @@
                                         <label class="label">
                                             <span class="label-text">First Name</span>
                                         </label>
-                                        <input type="text" value="<?php echo $user->user_firstname ?>" class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
+                                        <input type="text" value="<?php echo $user->user_firstname ?>"
+                                            class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
                                     </div>
                                     <div class="w-full flex flex-col">
                                         <label class="label">
                                             <span class="label-text">Last Name</span>
                                         </label>
-                                        <input type="text" value="<?php echo  $user->user_lastname ?>" class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
+                                        <input type="text" value="<?php echo  $user->user_lastname ?>"
+                                            class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
                                     </div>
                                 </div>
                                 <div class="w-full flex flex-col">
                                     <label class="label">
                                         <span class="label-text">Email</span>
                                     </label>
-                                    <input type="text" value="<?php echo  $user->user_email ?>" class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
+                                    <input type="text" value="<?php echo  $user->user_email ?>"
+                                        class="input input-bordered w-full bg-white border-borderColor rounded-xl" />
                                 </div>
                             </div>
                         </div>
 
                         <button class="btn text-white border-0 bg-primary flex sm:hidden">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none">
                                 <g clip-path="url(#clip0_1068_61413)">
-                                <path d="M3.75 8.56031V19.5C3.75 19.6989 3.82902 19.8897 3.96967 20.0303C4.11032 20.171 4.30109 20.25 4.5 20.25H19.5C19.6989 20.25 19.8897 20.171 20.0303 20.0303C20.171 19.8897 20.25 19.6989 20.25 19.5V4.5C20.25 4.30109 20.171 4.11032 20.0303 3.96967C19.8897 3.82902 19.6989 3.75 19.5 3.75H8.56031C8.36166 3.75009 8.17117 3.82899 8.03063 3.96938L3.96938 8.03063C3.82899 8.17117 3.75009 8.36166 3.75 8.56031Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M12 17.25C13.6569 17.25 15 15.9069 15 14.25C15 12.5931 13.6569 11.25 12 11.25C10.3431 11.25 9 12.5931 9 14.25C9 15.9069 10.3431 17.25 12 17.25Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M8.25 8.25H15.75C15.9489 8.25 16.1397 8.17098 16.2803 8.03033C16.421 7.88968 16.5 7.69891 16.5 7.5V3.75" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path
+                                        d="M3.75 8.56031V19.5C3.75 19.6989 3.82902 19.8897 3.96967 20.0303C4.11032 20.171 4.30109 20.25 4.5 20.25H19.5C19.6989 20.25 19.8897 20.171 20.0303 20.0303C20.171 19.8897 20.25 19.6989 20.25 19.5V4.5C20.25 4.30109 20.171 4.11032 20.0303 3.96967C19.8897 3.82902 19.6989 3.75 19.5 3.75H8.56031C8.36166 3.75009 8.17117 3.82899 8.03063 3.96938L3.96938 8.03063C3.82899 8.17117 3.75009 8.36166 3.75 8.56031Z"
+                                        stroke="white" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M12 17.25C13.6569 17.25 15 15.9069 15 14.25C15 12.5931 13.6569 11.25 12 11.25C10.3431 11.25 9 12.5931 9 14.25C9 15.9069 10.3431 17.25 12 17.25Z"
+                                        stroke="white" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M8.25 8.25H15.75C15.9489 8.25 16.1397 8.17098 16.2803 8.03033C16.421 7.88968 16.5 7.69891 16.5 7.5V3.75"
+                                        stroke="white" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
                                 </g>
                                 <defs>
-                                <clipPath id="clip0_1068_61413">
-                                    <rect width="24" height="24" fill="white"/>
-                                </clipPath>
+                                    <clipPath id="clip0_1068_61413">
+                                        <rect width="24" height="24" fill="white" />
+                                    </clipPath>
                                 </defs>
                             </svg>
                             Save Changes
@@ -1763,10 +1675,10 @@
 
                         <div class="flex flex-col w-full shadow-md px-3 py-4 lg:px-8 lg:py-6 rounded-md gap-6">
                             <h1 class="text-2xl text-textColor">Email Verification</h1>
-                            <!-- Condititon user verified email -->         
-                                
+                            <!-- Condititon user verified email -->
+
                             <?php 
-                                // echo '<script>console.log('. json_encode($user) .')</script>'; 
+                                 echo '<script>console.log('. $user->user_status .')</script>'; 
                                 $user_email = $user->user_email;
                                 $user_email_mark = $user->user_status; // change to user obj email boolean mark
 
@@ -1795,9 +1707,10 @@
                                             </span>
                                         </label>'; 
                                 }
-                            ?>                
+                            ?>
                         </div>
-                        <div class="flex w-full shadow-md px-3 py-4 lg:px-8 lg:py-6 rounded-md gap-6 justify-between items-center" style="height: 140px;">
+                        <div class="flex w-full shadow-md px-3 py-4 lg:px-8 lg:py-6 rounded-md gap-6 justify-between items-center"
+                            style="height: 140px;">
                             <h1 class="text-2xl text-textColor">Stripe account</h1>
                             <?php echo $stripeChecker ?>
                         </div>
@@ -1843,21 +1756,29 @@
                             </div>
                         </div>
 
-                        <div class="flex w-full justify-between shadow-md px-8 py-6 rounded-md gap-6 items-center flex-col sm:flex-row">
+                        <div
+                            class="flex w-full justify-between shadow-md px-8 py-6 rounded-md gap-6 items-center flex-col sm:flex-row">
                             <h1 class="text-2xl text-textColor">Password</h1>
                             <a href="/reset-password/">
                                 <button class="btn bg-white border-primary text-primary hover:scale-105">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none">
                                         <g clip-path="url(#clip0_1068_61470)">
-                                        <path d="M6 6C6 6 8.25 3.75 12 3.75C17.25 3.75 20.25 9 20.25 9" stroke="#143A62" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M18 18C18 18 15.75 20.25 12 20.25C6.75 20.25 3.75 15 3.75 15" stroke="#143A62" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M15.75 9H20.25V4.5" stroke="#143A62" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M8.25 15H3.75V19.5" stroke="#143A62" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M6 6C6 6 8.25 3.75 12 3.75C17.25 3.75 20.25 9 20.25 9"
+                                                stroke="#143A62" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="M18 18C18 18 15.75 20.25 12 20.25C6.75 20.25 3.75 15 3.75 15"
+                                                stroke="#143A62" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="M15.75 9H20.25V4.5" stroke="#143A62" stroke-width="1.5"
+                                                stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M8.25 15H3.75V19.5" stroke="#143A62" stroke-width="1.5"
+                                                stroke-linecap="round" stroke-linejoin="round" />
                                         </g>
                                         <defs>
-                                        <clipPath id="clip0_1068_61470">
-                                            <rect width="24" height="24" fill="white"/>
-                                        </clipPath>
+                                            <clipPath id="clip0_1068_61470">
+                                                <rect width="24" height="24" fill="white" />
+                                            </clipPath>
                                         </defs>
                                     </svg>
                                     Change Password
@@ -1865,12 +1786,18 @@
                             </a>
                         </div>
 
-                        <div class="flex w-full justify-between shadow-md px-8 py-6 rounded-md gap-6 items-center flex-col sm:flex-row">
+                        <div
+                            class="flex w-full justify-between shadow-md px-8 py-6 rounded-md gap-6 items-center flex-col sm:flex-row">
                             <h1 class="text-2xl text-textColor">Delete account</h1>
                             <form method="post" action="">
-                                <button class="btn bg-white border-warning text-warning capitalize hover:scale-105 hover:bg-red-200 hover:text-red-500" id="delete_account" onclick="delAcc.showModal()">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M20.25 4.5H16.5V3.75C16.5 3.15326 16.2629 2.58097 15.841 2.15901C15.419 1.73705 14.8467 1.5 14.25 1.5H9.75C9.15326 1.5 8.58097 1.73705 8.15901 2.15901C7.73705 2.58097 7.5 3.15326 7.5 3.75V4.5H3.75C3.55109 4.5 3.36032 4.57902 3.21967 4.71967C3.07902 4.86032 3 5.05109 3 5.25C3 5.44891 3.07902 5.63968 3.21967 5.78033C3.36032 5.92098 3.55109 6 3.75 6H4.5V19.5C4.5 19.8978 4.65804 20.2794 4.93934 20.5607C5.22064 20.842 5.60218 21 6 21H18C18.3978 21 18.7794 20.842 19.0607 20.5607C19.342 20.2794 19.5 19.8978 19.5 19.5V6H20.25C20.4489 6 20.6397 5.92098 20.7803 5.78033C20.921 5.63968 21 5.44891 21 5.25C21 5.05109 20.921 4.86032 20.7803 4.71967C20.6397 4.57902 20.4489 4.5 20.25 4.5ZM9 3.75C9 3.55109 9.07902 3.36032 9.21967 3.21967C9.36032 3.07902 9.55109 3 9.75 3H14.25C14.4489 3 14.6397 3.07902 14.7803 3.21967C14.921 3.36032 15 3.55109 15 3.75V4.5H9V3.75ZM18 19.5H6V6H18V19.5ZM10.5 9.75V15.75C10.5 15.9489 10.421 16.1397 10.2803 16.2803C10.1397 16.421 9.94891 16.5 9.75 16.5C9.55109 16.5 9.36032 16.421 9.21967 16.2803C9.07902 16.1397 9 15.9489 9 15.75V9.75C9 9.55109 9.07902 9.36032 9.21967 9.21967C9.36032 9.07902 9.55109 9 9.75 9C9.94891 9 10.1397 9.07902 10.2803 9.21967C10.421 9.36032 10.5 9.55109 10.5 9.75ZM15 9.75V15.75C15 15.9489 14.921 16.1397 14.7803 16.2803C14.6397 16.421 14.4489 16.5 14.25 16.5C14.0511 16.5 13.8603 16.421 13.7197 16.2803C13.579 16.1397 13.5 15.9489 13.5 15.75V9.75C13.5 9.55109 13.579 9.36032 13.7197 9.21967C13.8603 9.07902 14.0511 9 14.25 9C14.4489 9 14.6397 9.07902 14.7803 9.21967C14.921 9.36032 15 9.55109 15 9.75Z" fill="#FF2919"/>
+                                <button
+                                    class="btn bg-white border-warning text-warning capitalize hover:scale-105 hover:bg-red-200 hover:text-red-500"
+                                    id="delete_account" onclick="delAcc.showModal()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none">
+                                        <path
+                                            d="M20.25 4.5H16.5V3.75C16.5 3.15326 16.2629 2.58097 15.841 2.15901C15.419 1.73705 14.8467 1.5 14.25 1.5H9.75C9.15326 1.5 8.58097 1.73705 8.15901 2.15901C7.73705 2.58097 7.5 3.15326 7.5 3.75V4.5H3.75C3.55109 4.5 3.36032 4.57902 3.21967 4.71967C3.07902 4.86032 3 5.05109 3 5.25C3 5.44891 3.07902 5.63968 3.21967 5.78033C3.36032 5.92098 3.55109 6 3.75 6H4.5V19.5C4.5 19.8978 4.65804 20.2794 4.93934 20.5607C5.22064 20.842 5.60218 21 6 21H18C18.3978 21 18.7794 20.842 19.0607 20.5607C19.342 20.2794 19.5 19.8978 19.5 19.5V6H20.25C20.4489 6 20.6397 5.92098 20.7803 5.78033C20.921 5.63968 21 5.44891 21 5.25C21 5.05109 20.921 4.86032 20.7803 4.71967C20.6397 4.57902 20.4489 4.5 20.25 4.5ZM9 3.75C9 3.55109 9.07902 3.36032 9.21967 3.21967C9.36032 3.07902 9.55109 3 9.75 3H14.25C14.4489 3 14.6397 3.07902 14.7803 3.21967C14.921 3.36032 15 3.55109 15 3.75V4.5H9V3.75ZM18 19.5H6V6H18V19.5ZM10.5 9.75V15.75C10.5 15.9489 10.421 16.1397 10.2803 16.2803C10.1397 16.421 9.94891 16.5 9.75 16.5C9.55109 16.5 9.36032 16.421 9.21967 16.2803C9.07902 16.1397 9 15.9489 9 15.75V9.75C9 9.55109 9.07902 9.36032 9.21967 9.21967C9.36032 9.07902 9.55109 9 9.75 9C9.94891 9 10.1397 9.07902 10.2803 9.21967C10.421 9.36032 10.5 9.55109 10.5 9.75ZM15 9.75V15.75C15 15.9489 14.921 16.1397 14.7803 16.2803C14.6397 16.421 14.4489 16.5 14.25 16.5C14.0511 16.5 13.8603 16.421 13.7197 16.2803C13.579 16.1397 13.5 15.9489 13.5 15.75V9.75C13.5 9.55109 13.579 9.36032 13.7197 9.21967C13.8603 9.07902 14.0511 9 14.25 9C14.4489 9 14.6397 9.07902 14.7803 9.21967C14.921 9.36032 15 9.55109 15 9.75Z"
+                                            fill="#FF2919" />
                                     </svg>
                                     Delete
                                 </button>
@@ -1881,40 +1808,53 @@
 
                 <div id="tab8" class="tabContent hidden">
                     <div class="flex w-full justify-between items-center mb-8 lg:mb-6 flex-col md:flex-row">
-                            <div class="flex gap-5 items-center w-full justify-start">
-                                <h1 class="text-3xl font-medium text-textColor pl-20 xl:pl-0">Switch Account</h1>
-                            </div>
+                        <div class="flex gap-5 items-center w-full justify-start">
+                            <h1 class="text-3xl font-medium text-textColor pl-20 xl:pl-0">Switch Account</h1>
                         </div>
-                        <div class="flex flex-col w-full gap-4">
-                            <h3 class="text-xl text-textColor text-center sm:text-left">CBC permits four different user types and you can access your Account Dashboard for each user type</h1>
+                    </div>
+                    <div class="flex flex-col w-full gap-4">
+                        <h3 class="text-xl text-textColor text-center sm:text-left">CBC permits four different user
+                            types and you can access your Account Dashboard for each user type</h1>
                             <ul>
-                                <li class="text-textColor"><span class="text-primary font-medium">1. Candidate:</span> Access your Account as a Candidate user</li>
-                                <li class="text-textColor"><span class="text-primary font-medium">2. Donor:</span> Access your Account as a Donor user</li>
-                                <li class="text-textColor"><span class="text-primary font-medium">3. Advocate:</span> Access your Account as an Advocate user</li>
-                                <li class="text-textColor"><span class="text-primary font-medium">4. Physician:</span> Access your Account as a Physician user</li>
+                                <li class="text-textColor"><span class="text-primary font-medium">1. Candidate:</span>
+                                    Access your Account as a Candidate user</li>
+                                <li class="text-textColor"><span class="text-primary font-medium">2. Donor:</span>
+                                    Access your Account as a Donor user</li>
+                                <li class="text-textColor"><span class="text-primary font-medium">3. Advocate:</span>
+                                    Access your Account as an Advocate user</li>
+                                <li class="text-textColor"><span class="text-primary font-medium">4. Physician:</span>
+                                    Access your Account as a Physician user</li>
                             </ul>
                             <div class="w-full flex flex-col">
                                 <label class="label">
                                     <span class="label-text">Account type</span>
                                 </label>
 
-                                <select class="select select-bordered w-full sm:max-w-xs bg-white border-borderColor rounded-xl" id="userTypeSelect">
+                                <select
+                                    class="select select-bordered w-full sm:max-w-xs bg-white border-borderColor rounded-xl"
+                                    id="userTypeSelect">
                                     <?php echo $options ?>
                                 </select>
 
                             </div>
                             <button class="btn bg-primary text-white w-full sm:w-56 hover:scale-105" id="switchAcc">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
                                     <g clip-path="url(#clip0_1068_61688)">
-                                    <path d="M6 6C6 6 8.25 3.75 12 3.75C17.25 3.75 20.25 9 20.25 9" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M18 18C18 18 15.75 20.25 12 20.25C6.75 20.25 3.75 15 3.75 15" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M15.75 9H20.25V4.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M8.25 15H3.75V19.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M6 6C6 6 8.25 3.75 12 3.75C17.25 3.75 20.25 9 20.25 9" stroke="white"
+                                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M18 18C18 18 15.75 20.25 12 20.25C6.75 20.25 3.75 15 3.75 15"
+                                            stroke="white" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                        <path d="M15.75 9H20.25V4.5" stroke="white" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M8.25 15H3.75V19.5" stroke="white" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round" />
                                     </g>
                                     <defs>
-                                    <clipPath id="clip0_1068_61688">
-                                        <rect width="24" height="24" fill="white"/>
-                                    </clipPath>
+                                        <clipPath id="clip0_1068_61688">
+                                            <rect width="24" height="24" fill="white" />
+                                        </clipPath>
                                     </defs>
                                 </svg>
                                 Switch account
@@ -1922,71 +1862,25 @@
                     </div>
                 </div>
             </div>
-            </div>
         </div>
+    </div>
 
     <!-- Modals -->
     <dialog id="allRequests" class="modal">
-        <div class="modal-box bg-white text-textColor max-w-4xl">
+        <div class="modal-box bg-white text-textColor max-w-4xl max-h-full h-full overflow-hidden">
             <form method="dialog">
                 <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
             </form>
             <h2 class="font-bold text-3xl px-6 pb-8 border-b border-borderColor">All Requests:</h2>
-            <div class="text-center text-2xl text-textValue py-5 w-full">No request</div>
-            <!--
-                <div class="flex flex-col gap-4 pt-8 px-8 pb-1 items-center max-h-96 overflow-auto">
-                        <div class="w-full flex flex-col md:flex-row px-4 py-3 rounded-lg gap-4 shadowCard">
-                            <div class="flex w-full flex-col gap-4">
-                                <div class="flex items-center gap-4">
-                                    <h2 class="text-lg text-primary font-bold">
-                                        name']
-                                    </h2>
-                                    <div class="badge bg-badgeM badgeM text-blueMain py-3">
-                                        speciality
-                                    </div>
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <a href="tel:#">
-                                        phone
-                                    </a>
-                                    <a href="#" class="flex gap-1 items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
-                                            <g clip-path="url(#clip0_2152_34177)">
-                                                <path d="M3.5 15H12.5" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                <path d="M8 9C9.10457 9 10 8.10457 10 7C10 5.89543 9.10457 5 8 5C6.89543 5 6 5.89543 6 7C6 8.10457 6.89543 9 8 9Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                                <path d="M13 7C13 11.5 8 15 8 15C8 15 3 11.5 3 7C3 5.67392 3.52678 4.40215 4.46447 3.46447C5.40215 2.52678 6.67392 2 8 2C9.32608 2 10.5979 2.52678 11.5355 3.46447C12.4732 4.40215 13 5.67392 13 7Z" stroke="#143A62" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </g>
-                                            <defs>
-                                                <clipPath id="clip0_2152_34177">
-                                                <rect width="16" height="16" fill="white" transform="translate(0 0.5)"/>
-                                                </clipPath>
-                                            </defs>
-                                        </svg>
-                                        hospital
-                                    </a>
-                                    <a href="#">
-                                        website
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="flex w-full justify-end flex-wrap gap-4">
-                                <div class="flex gap-3 items-center">
-                                    <button class="px-4 py-2 bg-primary rounded-xl text-white border-primary hover:scale-105">Approve</button>
-                                    <button class="px-4 py-2 bg-white border-warning rounded-xl text-warning hover:scale-105 hover:bg-red-200 hover:border-red-200 hover:text-red-500">Decline</button>
-                                </div>
-                            </div>
-                        </div>
-                </div>
-
-                <span class="text-center text-2xl text-textValue">No request</span>
-            -->
+            <?php 
+                               set_query_var( 'candidateInProgress', $candidateInProgress );
+                                get_template_part( 'parts/ph_requests' );?>
+           
             <div class="flex items-center text-lg gap-1 pl-6 mt-4 xl:pl-0">
-                <?php
-                    $total_requests = 0;
-                ?>
+
                 <h3 class="text-textColor font-semibold">Requests:</h3>
-                <span class="text-textValue">(<?php echo $total_requests; ?>)</span>
-            </div> 
+                <span class="text-textValue">(<?php echo count($candidateInProgress); ?>)</span>
+            </div>
         </div>
     </dialog>
     <dialog id="logout" class="modal">
@@ -1999,9 +1893,12 @@
                 <span>Are you sure that you want to log out from your account?</span>
                 <div class="flex items-center gap-4 justify-center w-full flex-col sm:flex-row">
                     <form method="dialog" class="m-0 w-full">
-                        <button class="btn border border-primary bg-white text-primary w-full sm:w-48 hover:scale-105 hover:text-primary hover:bg-transparent">Cancel</button>
-                    </form>    
-                    <a href="<?php echo wp_logout_url(); ?>"><button class="btn w-full sm:w-48 bg-warning text-white border-warning hover:scale-105 hover:text-red-500 hover:bg-warning hover:bg-opacity-40 hover:border-warning">Log Out</button></a>                           
+                        <button
+                            class="btn border border-primary bg-white text-primary w-full sm:w-48 hover:scale-105 hover:text-primary hover:bg-transparent">Cancel</button>
+                    </form>
+                    <a href="<?php echo wp_logout_url(); ?>"><button
+                            class="btn w-full sm:w-48 bg-warning text-white border-warning hover:scale-105 hover:text-red-500 hover:bg-warning hover:bg-opacity-40 hover:border-warning">Log
+                            Out</button></a>
                 </div>
             </div>
         </div>
@@ -2013,13 +1910,18 @@
             </form>
             <h3 class="font-bold text-3xl px-6 pb-8 border-b border-borderColor">Delete Account</h3>
             <div class="flex flex-col gap-6 pt-8 px-8 pb-1 items-center">
-<!--                <img src="https://staging.childfreebc.com/wp-content/uploads/2023/10/29268674_hand_illustration-Converted-1.svg" alt="delete account" class="w-96 h-96" />-->
-                <img src="https://childfreebc.com/wp-content/uploads/2023/10/29268674_hand_illustration-Converted-1.svg" alt="delete account" class="w-96 h-96" />
-                <span class="text-xs text-textValue">If you would like to permanently delete your account, make any other changes to your account, or opt out of any portions of our Terms and Conditions or Privacy Policy, please e-mail us at <a href="registrations@childfreebc.com" class="text-primary font-normal">registrations@childfreebc.com</a> and we will assist with your request promptly.</span>
+                <!--                <img src="https://staging.childfreebc.com/wp-content/uploads/2023/10/29268674_hand_illustration-Converted-1.svg" alt="delete account" class="w-96 h-96" />-->
+                <img src="https://childfreebc.com/wp-content/uploads/2023/10/29268674_hand_illustration-Converted-1.svg"
+                    alt="delete account" class="w-96 h-96" />
+                <span class="text-xs text-textValue">If you would like to permanently delete your account, make any
+                    other changes to your account, or opt out of any portions of our Terms and Conditions or Privacy
+                    Policy, please e-mail us at <a href="registrations@childfreebc.com"
+                        class="text-primary font-normal">registrations@childfreebc.com</a> and we will assist with your
+                    request promptly.</span>
             </div>
         </div>
     </dialog>
-</main> 
+</main>
 
 <!-- $recent_donations_view = do_shortcode('[dashboard_candidate_recent_donations_view]');[candidate_progress] -->
 <!-- Charts -->
@@ -2113,5 +2015,50 @@
     }
     });
 </script> -->
+
+<!-- Modal notes window -->
+
+    <div id="physician-popup-overlay" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" data-user-id="">
+    
+        <div class="bg-white rounded-lg shadow-lg w-1/3 relative">
+            <div class="flex justify-between items-center border-b p-4">
+                <h2 class="text-xl font-semibold">Add new note</h2>
+                <button class="close text-gray-500 hover:text-gray-700 hover:bg-transparent border-none focus:outline-none ">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-4">
+            <form id="popup-form" class="space-y-4">
+                    <div>
+                        <label for="text-input" class="block text-sm font-medium text-gray-500" required>Note Title</label>
+                        <input type="text" id="text-input" name="note_title" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter note title...">
+                    </div>
+                    <div>
+                        <label for="textarea" class="block text-sm font-medium text-gray-500" required>Note Text</label>
+                        <textarea id="textarea" name="note_text" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter note text..." requiered></textarea>
+                    </div>
+                    <div>
+                        <label for="file-upload" class="block text-sm font-medium text-gray-700">Attachments <span class="font-noramlS text-gray-500">(Optional)</span></label>
+                        <div id="dropzone" class="dropzone">
+                            Drag & Drop files here or click to upload
+                            <input type="file" id="file-upload" name="attachments[]" multiple class="hidden">
+                        </div>
+                        <div id="file-list" class="mt-2 space-y-2"></div>
+                    </div>
+                    <input type="hidden" name="candidate_id" id="candidate_id" value="">
+                </form>
+            </div>
+            <div class="flex justify-end border-t p-4">
+                <button class="close bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded mr-2">Cancel</button>
+                <button type="submit" form="popup-form" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">Save</button>
+            </div>
+            <span class="form_notes_loader w-full h-full absolute top-0 flex items-center justify-center bg-slate-50	 bg-opacity-50" style="display:none;" id="form_notes_loader">
+                <img src="/wp-content/uploads/2023/04/candidates-loader.gif" width="55px">
+            </span>
+        </div>
+        
+    </div>
 
 <?php get_footer() ?>

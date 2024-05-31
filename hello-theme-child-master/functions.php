@@ -107,6 +107,7 @@ function enqueue_toggle_filters_script()
             wp_localize_script( 'filters-js', 'filterData', array(
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
             ) );
+            
         } else {
             wp_enqueue_script('physician-js', get_stylesheet_directory_uri() . '/assets/js/dashboardsJS/physician.js', array('jquery'), '1.0', true);
             wp_localize_script( 'physician-js', 'filterData', array(
@@ -539,4 +540,182 @@ function custom_header_code_tester()
 }
 add_action('wp_head', 'custom_header_code_tester');
 
+// Hook into Formidable Forms after entry creation
+//add_action('frm_after_create_entry', 'create_post_and_register_user', 50, 2);
 
+function create_post_and_register_user($entry_id, $form_id) {
+    global $frmdb, $wpdb;
+    // Check if the form ID matches the form where user registration occurs
+    if ($form_id == 3) { // Replace YOUR_REGISTRATION_FORM_ID with the actual form ID
+        // Get the product ID from the form entry data
+        //$product_id = absint($_POST['product_id_field']); // Replace 'product_id_field' with the actual field name for the product ID
+        $product_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $frmdb->entries WHERE id=".$entry_id.""));
+        // Check if the product ID is valid
+        if ($product_id) {
+            // Update user meta with the product ID during user registration
+            add_action('user_register', function ($user_id) use ($product_id) {
+                update_user_meta($user_id, 'product_id', $product_id);
+            });
+        }
+    }
+}
+
+
+//add_action('frm_after_create_entry', 'capture_product_id', 50, 2);
+function capture_product_id($entry_id, $form_id) {
+    // Check if this is the form where the product is created (replace 'your_form_id' with the actual form ID)
+    //if ($form_id == 3) {
+        // Assuming you have the product ID in the entry meta under a specific field key (replace 'your_field_key' with the actual field key)
+       // $product_id = FrmEntryMeta::get_entry_meta_value($entry_id, 'your_field_key');
+        global $frmdb, $wpdb;
+        // Save the product ID in a session variable or transient for later use
+        // You can also save it in a custom database table if needed
+        $product_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $frmdb->entries WHERE id=".$entry_id.""));
+        // Set the value in session storage
+        
+        set_transient('new_product_id', $product_id, HOUR_IN_SECONDS); // Example: save for 1 hour
+   // }
+}
+
+//add_action('user_register', 'save_product_id_user_meta', 20, 1);
+
+function save_product_id_user_meta($user_id) {
+    // Check if the new product ID is available in the transient or session
+    //if ($product_id = get_transient('new_product_id')) {
+        $product_id = get_transient('new_product_id');
+        // Save the product ID as user meta for the newly registered user
+        update_user_meta($user_id, 'product_id', $product_id);
+        update_user_meta($user_id, '_rest', $product_id);
+        update_user_meta($user_id, 'rest', $product_id);
+        
+        // Optionally, clear the transient or session variable after use
+        delete_transient('new_product_id');
+   // }
+}
+
+
+// Update user progress
+function update_product_progress() {
+    // Get all products
+    $products = get_posts(array(
+        'post_type' => 'product',
+        'posts_per_page' => -1,
+    ));
+
+    // Loop through products
+    foreach ($products as $product) {
+        $raised = intval(get_post_meta($product->ID, '_amount_raised', true));
+        $goal = intval(get_post_meta($product->ID, '_goal', true));
+        $progress = ($goal > 0 ? ($raised*100  / $goal): 0);
+        update_post_meta($product->ID, '_progress', $progress);
+    }
+}
+
+add_action('init', 'update_product_progress');
+
+// Add bonus to advocate after candidate registered
+
+function add_bonus_to_affiliate_on_login( $user_login, $user ) {
+    if ( ! function_exists( 'affiliate_wp' ) ) {
+        error_log( 'AffiliateWP is not active.' );
+        return;
+    }
+
+    $affiliate_id = affiliate_wp()->tracking->get_affiliate_id();
+
+
+    if ( $affiliate_id ) {
+
+        $bonus_amount = 5;
+        $current_balance = affwp_get_affiliate_unpaid_earnings( $affiliate_id );
+        $new_balance = $current_balance + $bonus_amount;
+
+        affwp_increase_affiliate_unpaid_earnings( $affiliate_id, $bonus_amount );
+
+    } else {
+
+        error_log( 'No affiliate ID found for user login.' );
+    }
+}
+add_action( 'wp_login', 'add_bonus_to_affiliate_on_login', 10, 2 );
+
+function add_bonus_to_affiliate_on_registration( $user_id ) {
+
+    if ( ! is_user_logged_in() ) {
+        return;
+    }
+
+
+    $user = get_userdata( $user_id );
+    $user_login = $user->user_login;
+
+    add_bonus_to_affiliate_on_login( $user_login, $user );
+}
+add_action( 'user_register', 'add_bonus_to_affiliate_on_registration' );
+
+// Add notes for physician dashboard
+
+function handle_add_procedure_note() {
+    // Verify nonce for security
+   // check_ajax_referer('acf_form', 'security');
+
+    // Get the product ID from the AJAX request
+    $product_id = intval($_POST['candidate_id']);
+    $note_title = sanitize_text_field($_POST['note_title']);
+    $note_text = sanitize_textarea_field($_POST['note_text']);
+    $attachments = $_FILES['attachments'];
+
+    // Current date and time
+    $note_created = current_time('mysql');
+
+    // Get the current repeater field values
+    $procedure_notes = get_field('procedure_notes', $product_id);
+
+    if (!$procedure_notes) {
+        $procedure_notes = [];
+    }
+
+    // Handle file uploads
+    $uploaded_files = [];
+    if (!empty($attachments['name'][0])) {
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/media.php');
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+
+        for ($i = 0; $i < count($attachments['name']); $i++) {
+            if ($attachments['error'][$i] === UPLOAD_ERR_OK) {
+                $file = [
+                    'name'     => $attachments['name'][$i],
+                    'type'     => $attachments['type'][$i],
+                    'tmp_name' => $attachments['tmp_name'][$i],
+                    'error'    => $attachments['error'][$i],
+                    'size'     => $attachments['size'][$i],
+                ];
+
+                // Upload the file and get the attachment ID
+                $attachment_id = media_handle_sideload($file, 0);
+                if (is_wp_error($attachment_id)) {
+                    wp_send_json_error(['message' => $attachment_id->get_error_message()]);
+                } else {
+                    $uploaded_files[] = ['file' => $attachment_id];
+                }
+            }
+        }
+    }
+
+    // Prepare the new note data
+    $new_note = [
+        'note_title' => $note_title,
+        'note_text' => $note_text,
+        'attachments' => $uploaded_files,
+        'note_created' => $note_created,
+    ];
+
+    // Append the new note to the repeater field
+    $procedure_notes[] = $new_note;
+    update_field('procedure_notes', $procedure_notes, $product_id);
+
+    wp_send_json_success(['message' => 'Note added successfully']);
+}
+add_action('wp_ajax_add_procedure_note', 'handle_add_procedure_note');
+add_action('wp_ajax_nopriv_add_procedure_note', 'handle_add_procedure_note');
