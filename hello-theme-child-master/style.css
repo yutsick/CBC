@@ -145,3 +145,27 @@ text-decoration: underline !important;
     transform: rotate(90deg);
     transition: 0.2s;
 }
+
+#physician-popup-overlay{
+    display: none;
+}
+
+.add_note{
+    cursor: pointer;
+}
+
+.dropzone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+    border: 2px dashed #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.dropzone.dragover {
+    background-color: #e6f7ff;
+}

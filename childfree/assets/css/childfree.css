@@ -918,3 +918,14 @@ input#field_i5n9y-0, input#field_i5n9y-1, input#field_i5n9y-2, input#field_i5n9y
     font-size: 20px;
     font-weight: normal;
 }
+
+/* Dachboard Candidate */
+.show_more .btn, .show_more .btn:active{
+    background-color: var(--e-global-color-primary);
+    color: #fff;
+    font-weight: 500;
+    font-family: "Be Vietnam Pro", sans-serif;
+    line-height: 27px;
+    border-radius: 12px;
+    padding: 10px 24px;
+}

@@ -611,8 +611,8 @@ if ($productsRef->have_posts()) {
                                         <?php echo '$' . number_format($total_unpaid_earnings, 2); ?>
                                     </span>
                                 </div>
-                            </div>
-
+                            </div> 
+    
                             <div class="flex flex-col gap-3 mb-8">
                                 <span class="text-base text-textColor">Your QR code</span>
                                 <div class="flex gap-4 items-center flex-col md:flex-row">
@@ -628,8 +628,11 @@ if ($productsRef->have_posts()) {
 
                             <div class="flex flex-col gap-3 mb-8">
                                 <span class="text-base text-textColor">Your link</span>
+
                                 <div class="flex gap-2 items-center flex-wrap justify-center md:justify-start">
-                                    <input type="text" value="https://childfreebc.com/register-as-candidates/?ref=<?php echo $user_name; ?>"
+                                    <!-- <input type="text" value="https://childfreebc.com/register-as-candidates/?ref=<?php echo $user_name; ?>"
+                                           class="input border-borderColor bg-white rounded-xl bg-white w-full max-w-lg" id="accLink" readonly /> -->
+                                           <input type="text" value="<?php echo do_shortcode('[affiliate_referral_url url="https://childfreebc.com/register-as-candidates/"]');?>"
                                            class="input border-borderColor bg-white rounded-xl bg-white w-full max-w-lg" id="accLink" readonly />
                                     <div class="tooltip tooltip-bottom tooltip-success flex" data-tip="Copy referral link">
                                         <button class="btn bg-primary border-0 text-white capitalize hover:scale-105" id="copy-accLink">
